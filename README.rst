@@ -7,9 +7,9 @@ Script Venv
         :target: https://pypi.python.org/pypi/script-venv
 
 .. image:: https://img.shields.io/travis/neongraal/script_venv.svg
-        :target: https://travis-ci.org/neongraal/script-venv
+        :target: https://travis-ci.org/NeonGraal/script-venv
 
-.. image:: https://img.shields.io/appveyor/neongraal/script_venv.svg
+.. image:: https://img.shields.io/appveyor/ci/neongraal/script_venv.svg
         :target: https://ci.appveyor.com/api/projects/status/8r62gxn9pyjn31s2?svg=true
 
 .. image:: https://readthedocs.org/projects/script-venv/badge/?version=latest
