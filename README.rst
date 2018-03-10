@@ -6,7 +6,7 @@ Script Venv
 .. image:: https://img.shields.io/pypi/v/script-venv.svg
         :target: https://pypi.python.org/pypi/script-venv
 
-.. image:: https://img.shields.io/travis/neongraal/script_venv.svg
+.. image:: https://img.shields.io/travis/NeonGraal/script-venv.svg
         :target: https://travis-ci.org/NeonGraal/script-venv
 
 .. image:: https://img.shields.io/appveyor/ci/NeonGraal/script-venv.svg
