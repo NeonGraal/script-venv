@@ -10,3 +10,6 @@ twine
 
 pytest==3.4.2
 pytest-runner==2.11.1
+pytest-cov==2.5.1
+pytest-flake8==0.9.1
+pytest-mypy==0.3.0
