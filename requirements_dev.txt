@@ -13,3 +13,4 @@ pytest-runner==2.11.1
 pytest-cov==2.5.1
 pytest-flake8==0.9.1
 pytest-mypy==0.3.0 ; python_version >= "3.4"
+mypy==0.550 ; python_version >= "3.4"
