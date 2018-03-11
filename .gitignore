@@ -98,5 +98,5 @@ ENV/
 /site
 
 # mypy
-.mypy_cache/
+.*cache/
 workspace.xml

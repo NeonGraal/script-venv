@@ -22,7 +22,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
 
-import script_venv
+import script_venv  # noqa: E402
 
 # -- General configuration ---------------------------------------------
 
@@ -122,7 +122,7 @@ latex_elements = {
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
-}
+}  # type: dict
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass
@@ -158,6 +158,3 @@ texinfo_documents = [
      'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-
