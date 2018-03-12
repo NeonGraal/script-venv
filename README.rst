@@ -33,7 +33,17 @@ A python package for script (and command) virtualisation with less typing.
 Features
 --------
 
-* TODO
+* Run scripts, either console, gui or pure python, in their own virtual environment.
+* Console or gui scripts can be auto registered from their package.
+* Virtual environments can be global, user (default) or working directory.
+
+Examples
+--------
+
+Presuming ``Example.py`` is registered for the ``example`` use virtual environment::
+    > sv Example.py
+    |~/.sv/example/{bin|scripts}/python Example.py
+
 
 Credits
 -------

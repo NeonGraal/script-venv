@@ -35,7 +35,7 @@ setup(
     description="A python package for script (and command) virtualisation with less typing.",
     entry_points={
         'console_scripts': [
-            'script_venv=script_venv.cli:main',
+            'sv=script_venv.cli:main',
         ],
     },
     install_requires=requirements,
