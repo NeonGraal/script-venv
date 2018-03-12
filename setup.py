@@ -15,7 +15,7 @@ requirements = ['Click>=6.0', ]
 
 setup_requirements = ['pytest-runner', ]
 
-test_requirements = ['pytest', 'pytest-cov', 'pytest-flake8', 'pytest-mypy']
+test_requirements = ['pytest', 'pytest-cov', 'pytest-flake8', 'pytest-mypy ; python_version >= "3.4"', ]
 
 setup(
     author="Struan Lyall Judd",
@@ -25,8 +25,6 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
-        "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
