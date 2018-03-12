@@ -41,6 +41,7 @@ Examples
 --------
 
 Presuming ``Example.py`` is registered for the ``example`` use virtual environment::
+
     $ sv Example.py
     Runs "~/.sv/example/{bin|scripts}/python Example.py"
 
