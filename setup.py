@@ -15,7 +15,7 @@ requirements = ['Click>=6.0', ]
 
 setup_requirements = ['pytest-runner', ]
 
-test_requirements = ['pytest', 'pytest-cov', 'pytest-flake8', 'pytest-mypy', 'mypy==0.550', ]
+test_requirements = ['pytest', 'pytest-cov', 'pytest-flake8', 'pytest-mypy', 'mypy==0.560', ]
 
 setup(
     author="Struan Lyall Judd",

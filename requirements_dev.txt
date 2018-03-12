@@ -13,4 +13,4 @@ pytest-runner==4.0
 pytest-cov==2.5.1
 pytest-flake8==0.9.1
 pytest-mypy==0.3.0
-mypy==0.550 # pyup: != 0.570 # disable 0.570, breaks tests
+mypy==0.560 # pyup: != 0.570 # disable 0.570, breaks tests
