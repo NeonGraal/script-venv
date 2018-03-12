@@ -17,8 +17,8 @@ Script Venv
         :alt: Documentation Status
 
 
-.. image:: https://pyup.io/repos/github/neongraal/script-venv/shield.svg
-     :target: https://pyup.io/repos/github/neongraal/script-venv/
+.. image:: https://pyup.io/repos/github/NeonGraal/script-venv/shield.svg
+     :target: https://pyup.io/repos/github/NeonGraal/script-venv/
      :alt: Updates
 
 
