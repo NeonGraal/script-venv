@@ -33,17 +33,25 @@ A python package for script (and command) virtualisation with less typing.
 Features
 --------
 
-* Run scripts, either console, gui or pure python, in their own virtual environment.
-* Console or gui scripts can be auto registered from their package.
-* Virtual environments can be global, user (default) or working directory.
+* Run scripts, either console, gui or pure python, in their own virtual environment (venv).
+* Scripts can be registered to a specific venv.
+* Console or gui scripts can be auto registered from their package into a venv.
+* VEnvs can be per user (default), local (under the current directory) or in a relative directory.
+* VEnvs can be registered with requirements, and such venvs can be created as needed.
+
 
 Examples
 --------
 
-Presuming ``Example.py`` is registered for the ``example`` use virtual environment::
+If ``Example.py`` is registered for the ``example`` local venv::
 
     $ sv Example.py
-    Runs "~/.sv/example/{bin|scripts}/python Example.py"
+    Runs ".sv/example/bin/python Example.py"
+
+If ``cookiecutter`` is registered for the ``cc`` user venv::
+
+    $ sv cookiecutter
+    Runs "~/.sv/cc/bin/cookiecutter"
 
 
 Credits
