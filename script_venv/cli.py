@@ -4,13 +4,23 @@
 import sys
 import click
 
+from .script_venv import ScriptVenvGroup
 
-@click.command()
-def main(args=None):
+
+@click.command(name="sv", cls=ScriptVenvGroup)
+@click.version_option()
+def main():
+    # type: () -> None
     """Console script for script_venv."""
-    click.echo("Replace this message by putting your code into "
-               "script_venv.cli.main")
-    click.echo("See click documentation at http://click.pocoo.org/")
+    pass
+
+
+@main.command(name=":update")
+@click.argument('venv', type=click.STRING)
+def update(venv):
+    # type: (str) -> int
+    """Update venv"""
+    click.echo("update venv: " + venv)
     return 0
 
 
