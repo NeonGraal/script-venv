@@ -1,29 +1,27 @@
 # -*- coding: utf-8 -*-
 
 """Main module."""
-import click
-from click.core import Context
-from typing import Any
-from typing import List
-from click.core import Command
-from typing import Union
+
+from click import Context, Command, Group
+
+from script_venv.config import VENVS
+from typing import Iterable, Any
 
 
-class ScriptVenvCommand(click.Command):
-    def make_context(self, info_name, args, parent=None, **extra):
-        # type: (str, List[str], Context, **Any) -> Context
-        ctx = click.Context(self, info_name=info_name, parent=parent, **extra)
+class ScriptVenvCommand(Command):
+    def make_context(self, info_name: str, args: Iterable[str], parent: Context=None, **extra: Any) -> Context:
+        ctx = Context(self, info_name=info_name, parent=parent, **extra)
         ctx.args = args
         return ctx
 
-    def invoke(self, ctx):
+    def invoke(self, ctx: Context) -> None:
         # type: (Context) -> None
-        click.echo(f"{self.name} args: {ctx.args}")
+        venv = VENVS[ctx.info_name.lower()]
+        venv.run(ctx.info_name, ctx.args)
 
 
-class ScriptVenvGroup(click.Group):
-    def get_command(self, ctx, cmd_name):
-        # type: (Context, str) -> Union[Command, ScriptVenvCommand]
+class ScriptVenvGroup(Group):
+    def get_command(self, ctx: Context, cmd_name: str) -> Command:
         cmd = super(ScriptVenvGroup, self).get_command(ctx, cmd_name)
 
         if cmd:

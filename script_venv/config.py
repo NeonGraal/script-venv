@@ -2,10 +2,9 @@
 
 """ Config file processing """
 from configparser import ConfigParser
+from pathlib import Path
 
-from os import path
-
-from .env import VEnv
+from .venv import VEnv
 
 """
 Config file structure:
@@ -20,8 +19,20 @@ requirements:
 """
 
 _SCRIPTS = "SCRIPTS"
-_VENVS = {}
+VENVS = {}
 
+local_config = Path.cwd() / '.sv_cfg'
+
+if local_config.exists():
+    config = ConfigParser()
+    config.read(local_config)
+
+    scripts = config[_SCRIPTS]
+    for s in scripts:
+        v = scripts[s] or s
+        VENVS[s] = VEnv(v, local=True)
+
+"""
 user_config = path.expanduser('~/.sv_cfg')
 if path.isfile(user_config):
     config = ConfigParser()
@@ -32,18 +43,8 @@ if path.isfile(user_config):
             requirements = [r for r in config.get(v, 'requirements').splitlines() if r]
             _VENVS[v] = VEnv(v, requirements=requirements, local=config.getboolean(v, 'local', False))
 
-    packages = config['PACKAGES']
-    for p in packages:
-        v = packages[p] or p
-        if v not in _VENVS:
-            env = VEnv(v, requirements=p, local=False)
-        else:
-            env = _VENVS[v]
-
-        for s in env.scripts():
-            _SCRIPTS[s] = env
-
     scripts = config['SCRIPTS']
     for s in scripts:
         if scripts[s] in _VENVS:
             _SCRIPTS[s] = _VENVS[scripts[s]]
+"""
