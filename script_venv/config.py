@@ -30,7 +30,7 @@ class VenvConfig(object):
 
         if config_file.exists():
             config = ConfigParser()
-            config.read(config_file)
+            config.read_file(config_file.open())
 
             scripts = config[SCRIPTS]
             for s in scripts:
