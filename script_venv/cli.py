@@ -18,20 +18,20 @@ def main() -> None:
 
 @main.command(name=":update")
 @click.argument('venv', type=click.STRING)
-def update(venv: str) -> int:
+def update_venvs(venv: str) -> int:
     """Update venv"""
     click.echo("update venv: " + venv)
     return 0
 
 
 @main.command(name=":list")
-def list() -> None:
+def list_venvs() -> None:
     """List known scripts and venvs"""
     config = VenvConfig()
     config.load(Path('~'), False)
     config.load(Path(''), True)
 
-    print("Configs:", sorted(config.cfgs))
+    print("Configs:", sorted(config.configs))
     for s in config.scripts:
         print(s, '->', config.scripts[s])
     for v in config.venvs:

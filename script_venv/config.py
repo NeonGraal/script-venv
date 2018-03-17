@@ -11,6 +11,7 @@ from os import path
 
 from .venv import VEnv
 
+# noinspection SpellCheckingInspection
 """
 Config file structure:
 [SCRIPTS]
@@ -28,7 +29,7 @@ SCRIPTS = "SCRIPTS"
 
 class VenvConfig(object):
     def __init__(self) -> None:
-        self.cfgs = set()  # type: Set[str]
+        self.configs = set()  # type: Set[str]
         self._scripts = {}  # type: Dict[str, str]
         self._venvs = {}  # type: Dict[str, VEnv]
         self._scripts_proxy = MappingProxyType(self._scripts)
@@ -39,7 +40,7 @@ class VenvConfig(object):
         config_file_path = Path(path.expanduser(str(config_file))).absolute()
 
         if config_file_path.exists():
-            self.cfgs.add(config_file.as_posix())
+            self.configs.add(config_file.as_posix())
             config = ConfigParser()
             config.read_file(config_file_path.open())
 
