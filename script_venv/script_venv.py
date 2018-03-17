@@ -10,7 +10,7 @@ from .config import VenvConfig
 
 
 class ScriptVenvContext(Context):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super(ScriptVenvContext, self). __init__(*args, **kwargs)
         self.config = VenvConfig()
 

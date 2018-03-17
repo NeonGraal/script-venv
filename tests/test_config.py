@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
 """ Config file processing """
-from pathlib import Path
 
-import pytest
 from os import getcwd, chdir, path
-
+from pathlib import Path
+import pytest
 from typing import Iterable
 
 from script_venv.config import VenvConfig
@@ -23,24 +22,24 @@ def config() -> Iterable[VenvConfig]:
         chdir(old_path)
 
 
-def test_config_missing():
+def test_config_missing() -> None:
     config = VenvConfig()
     config.load(Path.home() / 'test', True)
     assert [] == list(config.venvs)
 
 
-def test_config_load(config: VenvConfig):
+def test_config_load(config: VenvConfig) -> None:
     assert 'sample.py' in config.scripts
     assert 'sample' in config.venvs
 
 
-def test_config_venv(config: VenvConfig):
+def test_config_venv(config: VenvConfig) -> None:
     assert 'sample' == config.scripts['sample.py']
 
 
-def test_config_scripts(config: VenvConfig):
+def test_config_scripts(config: VenvConfig) -> None:
     assert ['pip', 'sample.py'] == sorted(config.scripts)
 
 
-def test_config_venvs(config: VenvConfig):
+def test_config_venvs(config: VenvConfig) -> None:
     assert ['sample'] == sorted(config.venvs)
