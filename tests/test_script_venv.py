@@ -7,45 +7,51 @@ from click.testing import CliRunner
 # from script_venv import script_venv
 
 from script_venv import cli
-from os import getcwd
+from os import getcwd, chdir
 import pytest
 
 
 @pytest.fixture()
 def runner():
-    return CliRunner()
+    old_cwd = getcwd()
+    try:
+        chdir('tests')
+        yield CliRunner()
+    finally:
+        chdir(old_cwd)
 
 
-def test_cli_default(runner):
-    # type: (CliRunner) -> None
+def test_cli_default(runner: CliRunner) -> None:
     result = runner.invoke(cli.main)
     assert result.exit_code == 0
     assert 'Show this message and exit.' in result.output
 
 
-def test_cli_version(runner):
-    # type: (CliRunner) -> None
+def test_cli_version(runner: CliRunner) -> None:
     result = runner.invoke(cli.main, ['--version'])
     assert result.exit_code == 0
     assert 'sv, version' in result.output
 
 
-def test_cli_help(runner):
-    # type: (CliRunner) -> None
+def test_cli_help(runner: CliRunner) -> None:
     result = runner.invoke(cli.main, ['--help'])
     assert result.exit_code == 0
     assert 'Show this message and exit.' in result.output
 
 
-def test_cli_update_help(runner):
-    # type: (CliRunner) -> None
+def test_cli_update_help(runner: CliRunner) -> None:
     result = runner.invoke(cli.main, [':update', '--help'])
     assert result.exit_code == 0
     assert 'Show this message and exit.' in result.output
 
 
+def test_cli_list_help(runner: CliRunner) -> None:
+    result = runner.invoke(cli.main, [':list', '--help'])
+    assert result.exit_code == 0
+    assert 'Show this message and exit.' in result.output
+
+
 def test_cli_sample(runner: CliRunner) -> None:
-    # type: (CliRunner) -> None
     result = runner.invoke(cli.main, ['Sample.py'])
     assert result.exit_code == 0
     assert getcwd() in result.output

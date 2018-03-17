@@ -102,3 +102,6 @@ ENV/
 workspace.xml
 annotations.json
 *.dist-info/
+
+shelf/
+tests/sample/

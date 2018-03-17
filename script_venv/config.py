@@ -18,19 +18,34 @@ requirements:
     pipdeptree
 """
 
-_SCRIPTS = "SCRIPTS"
-VENVS = {}
+SCRIPTS = "SCRIPTS"
 
-local_config = Path.cwd() / '.sv_cfg'
 
-if local_config.exists():
-    config = ConfigParser()
-    config.read(local_config)
+class VenvConfig(object):
+    def __init__(self):
+        self._venvs = {}
 
-    scripts = config[_SCRIPTS]
-    for s in scripts:
-        v = scripts[s] or s
-        VENVS[s] = VEnv(v, local=True)
+    def load(self, config_path: Path):
+        config_file = config_path / '.sv_cfg'
+
+        if config_file.exists():
+            config = ConfigParser()
+            config.read(config_file)
+
+            scripts = config[SCRIPTS]
+            for s in scripts:
+                v = scripts[s] or s
+                self._venvs[s] = VEnv(v, local=True)
+
+    def scripts(self):
+        return self._venvs.keys()
+
+    def venvs(self):
+        return self._venvs.values()
+
+    def __getitem__(self, item):
+        return self._venvs[item]
+
 
 """
 user_config = path.expanduser('~/.sv_cfg')
