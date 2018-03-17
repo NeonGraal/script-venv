@@ -24,7 +24,7 @@ def config() -> Iterable[VenvConfig]:
 
 def test_config_missing() -> None:
     config = VenvConfig()
-    config.load(Path.home() / 'test', True)
+    config.load(Path(path.expanduser('~')) / 'test', True)
     assert [] == list(config.venvs)
 
 
