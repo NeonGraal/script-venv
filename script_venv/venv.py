@@ -33,7 +33,8 @@ class VEnv(object):
     def exists(self) -> bool:
         return self.env_path.exists()
 
-    def run(self, cmd_name: str, args: List[str]) -> None:
+    def run(self, cmd_name: str, args: List[str], call=None) -> int:
+        call = call if callable(call) else subprocess.call
         bin_path = self.abs_path / _bin
         cmd_path = bin_path / (cmd_name + _exe)
         new_env = dict()  # type: Dict[str,str]
@@ -41,9 +42,9 @@ class VEnv(object):
                        VIRTUAL_ENV=str(self.abs_path),
                        PATH=''.join([_quote % self.abs_path, os.pathsep, os.environ['PATH']])
                        )
-        if cmd_path.exists():
+        if cmd_path.exists():  # pragma: no cover
             cmd = [str(cmd_path)]
         else:
             cmd = [str(bin_path / os.path.basename(sys.executable)), cmd_name]
 
-        exit(subprocess.call(cmd + args, env=new_env))
+        return call(cmd + args, env=new_env)

@@ -44,7 +44,8 @@ class ScriptVenvCommand(Command):
                 if not venv.requirements:
                     echo('Cannot create venv: "%s"' % v)
                     return
-            venv.run(cmd, args)
+            result = venv.run(cmd, args)
+            ctx.exit(result)
 
 
 class ScriptVenvGroup(Group):
