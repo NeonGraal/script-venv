@@ -104,4 +104,4 @@ annotations.json
 *.dist-info/
 
 shelf/
-tests/sample/
+tests/.sv/

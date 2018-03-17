@@ -39,10 +39,22 @@ def test_cli_help(runner: CliRunner) -> None:
     assert 'Show this message and exit.' in result.output
 
 
+def test_cli_update(runner: CliRunner) -> None:
+    result = runner.invoke(cli.main, [':update', 'sample'])
+    assert result.exit_code == 0
+    assert 'update venv: sample' in result.output
+
+
 def test_cli_update_help(runner: CliRunner) -> None:
     result = runner.invoke(cli.main, [':update', '--help'])
     assert result.exit_code == 0
     assert 'Show this message and exit.' in result.output
+
+
+def test_cli_list(runner: CliRunner) -> None:
+    result = runner.invoke(cli.main, [':list'])
+    assert result.exit_code == 0
+    assert 'sample.py -> sample' in result.output
 
 
 def test_cli_list_help(runner: CliRunner) -> None:
@@ -52,6 +64,15 @@ def test_cli_list_help(runner: CliRunner) -> None:
 
 
 def test_cli_sample(runner: CliRunner) -> None:
+    result = runner.invoke(cli.main, ['Sample', '-m', 'pip', 'list'])
+    assert result.exit_code == 0
+
+
+def test_cli_sample_script(runner: CliRunner) -> None:
     result = runner.invoke(cli.main, ['Sample.py'])
     assert result.exit_code == 0
-    assert getcwd() in result.output
+
+
+def test_cli_pip(runner: CliRunner, capfd) -> None:
+    result = runner.invoke(cli.main, ['pip', 'list'])
+    assert result.exit_code == 0

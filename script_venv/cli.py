@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 """Console script for script_venv."""
-import sys
 import click
 from pathlib import Path
+import sys
 
-from script_venv.config import VenvConfig
+from .config import VenvConfig
 from .script_venv import ScriptVenvGroup
 
 
@@ -26,14 +26,16 @@ def update(venv: str) -> int:
 
 @main.command(name=":list")
 def list() -> None:
-    """List known venvs"""
+    """List known scripts and venvs"""
     config = VenvConfig()
-    config.load(Path.cwd())
+    config.load(Path('~'), False)
+    config.load(Path(''), True)
 
-    for s in config.scripts():
-        print(s, '->', config[s].name)
-    for v in config.venvs():
-        print(v)
+    print("Configs:", sorted(config.cfgs))
+    for s in config.scripts:
+        print(s, '->', config.scripts[s])
+    for v in config.venvs:
+        print(config.venvs[v])
 
 
 if __name__ == "__main__":

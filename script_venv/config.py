@@ -3,6 +3,7 @@
 """ Config file processing """
 from configparser import ConfigParser
 from pathlib import Path
+from types import MappingProxyType
 
 from .venv import VEnv
 
@@ -23,43 +24,31 @@ SCRIPTS = "SCRIPTS"
 
 class VenvConfig(object):
     def __init__(self):
+        self.cfgs = set()
+        self._scripts = {}
         self._venvs = {}
+        self._scripts_proxy = MappingProxyType(self._scripts)
+        self._venvs_proxy = MappingProxyType(self._venvs)
 
-    def load(self, config_path: Path):
+    def load(self, config_path: Path, local: bool):
         config_file = config_path / '.sv_cfg'
+        config_file_path = config_file.expanduser().absolute()
 
-        if config_file.exists():
+        if config_file_path.exists():
+            self.cfgs.add(config_file.as_posix())
             config = ConfigParser()
-            config.read_file(config_file.open())
+            config.read_file(config_file_path.open())
 
             scripts = config[SCRIPTS]
             for s in scripts:
                 v = scripts[s] or s
-                self._venvs[s] = VEnv(v, local=True)
+                self._scripts[s] = v
+                self._venvs.setdefault(v, VEnv(v, local=local))
 
+    @property
     def scripts(self):
-        return self._venvs.keys()
+        return self._scripts_proxy
 
+    @property
     def venvs(self):
-        return self._venvs.values()
-
-    def __getitem__(self, item):
-        return self._venvs[item]
-
-
-"""
-user_config = path.expanduser('~/.sv_cfg')
-if path.isfile(user_config):
-    config = ConfigParser()
-    config.read(user_config)
-
-    for v in config.sections():
-        if v.islower():
-            requirements = [r for r in config.get(v, 'requirements').splitlines() if r]
-            _VENVS[v] = VEnv(v, requirements=requirements, local=config.getboolean(v, 'local', False))
-
-    scripts = config['SCRIPTS']
-    for s in scripts:
-        if scripts[s] in _VENVS:
-            _SCRIPTS[s] = _VENVS[scripts[s]]
-"""
+        return self._venvs_proxy
