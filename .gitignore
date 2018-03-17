@@ -100,7 +100,7 @@ ENV/
 # mypy
 .*cache/
 workspace.xml
-annotations.json
+type_info.json
 *.dist-info/
 
 shelf/

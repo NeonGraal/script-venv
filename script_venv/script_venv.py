@@ -32,15 +32,18 @@ class ScriptVenvCommand(Command):
                 v = ctx.config.scripts[name]
             elif name in ctx.config.venvs:
                 v = name
-                if len(args) > 0:
-                    cmd = args.pop(0)
-                else:
+                if len(args) == 0:
                     echo('Insufficient parameters', err=True)
                     return
+                cmd = args.pop(0)
             else:
                 echo('Unknown script or venv: "%s"' % ctx.info_name, err=True)
                 return
             venv = ctx.config.venvs[v]
+            if not venv.exists():
+                if not venv.requirements:
+                    echo('Cannot create venv: "%s"' % v)
+                    return
             venv.run(cmd, args)
 
 

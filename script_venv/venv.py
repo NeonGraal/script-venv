@@ -34,6 +34,9 @@ class VEnv(object):
         env_path = self.env_path.expanduser().absolute()
         return "%s (%s%s)" % (self.name, self.env_path, '' if env_path.exists() else ' !MISSING')
 
+    def exists(self) -> bool:
+        return self.env_path.exists()
+
     def run(self, cmd_name, args):
         env_path = self.env_path.expanduser().absolute()
         bin_path = env_path / _bin

@@ -5,6 +5,8 @@ from configparser import ConfigParser
 from pathlib import Path
 from types import MappingProxyType
 
+from typing import Mapping, Set, Dict  # noqa: F401
+
 from .venv import VEnv
 
 """
@@ -23,14 +25,14 @@ SCRIPTS = "SCRIPTS"
 
 
 class VenvConfig(object):
-    def __init__(self):
-        self.cfgs = set()
-        self._scripts = {}
-        self._venvs = {}
+    def __init__(self) -> None:
+        self.cfgs = set()  # type: Set[str]
+        self._scripts = {}  # type: Dict[str, str]
+        self._venvs = {}  # type: Dict[str, VEnv]
         self._scripts_proxy = MappingProxyType(self._scripts)
         self._venvs_proxy = MappingProxyType(self._venvs)
 
-    def load(self, config_path: Path, local: bool):
+    def load(self, config_path: Path, local: bool) -> None:
         config_file = config_path / '.sv_cfg'
         config_file_path = config_file.expanduser().absolute()
 
@@ -46,9 +48,9 @@ class VenvConfig(object):
                 self._venvs.setdefault(v, VEnv(v, local=local))
 
     @property
-    def scripts(self):
+    def scripts(self) -> Mapping[str, str]:
         return self._scripts_proxy
 
     @property
-    def venvs(self):
+    def venvs(self) -> Mapping[str, VEnv]:
         return self._venvs_proxy
