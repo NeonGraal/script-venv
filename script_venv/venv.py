@@ -6,22 +6,18 @@ import os
 from pathlib import Path
 import subprocess
 import sys
-from typing import Iterable, List, NoReturn, Dict  # noqa: F401
+from typing import Iterable, List, Dict  # noqa: F401
 
 _r = 'requirements'
 
 if os.name == 'nt':  # pragma: no cover
     _bin = 'Scripts'
     _exe = '.exe'
-
-    def path_quote(p: Path) -> str:
-        return '"%s"' % p
+    _quote = '"%s"'
 else:  # pragma: no cover
     _bin = 'bin'
     _exe = ''
-
-    def path_quote(p: Path) -> str:
-        return str(p)
+    _quote = '%s'
 
 
 class VEnv(object):
@@ -29,22 +25,21 @@ class VEnv(object):
         self.name = name
         self.requirements = requirements
         self.env_path = (Path('.sv') if local else Path('~') / '.sv') / name
+        self.abs_path = Path(os.path.expanduser(self.env_path)).absolute()
 
     def __str__(self) -> str:
-        env_path = self.env_path.expanduser().absolute()
-        return "%s (%s%s)" % (self.name, self.env_path, '' if env_path.exists() else ' !MISSING')
+        return "%s (%s%s)" % (self.name, self.env_path, '' if self.abs_path.exists() else ' !MISSING')
 
     def exists(self) -> bool:
         return self.env_path.exists()
 
-    def run(self, cmd_name: str, args: List[str]) -> NoReturn:
-        env_path = self.env_path.expanduser().absolute()
-        bin_path = env_path / _bin
+    def run(self, cmd_name: str, args: List[str]) -> None:
+        bin_path = self.abs_path / _bin
         cmd_path = bin_path / (cmd_name + _exe)
         new_env = dict()  # type: Dict[str,str]
         new_env.update(os.environ,
-                       VIRTUAL_ENV=str(env_path),
-                       PATH=''.join([path_quote(env_path), os.pathsep, os.environ['PATH']])
+                       VIRTUAL_ENV=str(self.abs_path),
+                       PATH=''.join([_quote % self.abs_path, os.pathsep, os.environ['PATH']])
                        )
         if cmd_path.exists():
             cmd = [str(cmd_path)]

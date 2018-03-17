@@ -7,6 +7,8 @@ from types import MappingProxyType
 
 from typing import Mapping, Set, Dict  # noqa: F401
 
+from os import path
+
 from .venv import VEnv
 
 """
@@ -34,7 +36,7 @@ class VenvConfig(object):
 
     def load(self, config_path: Path, local: bool) -> None:
         config_file = config_path / '.sv_cfg'
-        config_file_path = config_file.expanduser().absolute()
+        config_file_path = Path(path.expanduser(str(config_file))).absolute()
 
         if config_file_path.exists():
             self.cfgs.add(config_file.as_posix())
