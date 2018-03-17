@@ -25,7 +25,7 @@ class VEnv(object):
         self.name = name
         self.requirements = requirements
         self.env_path = (Path('.sv') if local else Path('~') / '.sv') / name
-        self.abs_path = Path(os.path.expanduser(self.env_path)).absolute()
+        self.abs_path = Path(os.path.expanduser(str(self.env_path))).absolute()
 
     def __str__(self) -> str:
         return "%s (%s%s)" % (self.name, self.env_path, '' if self.abs_path.exists() else ' !MISSING')
