@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 """ Venv tests """
-from random import randrange
-
+import os
 import pytest
+from random import randrange
 from script_venv.venv import VEnv
 
 
@@ -60,5 +60,5 @@ def test_venv_create_req(venv) -> None:
     return_code = venv.create(creator=test_creator)
 
     assert return_code
-    assert result['path'].endswith(r'.sv\test')
+    assert ['.sv', 'test'] == result['path'].split(os.pathsep)[-2:]
     assert result['with_pip']
