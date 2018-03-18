@@ -1,3 +1,6 @@
 [SCRIPTS]
 Sample.py=sample
 pip=sample
+pipdeptree=pip.test
+[pip.test]
+requirements=pipdeptree

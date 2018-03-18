@@ -42,8 +42,15 @@ class ScriptVenvCommand(Command):
             venv = ctx.config.venvs[v]
             if not venv.exists():
                 if not venv.requirements:
-                    echo('Cannot create venv: "%s"' % v)
+                    echo('Cannot create venv "%s" as no requirements' % v)
                     return
+
+                if not venv.create():
+                    echo('Creation of venv "%s" failed' % v)
+                    return
+
+                result = venv.run('pip', ['install'] + list(venv.requirements))
+
             result = venv.run(cmd, args)
             ctx.exit(result)
 

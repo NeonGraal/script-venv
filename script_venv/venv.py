@@ -7,6 +7,8 @@ from pathlib import Path
 import subprocess
 import sys
 from typing import Iterable, List, Dict  # noqa: F401
+import venv
+
 
 _r = 'requirements'
 
@@ -33,8 +35,9 @@ class VEnv(object):
     def exists(self) -> bool:
         return self.env_path.exists()
 
-    def run(self, cmd_name: str, args: List[str], call=None) -> int:
-        call = call if callable(call) else subprocess.call
+    def run(self, cmd_name: str, args: List[str], runner=None) -> int:
+        runner = runner if callable(runner) else subprocess.call
+
         bin_path = self.abs_path / _bin
         cmd_path = bin_path / (cmd_name + _exe)
         new_env = dict()  # type: Dict[str,str]
@@ -47,4 +50,13 @@ class VEnv(object):
         else:
             cmd = [str(bin_path / os.path.basename(sys.executable)), cmd_name]
 
-        return call(cmd + args, env=new_env)
+        return runner(cmd + args, env=new_env)
+
+    def create(self, creator=None) -> bool:
+        if not self.requirements:
+            return False
+
+        creator = creator if callable(creator) else venv.create
+
+        creator(str(self.abs_path), with_pip=True)
+        return True

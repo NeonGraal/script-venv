@@ -38,8 +38,8 @@ def test_config_venv(config: VenvConfig) -> None:
 
 
 def test_config_scripts(config: VenvConfig) -> None:
-    assert ['pip', 'sample.py'] == sorted(config.scripts)
+    assert {'pip', 'sample.py'} <= set(config.scripts)
 
 
 def test_config_venvs(config: VenvConfig) -> None:
-    assert ['sample'] == sorted(config.venvs)
+    assert {'sample'} <= set(config.venvs)

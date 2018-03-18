@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
 """Console script for script_venv."""
+
 import click
 from pathlib import Path
 import sys
+from typing import Dict, Set  # noqa: F401
 
 from .config import VenvConfig
 from .script_venv import ScriptVenvGroup
@@ -31,11 +33,17 @@ def list_venvs() -> None:
     config.load(Path('~'), False)
     config.load(Path(''), True)
 
-    print("Configs:", sorted(config.configs))
+    click.echo("Configs: %s" % sorted(config.configs))
+    scripts = {}  # type: Dict[str,Set[str]]
     for s in config.scripts:
-        print(s, '->', config.scripts[s])
+        scripts.setdefault(config.scripts[s], set()).add(s)
     for v in config.venvs:
-        print(config.venvs[v])
+        venv = config.venvs[v]
+        click.echo(str(venv))
+        if v in scripts:
+            click.echo("    Scripts: %s" % ', '.join(sorted(scripts[v])))
+        if venv.requirements:
+            click.echo("    Requirements: %s" % "\n\t\t".join(venv.requirements))
 
 
 if __name__ == "__main__":

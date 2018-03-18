@@ -44,6 +44,12 @@ class VenvConfig(object):
             config = ConfigParser()
             config.read_file(config_file_path.open())
 
+            for v in config:
+                if v.islower():
+                    venv = config[v]
+                    req = venv.get('requirements', '').splitlines()
+                    self._venvs.setdefault(v, VEnv(v, local=local, requirements=req))
+
             scripts = config[SCRIPTS]
             for s in scripts:
                 v = scripts[s] or s

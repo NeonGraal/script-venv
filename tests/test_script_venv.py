@@ -54,7 +54,7 @@ def test_cli_update_help(runner: CliRunner) -> None:
 def test_cli_list(runner: CliRunner) -> None:
     result = runner.invoke(cli.main, [':list'])
     assert result.exit_code == 0
-    assert 'sample.py -> sample' in result.output
+    assert 'Scripts:' in result.output
 
 
 def test_cli_list_help(runner: CliRunner) -> None:
