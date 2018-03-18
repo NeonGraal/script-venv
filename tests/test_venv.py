@@ -60,5 +60,5 @@ def test_venv_create_req(venv) -> None:
     return_code = venv.create(creator=test_creator)
 
     assert return_code
-    assert ['.sv', 'test'] == result['path'].split(os.pathsep)[-2:]
+    assert ['.sv', 'test'] == result['path'].split(os.sep)[-2:]
     assert result['with_pip']
