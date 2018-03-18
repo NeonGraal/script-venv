@@ -30,10 +30,10 @@ class VEnv(object):
         self.abs_path = Path(os.path.expanduser(str(self.env_path))).absolute()
 
     def __str__(self) -> str:
-        return "%s (%s%s)" % (self.name, self.env_path, '' if self.abs_path.exists() else ' !MISSING')
+        return "%s (%s%s)" % (self.name, self.env_path, '' if self.exists() else ' !MISSING')
 
     def exists(self) -> bool:
-        return self.env_path.exists()
+        return self.abs_path.exists()
 
     def run(self, cmd_name: str, args: List[str], runner=None) -> int:
         runner = runner if callable(runner) else subprocess.call
