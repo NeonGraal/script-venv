@@ -3,9 +3,8 @@
 """Console script for script_venv."""
 
 import click
-from pathlib import Path
 import sys
-from typing import Dict, Set  # noqa: F401
+from typing import Dict, Set, Iterable  # noqa: F401
 
 from .config import VenvConfig
 from .script_venv import ScriptVenvGroup
@@ -18,11 +17,16 @@ def main() -> None:
     pass
 
 
-@main.command(name=":update")
-@click.argument('venv', type=click.STRING)
-def update_venvs(venv: str) -> int:
-    """Update venv"""
-    click.echo("update venv: " + venv)
+@main.command(name=":register")
+@click.option('--per-user', '-u', is_flag=True, help='Register in "~/.sv_cfg"')
+@click.option('--is-local', '-l', is_flag=True, help='Register as local venv')
+@click.option('--is-global', '-g', is_flag=True, help='Register as global venv')
+@click.argument('venv')
+@click.argument('package', nargs=-1)
+def register_package(venv: str, package: Iterable[str], per_user: bool, is_local: bool, is_global: bool) -> int:
+    """Register packages and their scripts in venv"""
+    config = VenvConfig()
+    config.register(venv, package, per_user, is_local if per_user else not is_global)
     return 0
 
 
@@ -30,8 +34,8 @@ def update_venvs(venv: str) -> int:
 def list_venvs() -> None:
     """List known scripts and venvs"""
     config = VenvConfig()
-    config.load(Path('~'), False)
-    config.load(Path(''), True)
+    config.load(False)
+    config.load(True)
 
     click.echo("Configs: %s" % sorted(config.configs))
     scripts = {}  # type: Dict[str,Set[str]]
