@@ -39,14 +39,13 @@ def test_cli_help(runner: CliRunner) -> None:
     assert 'Show this message and exit.' in result.output
 
 
-def test_cli_update(runner: CliRunner) -> None:
-    result = runner.invoke(cli.main, [':update', 'sample'])
+def test_cli_register(runner: CliRunner) -> None:
+    result = runner.invoke(cli.main, [':register', 'pip.test'])
     assert result.exit_code == 0
-    assert 'update venv: sample' in result.output
 
 
-def test_cli_update_help(runner: CliRunner) -> None:
-    result = runner.invoke(cli.main, [':update', '--help'])
+def test_cli_register_help(runner: CliRunner) -> None:
+    result = runner.invoke(cli.main, [':register', '--help'])
     assert result.exit_code == 0
     assert 'Show this message and exit.' in result.output
 
@@ -54,7 +53,7 @@ def test_cli_update_help(runner: CliRunner) -> None:
 def test_cli_list(runner: CliRunner) -> None:
     result = runner.invoke(cli.main, [':list'])
     assert result.exit_code == 0
-    assert 'Scripts:' in result.output
+    assert 'Configs:' in result.output
 
 
 def test_cli_list_help(runner: CliRunner) -> None:
