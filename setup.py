@@ -13,7 +13,7 @@ with open('HISTORY.rst') as history_file:
 
 requirements = ['Click>=6.0', 'typing ; python_version < "3.5"']
 
-setup_requirements = ['pytest-runner', ]
+setup_requirements = ['pytest-runner', 'setuptools_scm', ]
 
 test_requirements = ['pytest', 'pytest-cov', 'pytest-flake8', 'pytest-mypy', 'mypy==0.560', ]
 
@@ -47,6 +47,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/neongraal/script_venv',
-    version='0.1.0',
+    use_scm_version=True,
     zip_safe=False,
 )

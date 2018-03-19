@@ -43,3 +43,7 @@ def test_config_scripts(config: VenvConfig) -> None:
 
 def test_config_venvs(config: VenvConfig) -> None:
     assert {'sample'} <= set(config.venvs)
+
+
+def test_venv_global(config: VenvConfig) -> None:
+    assert '~' in str(config.venvs['pip.test'])

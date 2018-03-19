@@ -26,14 +26,14 @@ class VEnv(object):
     def __init__(self, name, requirements: Iterable[str] = None, local=False) -> None:
         self.name = name
         self.requirements = requirements
-        self.env_path = (Path('.sv') if local else Path('~') / '.sv') / name
-        self.abs_path = Path(os.path.expanduser(str(self.env_path))).absolute()
+        self.env_path = str((Path('.sv') if local else Path('~') / '.sv') / name)
+        self.abs_path = Path(os.path.expanduser(self.env_path)).absolute()
 
     def __str__(self) -> str:
-        return "%s (%s%s)" % (self.name, self.env_path, '' if self.abs_path.exists() else ' !MISSING')
+        return "%s (%s%s)" % (self.name, self.env_path, '' if self.exists() else ' !MISSING')
 
     def exists(self) -> bool:
-        return self.env_path.exists()
+        return self.abs_path.exists()
 
     def run(self, cmd_name: str, args: List[str], runner=None) -> int:
         runner = runner if callable(runner) else subprocess.call
