@@ -41,14 +41,17 @@ class VenvConfig(object):
 
         if config_file_path.exists():
             self.configs.add(config_file.as_posix())
-            config = ConfigParser()
+            config = ConfigParser(allow_no_value=True)
             config.read_file(config_file_path.open())
 
             for v in config:
                 if v.islower():
-                    venv = config[v]
-                    req = venv.get('requirements', '').splitlines()
-                    self._venvs.setdefault(v, VEnv(v, local=local, requirements=req))
+                    if local:
+                        is_local = not config.has_option(v, 'global')
+                    else:
+                        is_local = config.has_option(v, 'local')
+                    req = [r for r in config.get(v, 'requirements', fallback='').splitlines() if r]
+                    self._venvs.setdefault(v, VEnv(v, local=is_local, requirements=req))
 
             scripts = config[SCRIPTS]
             for s in scripts:
