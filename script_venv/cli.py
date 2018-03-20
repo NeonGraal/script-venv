@@ -23,7 +23,11 @@ def main() -> None:
 @click.option('--is-global', '-g', is_flag=True, help='Register as global venv')
 @click.argument('venv')
 @click.argument('package', nargs=-1)
-def register_package(venv: str, package: Iterable[str], per_user: bool, is_local: bool, is_global: bool) -> int:
+def register_package(venv: str,
+                     package: Iterable[str],
+                     per_user: bool,
+                     is_local: bool,
+                     is_global: bool) -> int:  # pragma: no cover
     """Register packages and their scripts in venv"""
     config = VenvConfig()
     config.register(venv, package, per_user, is_local if per_user else not is_global)
@@ -36,18 +40,7 @@ def list_venvs() -> None:
     config = VenvConfig()
     config.load(False)
     config.load(True)
-
-    click.echo("Configs: %s" % sorted(config.configs))
-    scripts = {}  # type: Dict[str,Set[str]]
-    for s in config.scripts:
-        scripts.setdefault(config.scripts[s], set()).add(s)
-    for v in config.venvs:
-        venv = config.venvs[v]
-        click.echo(str(venv))
-        if v in scripts:
-            click.echo("    Scripts: %s" % ', '.join(sorted(scripts[v])))
-        if venv.requirements:
-            click.echo("    Requirements: %s" % "\n\t\t".join(venv.requirements))
+    config.list()
 
 
 if __name__ == "__main__":

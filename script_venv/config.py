@@ -76,6 +76,19 @@ class VenvConfig(object):
                 self._scripts[s] = v
                 self._venvs.setdefault(v, VEnv(v, local=per_user))
 
+    def list(self):
+        echo("Configs: %s" % sorted(self.configs))
+        scripts = {}  # type: Dict[str,Set[str]]
+        for s in self.scripts:
+            scripts.setdefault(self.scripts[s], set()).add(s)
+        for v in self.venvs:
+            venv = self.venvs[v]
+            echo(str(venv))
+            if v in scripts:
+                echo("    Scripts: %s" % ', '.join(sorted(scripts[v])))
+            if venv.requirements:
+                echo("    Requirements: %s" % "\n\t\t".join(venv.requirements))
+
     @property
     def scripts(self) -> Mapping[str, str]:
         return self._scripts_proxy
@@ -104,8 +117,7 @@ class VenvConfig(object):
                 if not venv.create():
                     echo("Unable to create %s to register %s" % (venv, sorted(packages)))
                     return
-            else:
-                venv.run('pip', ['install'] + list(packages))
+            venv.run('pip', ['install'] + list(packages))
 
             try:
                 import pkg_resources
