@@ -1,7 +1,10 @@
 [SCRIPTS]
-Sample.py=sample
-pip=sample
-pipdeptree=pip.test
+Sample.py = sample
+pip = sample
+pipdeptree = pip.test
+
 [pip.test]
 global
-requirements=pipdeptree
+requirements = pipdeptree
+
+[no.scripts]

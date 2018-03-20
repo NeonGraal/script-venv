@@ -132,7 +132,7 @@ class VenvConfig(object):
         if not config.has_section(name):
             config.add_section(name)
         config.set(name, _r, '\n'.join(sorted(requirements)))
-        if per_user != is_local:
+        if per_user == is_local:
             config.set(name, _l if per_user else _g, None)
 
         if out_file:

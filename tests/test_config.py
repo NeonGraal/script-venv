@@ -84,7 +84,22 @@ def test_register(venv_config: VenvConfig) -> None:
     def test_scripts(_package: str) -> Iterable[str]:
         return []
 
-    venv_config.register('test', ('package',), False, False, out_file=out_file, package_scripts=test_scripts)
+    venv_config.register('test', ('package',), False, True, out_file=out_file, package_scripts=test_scripts)
+
+    out_str = out_file.getvalue()
+    assert "[test]" in out_str
+    assert "requirements = package" in out_str
+    assert "global" not in out_str
+    assert "local" not in out_str
+
+
+def test_register_user(venv_config: VenvConfig) -> None:
+    out_file = StringIO()
+
+    def test_scripts(_package: str) -> Iterable[str]:
+        return []
+
+    venv_config.register('test', ('package',), True, False, out_file=out_file, package_scripts=test_scripts)
 
     out_str = out_file.getvalue()
     assert "[test]" in out_str
@@ -99,7 +114,7 @@ def test_register_local(venv_config: VenvConfig) -> None:
     def test_scripts(_package: str) -> Iterable[str]:
         return []
 
-    venv_config.register('test', ('package',), True, False, out_file=out_file, package_scripts=test_scripts)
+    venv_config.register('test', ('package',), True, True, out_file=out_file, package_scripts=test_scripts)
 
     out_str = out_file.getvalue()
     assert "local\n" in out_str
@@ -113,7 +128,7 @@ def test_register_global(venv_config: VenvConfig) -> None:
     def test_scripts(_package: str) -> Iterable[str]:
         return []
 
-    venv_config.register('test', ('package',), False, True, out_file=out_file, package_scripts=test_scripts)
+    venv_config.register('test', ('package',), False, False, out_file=out_file, package_scripts=test_scripts)
 
     out_str = out_file.getvalue()
     assert "global\n" in out_str

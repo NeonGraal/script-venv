@@ -39,11 +39,6 @@ def test_cli_help(runner: CliRunner) -> None:
     assert 'Show this message and exit.' in result.output
 
 
-def test_cli_register(runner: CliRunner) -> None:
-    result = runner.invoke(cli.main, [':register', 'pip.test'])
-    assert result.exit_code == 0
-
-
 def test_cli_register_help(runner: CliRunner) -> None:
     result = runner.invoke(cli.main, [':register', '--help'])
     assert result.exit_code == 0
@@ -72,6 +67,6 @@ def test_cli_sample_script(runner: CliRunner) -> None:
     assert result.exit_code == 0
 
 
-def test_cli_pip(runner: CliRunner, capfd) -> None:
+def test_cli_pip(runner: CliRunner) -> None:
     result = runner.invoke(cli.main, ['pip', 'list'])
     assert result.exit_code == 0
