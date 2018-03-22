@@ -39,6 +39,13 @@ Features
 * VEnvs can be per user (default), local (under the current directory) or in a relative directory.
 * VEnvs can be registered with requirements, and such venvs can be created as needed.
 
+Installation
+------------
+
+Run the following command to ensure you have the latest version of Script Venv::
+
+    $ pip install -U script_venv
+
 
 Examples
 --------
