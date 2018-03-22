@@ -76,6 +76,11 @@ class VenvConfig(object):
                 self._scripts[s] = v
                 self._venvs.setdefault(v, VEnv(v, local=per_user))
 
+        ignored = [s for s in config.sections() if not (s.islower() or s == _S)]
+
+        if ignored:
+            echo("Ignored the following sections of %s: %s" % (config_file, ', '.join(sorted(ignored))))
+
     def list(self):
         echo("Configs: %s" % sorted(self.configs))
         scripts = {}  # type: Dict[str,Set[str]]
@@ -108,16 +113,14 @@ class VenvConfig(object):
 
         if not config.has_section(_S):
             config.add_section(_S)
-        requirements = self._requirements(config, name) | set(packages)
+        requirements = self._requirements(config, name)
 
         if not package_scripts:  # pragma: no cover
             venv = VEnv(name, local=is_local)
-            if not venv.exists():
-                venv.requirements = requirements
-                if not venv.create():
-                    echo("Unable to create %s to register %s" % (venv, sorted(packages)))
-                    return
-            venv.run('pip', ['install'] + list(packages))
+            venv.requirements = requirements
+            if venv.create():
+                venv.install(*requirements)
+            venv.install(*packages)
 
             try:
                 import pkg_resources
@@ -143,7 +146,7 @@ class VenvConfig(object):
 
         if not config.has_section(name):
             config.add_section(name)
-        config.set(name, _r, '\n'.join(sorted(requirements)))
+        config.set(name, _r, '\n'.join(sorted(requirements | set(packages))))
         if per_user == is_local:
             config.set(name, _l if per_user else _g, None)
 
@@ -152,3 +155,16 @@ class VenvConfig(object):
         else:
             with config_file_path.open('w') as out_config:
                 config.write(out_config)
+
+    def create(self, venv_or_script: str, *extra_params: str, clean: bool=False):
+        if venv_or_script in self._venvs:
+            venv = self._venvs[venv_or_script]
+        elif venv_or_script in self._scripts:
+            v = self._scripts[venv_or_script]
+            venv = self._venvs[v]
+        else:
+            echo("Unable to find venv or script %s" % venv_or_script)
+            return
+
+        venv.create(clean=clean)
+        venv.install(*(tuple(venv.requirements) + extra_params))

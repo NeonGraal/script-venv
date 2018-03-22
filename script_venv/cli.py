@@ -21,7 +21,7 @@ def main() -> None:
 @click.option('--per-user', '-u', is_flag=True, help='Register in "~/.sv_cfg"')
 @click.option('--is-local', '-l', is_flag=True, help='Register as local venv')
 @click.option('--is-global', '-g', is_flag=True, help='Register as global venv')
-@click.argument('venv')
+@click.argument('venv', required=True)
 @click.argument('package', nargs=-1)
 def register_package(venv: str,
                      package: Iterable[str],
@@ -32,6 +32,19 @@ def register_package(venv: str,
     config = VenvConfig()
     config.register(venv, package, per_user, is_local if per_user else not is_global)
     return 0
+
+
+@main.command(name=":create")
+@click.option('--clean', '-c', is_flag=True, help='If the venv exists, clean it before applying requirements')
+@click.argument('venv_or_script', required=True)
+@click.argument('install_params', nargs=-1)
+def create_venv(venv_or_script: str, install_params: Iterable[str], clean: bool):
+    """Create or clean venv and apply requirements
+    appending any install parameters provided"""
+    config = VenvConfig()
+    config.load(False)
+    config.load(True)
+    config.create(venv_or_script, *install_params, clean=clean)
 
 
 @main.command(name=":list")
