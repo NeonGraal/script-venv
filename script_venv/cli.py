@@ -4,9 +4,10 @@
 
 import click
 import sys
-from typing import Dict, Set, Iterable  # noqa: F401
+from typing import Iterable  # noqa: F401
 
 from .config import VenvConfig
+from .factory import ConfigDependenciesImpl
 from .script_venv import ScriptVenvGroup
 
 
@@ -29,7 +30,7 @@ def register_package(venv: str,
                      is_local: bool,
                      is_global: bool) -> int:  # pragma: no cover
     """Register packages and their scripts in venv"""
-    config = VenvConfig()
+    config = VenvConfig(deps=ConfigDependenciesImpl())
     config.register(venv, package, per_user, is_local if per_user else not is_global)
     return 0
 
@@ -38,10 +39,12 @@ def register_package(venv: str,
 @click.option('--clean', '-c', is_flag=True, help='If the venv exists, clean it before applying requirements')
 @click.argument('venv_or_script', required=True)
 @click.argument('install_params', nargs=-1)
-def create_venv(venv_or_script: str, install_params: Iterable[str], clean: bool):
+def create_venv(venv_or_script: str,
+                install_params: Iterable[str],
+                clean: bool) -> None:  # pragma: no cover
     """Create or clean venv and apply requirements
     appending any install parameters provided"""
-    config = VenvConfig()
+    config = VenvConfig(deps=ConfigDependenciesImpl())
     config.load(False)
     config.load(True)
     config.create(venv_or_script, *install_params, clean=clean)
@@ -50,7 +53,7 @@ def create_venv(venv_or_script: str, install_params: Iterable[str], clean: bool)
 @main.command(name=":list")
 def list_venvs() -> None:
     """List known scripts and venvs"""
-    config = VenvConfig()
+    config = VenvConfig(deps=ConfigDependenciesImpl())
     config.load(False)
     config.load(True)
     config.list()

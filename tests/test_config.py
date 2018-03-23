@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
 """ Config file processing """
-from io import StringIO
 from os import getcwd, chdir
 import pytest
 from typing import Iterable
 
 from script_venv.config import VenvConfig
+
+from .factory import TestConfigDependencies
 
 # noinspection SpellCheckingInspection
 _SAMPLE_CFG = """[SCRIPTS]
@@ -29,123 +30,114 @@ def restore_cwd() -> Iterable[str]:
         chdir(old_path)
 
 
-@pytest.fixture
-def venv_config() -> VenvConfig:
-    return VenvConfig()
+class TestVenvConfig(object):
+    @pytest.fixture
+    def deps(self) -> TestConfigDependencies:
+        return TestConfigDependencies()
 
+    @pytest.fixture
+    def config(self, deps) -> VenvConfig:
+        return VenvConfig(deps=deps)
 
-def venv_config_load(venv_config: VenvConfig) -> None:
-    venv_config.load(False, in_file=StringIO("[SCRIPTS]\nsample.py=sample"))
+    @staticmethod
+    def venv_config_load(config: VenvConfig, deps: TestConfigDependencies) -> None:
+        deps.in_str = "[SCRIPTS]\nsample.py=sample"
 
-    assert 'sample.py' in venv_config.scripts
-    assert 'sample' in venv_config.venvs
-    assert 'sample' == venv_config.scripts['sample.py']
+        config.load(False)
 
+        assert 'sample.py' in config.scripts
+        assert 'sample' in config.venvs
+        assert 'sample' == config.scripts['sample.py']
 
-def venv_config_scripts(venv_config: VenvConfig) -> None:
-    venv_config.load(False, in_file=StringIO("[SCRIPTS]\nsample.py=sample\npip=sample"))
+    @staticmethod
+    def venv_config_scripts(config: VenvConfig, deps: TestConfigDependencies) -> None:
+        deps.in_str = "[SCRIPTS]\nsample.py=sample\npip=sample"
 
-    assert {'pip', 'sample.py'} <= set(venv_config.scripts)
+        config.load(False)
 
+        assert {'pip', 'sample.py'} <= set(config.scripts)
 
-def venv_config_venvs(venv_config: VenvConfig) -> None:
-    venv_config.load(False, in_file=StringIO("[sample]\n[pip]"))
+    @staticmethod
+    def venv_config_venvs(config: VenvConfig, deps: TestConfigDependencies) -> None:
+        deps.in_str = "[sample]\n[pip]\n"
 
-    assert {'sample', 'pip'} <= set(venv_config.venvs)
+        config.load(False)
 
+        assert {'sample', 'pip'} <= set(config.venvs)
 
-def test_venv_current(venv_config: VenvConfig) -> None:
-    venv_config.load(False, in_file=StringIO("[pip.test]\n"))
+    @staticmethod
+    def test_venv_current(config: VenvConfig, deps: TestConfigDependencies) -> None:
+        deps.in_str = "[pip.test]\n"
 
-    assert '~' not in str(venv_config.venvs['pip.test'])
+        config.load(False)
 
+        assert '~' not in str(config.venvs['pip.test'])
 
-def test_venv_user(venv_config: VenvConfig) -> None:
-    venv_config.load(True, in_file=StringIO("[pip.test]\n"))
+    @staticmethod
+    def test_venv_user(config: VenvConfig, deps: TestConfigDependencies) -> None:
+        deps.in_str = "[pip.test]\n"
 
-    assert '~' in str(venv_config.venvs['pip.test'])
+        config.load(True)
 
+        assert '~' in str(config.venvs['pip.test'])
 
-def test_venv_global(venv_config: VenvConfig) -> None:
-    venv_config.load(False, in_file=StringIO("[pip.test]\nglobal"))
+    @staticmethod
+    def test_venv_global(config: VenvConfig, deps: TestConfigDependencies) -> None:
+        deps.in_str = "[pip.test]\nglobal\n"
 
-    assert '~' in str(venv_config.venvs['pip.test'])
+        config.load(False)
 
+        assert '~' in str(config.venvs['pip.test'])
 
-def test_venv_local(venv_config: VenvConfig) -> None:
-    venv_config.load(True, in_file=StringIO("[pip.test]\nlocal"))
+    @staticmethod
+    def test_venv_local(config: VenvConfig, deps: TestConfigDependencies) -> None:
+        deps.in_str = "[pip.test]\nlocal\n"
 
-    assert '~' not in str(venv_config.venvs['pip.test'])
+        config.load(True)
 
+        assert '~' not in str(config.venvs['pip.test'])
 
-def test_register(venv_config: VenvConfig) -> None:
-    out_file = StringIO()
+    @staticmethod
+    def test_register(config: VenvConfig, deps: TestConfigDependencies) -> None:
+        config.register('test', ('package',), False, True)
 
-    def test_scripts(_package: str) -> Iterable[str]:
-        return []
+        assert "[test]" in deps.out_str
+        assert "requirements = package" in deps.out_str
+        assert "global" not in deps.out_str
+        assert "local" not in deps.out_str
 
-    venv_config.register('test', ('package',), False, True, out_file=out_file, package_scripts=test_scripts)
+    @staticmethod
+    def test_register_user(config: VenvConfig, deps: TestConfigDependencies) -> None:
+        config.register('test', ('package',), True, False)
 
-    out_str = out_file.getvalue()
-    assert "[test]" in out_str
-    assert "requirements = package" in out_str
-    assert "global" not in out_str
-    assert "local" not in out_str
+        assert "[test]" in deps.out_str
+        assert "requirements = package" in deps.out_str
+        assert "global" not in deps.out_str
+        assert "local" not in deps.out_str
 
+    @staticmethod
+    def test_register_local(config: VenvConfig, deps: TestConfigDependencies) -> None:
+        config.register('test', ('package',), True, True)
 
-def test_register_user(venv_config: VenvConfig) -> None:
-    out_file = StringIO()
+        assert "local\n" in deps.out_str
+        assert "requirements = package" in deps.out_str
+        assert "global" not in deps.out_str
 
-    def test_scripts(_package: str) -> Iterable[str]:
-        return []
+    @staticmethod
+    def test_register_global(config: VenvConfig, deps: TestConfigDependencies) -> None:
+        config.register('test', ('package',), False, False)
 
-    venv_config.register('test', ('package',), True, False, out_file=out_file, package_scripts=test_scripts)
+        assert "global\n" in deps.out_str
+        assert "requirements = package" in deps.out_str
+        assert "local" not in deps.out_str
 
-    out_str = out_file.getvalue()
-    assert "[test]" in out_str
-    assert "requirements = package" in out_str
-    assert "global" not in out_str
-    assert "local" not in out_str
+    @staticmethod
+    def test_register_scripts(config: VenvConfig, deps: TestConfigDependencies) -> None:
+        def test_scripts(package: str) -> Iterable[str]:
+            return [package + '.script']
 
+        config.register('test', ('package1', 'package2'), False, False)
 
-def test_register_local(venv_config: VenvConfig) -> None:
-    out_file = StringIO()
-
-    def test_scripts(_package: str) -> Iterable[str]:
-        return []
-
-    venv_config.register('test', ('package',), True, True, out_file=out_file, package_scripts=test_scripts)
-
-    out_str = out_file.getvalue()
-    assert "local\n" in out_str
-    assert "requirements = package" in out_str
-    assert "global" not in out_str
-
-
-def test_register_global(venv_config: VenvConfig) -> None:
-    out_file = StringIO()
-
-    def test_scripts(_package: str) -> Iterable[str]:
-        return []
-
-    venv_config.register('test', ('package',), False, False, out_file=out_file, package_scripts=test_scripts)
-
-    out_str = out_file.getvalue()
-    assert "global\n" in out_str
-    assert "requirements = package" in out_str
-    assert "local" not in out_str
-
-
-def test_register_scripts(venv_config: VenvConfig) -> None:
-    out_file = StringIO()
-
-    def test_scripts(package: str) -> Iterable[str]:
-        return [package + '.script']
-
-    venv_config.register('test', ('package1', 'package2'), False, False,
-                         out_file=out_file, package_scripts=test_scripts)
-
-    out_str = out_file.getvalue()
-    assert "package1.script = test" in out_str
-    assert "package2.script = test" in out_str
-    assert "requirements = package1\n\tpackage2" in out_str
+        assert "package1.script = test" in deps.out_str
+        assert "package2.script = test" in deps.out_str
+        assert "requirements = package1\n\tpackage2" in deps.out_str

@@ -6,12 +6,13 @@ from click import Context, Command, Group, echo
 from typing import Iterable, Any
 
 from .config import VenvConfig
+from .factory import ConfigDependenciesImpl
 
 
 class ScriptVenvContext(Context):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super(ScriptVenvContext, self). __init__(*args, **kwargs)
-        self.config = VenvConfig()
+        self.config = VenvConfig(deps=ConfigDependenciesImpl())
 
 
 class ScriptVenvCommand(Command):

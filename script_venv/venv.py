@@ -24,9 +24,13 @@ else:  # pragma: no cover
 
 
 class VEnv(object):
-    def __init__(self, name, requirements: Iterable[str] = None, local=False) -> None:
+    def __init__(self, name,
+                 requirements: Iterable[str] = None,
+                 prerequisites: Iterable[str] = None,
+                 local=False) -> None:
         self.name = name
         self.requirements = set(requirements or [])
+        self.prerequisites = set(prerequisites or [])
         self.env_path = str((Path('.sv') if local else Path('~') / '.sv') / name)
         self.abs_path = Path(os.path.expanduser(self.env_path)).absolute()
 
@@ -74,4 +78,6 @@ class VEnv(object):
         creator = creator if callable(creator) else venv.create
 
         creator(str(self.abs_path), with_pip=True, clear=clean)
+        if self.prerequisites:
+            self.install(*self.prerequisites)
         return True
