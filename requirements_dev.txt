@@ -1,6 +1,6 @@
 coverage==4.5.1
 flake8==3.5.0
-mypy==0.560 # pyup: != 0.570 # disable 0.570, breaks tests
+mypy==0.580 # pyup: != 0.570 # disable 0.570, breaks tests
 pip==9.0.3
 pytest==3.5.0
 pytest-runner==4.2
