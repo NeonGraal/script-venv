@@ -21,8 +21,9 @@ setup(
     author="Struan Lyall Judd",
     author_email='sv@scifi.geek.nz',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Betaa',
         'Intended Audience :: Developers',
+        'Intended Audience :: System Administrators',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',

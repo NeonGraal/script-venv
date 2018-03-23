@@ -34,7 +34,7 @@ def register_package(venv: str,
     return 0
 
 
-@main.command(name=":create")
+@main.command(name=":create", context_settings=dict(ignore_unknown_options=True,))
 @click.option('--clean', '-c', is_flag=True, help='If the venv exists, clean it before applying requirements')
 @click.argument('venv_or_script', required=True)
 @click.argument('install_params', nargs=-1)
