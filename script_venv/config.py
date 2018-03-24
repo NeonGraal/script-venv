@@ -8,7 +8,8 @@ from pathlib import Path
 from types import MappingProxyType
 from typing import Mapping, Set, Dict, Iterable, Tuple, Any, IO  # noqa: F401
 
-from .venv import VEnv
+from script_venv.common import CommonDependencies
+from .venv import VEnv, VEnvDependencies
 
 # noinspection SpellCheckingInspection
 """
@@ -30,7 +31,7 @@ _l = "local"
 _g = "global"
 
 
-class ConfigDependencies(object):  # pragma: no cover
+class ConfigDependencies(CommonDependencies):  # pragma: no cover
     def exists(self, path: Path) -> bool:
         raise NotImplementedError()
 
@@ -41,6 +42,9 @@ class ConfigDependencies(object):  # pragma: no cover
         raise NotImplementedError()
 
     def write(self, config: ConfigParser, path: Path):
+        raise NotImplementedError()
+
+    def venv_deps(self) -> VEnvDependencies:
         raise NotImplementedError()
 
 
@@ -82,17 +86,20 @@ class VenvConfig(object):
                 else:
                     is_local = not config.has_option(v, _g)
 
-                self._venvs.setdefault(v, VEnv(v, local=is_local,
-                                               requirements=self._packages_section(config, v, _r),
-                                               prerequisites=self._packages_section(config, v, _p),
-                                               ))
+                new_venv = VEnv(v, self.deps.venv_deps(),
+                                local=is_local,
+                                requirements=self._packages_section(config, v, _r),
+                                prerequisites=self._packages_section(config, v, _p),
+                                )
+                self._venvs.setdefault(v, new_venv)
 
         if config.has_section(_s):
             scripts = config[_s]
             for s in scripts:
                 v = scripts[s] or s
                 self._scripts[s] = v
-                self._venvs.setdefault(v, VEnv(v, local=per_user))
+                new_venv = VEnv(v, self.deps.venv_deps(), local=per_user)
+                self._venvs.setdefault(v, new_venv)
 
         ignored = [s for s in config.sections() if not (s.islower() or s == _s)]
 
@@ -133,7 +140,9 @@ class VenvConfig(object):
             config.add_section(_s)
         requirements = self._packages_section(config, name, _r)
 
-        venv = VEnv(name, local=is_local, requirements=requirements,
+        venv = VEnv(name, self.deps.venv_deps(),
+                    local=is_local,
+                    requirements=requirements,
                     prerequisites=self._packages_section(config, name, _p))
 
         for p, s in self.deps.scripts(venv, packages):

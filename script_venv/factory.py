@@ -1,20 +1,31 @@
 # -*- coding: utf-8 -*-
 
 """ Config file processing """
+import venv
 
 from click import echo
 from configparser import ConfigParser
+import os
 from pathlib import Path
+import subprocess
 from typing import Iterable, Tuple, Dict, Any, IO  # noqa: F401
 
+from script_venv.common import CommonDependencies
 from .config import ConfigDependencies
-from .venv import VEnv
+from .venv import VEnv, VEnvDependencies
 
 
-class ConfigDependenciesImpl(ConfigDependencies):
-    def write(self, config: ConfigParser, path: Path):  # pragma: no cover
-        with path.open('w') as out_config:
-            config.write(out_config)
+class CommonDependenciesImpl(CommonDependencies):
+    def exists(self, path: Path) -> bool:
+        return path.exists()
+
+
+class ConfigDependenciesImpl(ConfigDependencies, CommonDependenciesImpl):
+    def exists(self, path: Path) -> bool:
+        return super(ConfigDependenciesImpl, self).exists(path)
+
+    def read(self, path: Path) -> IO[Any]:
+        return path.open()
 
     def scripts(self, venv: VEnv, packages: Iterable[str]) -> Iterable[Tuple[str, str]]:  # pragma: no cover
         if venv.create():
@@ -38,8 +49,20 @@ class ConfigDependenciesImpl(ConfigDependencies):
 
         return ((s, p) for p in packages for s in pkg_scripts(p))
 
-    def read(self, path: Path) -> IO[Any]:
-        return path.open()
+    def write(self, config: ConfigParser, path: Path):  # pragma: no cover
+        with path.open('w') as out_config:
+            config.write(out_config)
+
+
+class VEnvDependenciesImpl(VEnvDependencies, CommonDependenciesImpl):
+    def creator(self, path: Path, clear: bool = False) -> None:
+        venv.create(str(path), with_pip=True, clear=clear)
 
     def exists(self, path: Path) -> bool:
-        return path.exists()
+        return super(VEnvDependenciesImpl, self).exists(path)
+
+    def runner(self, cmd: Iterable[str], env: Dict[str, str] = None) -> int:
+        new_env = dict(os.environ)  # type: Dict[str, str]
+        new_env.update(env)
+
+        return subprocess.call(list(cmd), env=new_env)

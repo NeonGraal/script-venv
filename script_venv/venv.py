@@ -3,13 +3,13 @@
 """Virtual environment handling"""
 
 import os
-from pathlib import Path
-import subprocess
 import sys
-from typing import Iterable, List, Dict  # noqa: F401
-import venv
+from pathlib import Path
+from typing import Iterable, Dict  # noqa: F401
 
 from click import echo
+
+from script_venv.common import CommonDependencies
 
 _r = 'requirements'
 
@@ -23,12 +23,24 @@ else:  # pragma: no cover
     _quote = '%s'
 
 
+class VEnvDependencies(CommonDependencies):  # pragma: no cover
+    def exists(self, path: Path) -> bool:
+        raise NotImplementedError()
+
+    def runner(self, cmd: Iterable[str], env: Dict[str, str] = None) -> int:
+        raise NotImplementedError()
+
+    def creator(self, path: Path, clear: bool = False) -> None:
+        raise NotImplementedError()
+
+
 class VEnv(object):
-    def __init__(self, name,
+    def __init__(self, name, deps: VEnvDependencies,
                  requirements: Iterable[str] = None,
                  prerequisites: Iterable[str] = None,
                  local=False) -> None:
         self.name = name
+        self.deps = deps
         self.requirements = set(requirements or [])
         self.prerequisites = set(prerequisites or [])
         self.env_path = str((Path('.sv') if local else Path('~') / '.sv') / name)
@@ -38,46 +50,40 @@ class VEnv(object):
         return "%s (%s%s)" % (self.name, self.env_path, '' if self.exists() else ' !MISSING')
 
     def exists(self) -> bool:
-        return self.abs_path.exists()
+        return self.deps.exists(self.abs_path)
 
     def _run_env(self) -> Dict[str, str]:
-        new_env = dict()  # type: Dict[str, str]
-        new_env.update(os.environ,
-                       VIRTUAL_ENV=str(self.abs_path),
-                       PATH=''.join([_quote % self.abs_path, os.pathsep, os.environ['PATH']])
-                       )
+        new_env = dict(
+            VIRTUAL_ENV=str(self.abs_path),
+            PATH=''.join([_quote % self.abs_path, os.pathsep, os.environ['PATH']])
+        )
         return new_env
 
-    def run(self, cmd_name: str, *args: str, runner=None) -> int:
-        runner = runner if callable(runner) else subprocess.call
-
+    def run(self, cmd_name: str, *args: str) -> int:
         bin_path = self.abs_path / _bin
         cmd_path = bin_path / (cmd_name + _exe)
-        if cmd_path.exists():  # pragma: no cover
+        if self.deps.exists(cmd_path):
             cmd = [str(cmd_path)]
         else:
             cmd = [str(bin_path / os.path.basename(sys.executable)), cmd_name]
 
-        return runner(cmd + list(args), env=self._run_env())
+        return self.deps.runner(cmd + list(args), env=self._run_env())
 
-    def install(self, *install_args: str, runner=None):
-        runner = runner if callable(runner) else subprocess.call
-
+    def install(self, *install_args: str):
         python_path = str(self.abs_path / _bin / os.path.basename(sys.executable))
         install_cmd = [python_path, '-m', 'pip', 'install'] + list(install_args)
 
-        return runner(install_cmd, env=self._run_env())
+        return self.deps.runner(install_cmd, env=self._run_env())
 
-    def create(self, clean=False, creator=None) -> bool:
+    def create(self, clean=False) -> bool:
         if self.exists():
             if not clean:
                 return False
             echo("Cleaning venv %s at %s" % (self.name, self.env_path))
         else:
             echo("Creating venv %s at %s" % (self.name, self.env_path))
-        creator = creator if callable(creator) else venv.create
 
-        creator(str(self.abs_path), with_pip=True, clear=clean)
+        self.deps.creator(self.abs_path, clear=clean)
         if self.prerequisites:
             self.install(*self.prerequisites)
         return True
