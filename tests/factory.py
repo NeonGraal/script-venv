@@ -30,6 +30,7 @@ class TestVEnvDependencies(VEnvDependencies):
 class TestConfigDependencies(ConfigDependencies):
     in_str = ""
     out_str = ""
+    test_venv = TestVEnvDependencies()
 
     def exists(self, path: Path) -> bool:
         return bool(self.in_str)
@@ -42,7 +43,7 @@ class TestConfigDependencies(ConfigDependencies):
         return [(p, p + ".script") for p in packages]
 
     def venv_deps(self) -> VEnvDependencies:
-        return TestVEnvDependencies()
+        return self.test_venv
 
     def write(self, config: ConfigParser, path: Path):
         with StringIO() as out_file:

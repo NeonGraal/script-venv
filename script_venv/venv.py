@@ -9,8 +9,6 @@ from typing import Iterable, Dict  # noqa: F401
 
 from click import echo
 
-from script_venv.common import CommonDependencies
-
 _r = 'requirements'
 
 if os.name == 'nt':  # pragma: no cover
@@ -23,7 +21,7 @@ else:  # pragma: no cover
     _quote = '%s'
 
 
-class VEnvDependencies(CommonDependencies):  # pragma: no cover
+class VEnvDependencies(object):  # pragma: no cover
     def exists(self, path: Path) -> bool:
         raise NotImplementedError()
 

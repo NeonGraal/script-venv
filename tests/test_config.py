@@ -4,6 +4,7 @@
 
 from typing import Callable, cast
 
+import os
 import pytest
 
 from script_venv.config import VenvConfig
@@ -136,6 +137,72 @@ class TestVenvConfigLocation(VenvConfigFixtures):
         assert '~' not in str(config.venvs['pip.test'])
 
 
+class TestVenvConfigList(VenvConfigFixtures):
+    @staticmethod
+    def test_list_empty(config: VenvConfig,
+                        click_iso: Callable) -> None:
+        with click_iso() as out:
+            config.list()
+            click_out = out.getvalue()
+
+        assert b"Configs: []" == click_out.strip()
+
+    @staticmethod
+    def test_list_basic(config: VenvConfig,
+                        click_iso: Callable) -> None:
+        deps = cast(TestConfigDependencies, config.deps)
+        deps.in_str = "[test]\n"
+
+        config.load(False)
+        with click_iso() as out:
+            config.list()
+            click_out = out.getvalue().decode()
+
+        assert "['.sv_cfg']" in click_out
+        assert os.sep.join(['test (.sv', 'test !MISSING)']) in click_out.splitlines()
+
+    @staticmethod
+    def test_list_requirements(config: VenvConfig,
+                               click_iso: Callable) -> None:
+        deps = cast(TestConfigDependencies, config.deps)
+        deps.in_str = "[test]\nrequirements = second\n\tfirst\n"
+
+        config.load(False)
+        with click_iso() as out:
+            config.list()
+            click_out = out.getvalue().decode()
+
+        assert "\tRequirements: first" in click_out
+        assert "\t\tsecond" in click_out
+
+    @staticmethod
+    def test_list_prerequisites(config: VenvConfig,
+                                click_iso: Callable) -> None:
+        deps = cast(TestConfigDependencies, config.deps)
+        deps.in_str = "[test]\nprerequisites = beta\n\talpha\n"
+
+        config.load(False)
+        with click_iso() as out:
+            config.list()
+            click_out = out.getvalue().decode()
+
+        assert "\tPrerequisites: alpha" in click_out
+        assert "\t\tbeta" in click_out
+
+    @staticmethod
+    def test_list_scripts(config: VenvConfig,
+                          click_iso: Callable) -> None:
+        deps = cast(TestConfigDependencies, config.deps)
+        deps.in_str = "[SCRIPTS]\nsample = test\ntester = test"
+
+        config.load(False)
+        with click_iso() as out:
+            config.list()
+            click_out = out.getvalue().decode()
+
+        assert "\tScripts: sample, tester" in click_out
+
+
 class TestVenvConfigRegister(VenvConfigFixtures):
     @staticmethod
     def test_register(config: VenvConfig,
@@ -220,7 +287,6 @@ requirements = old
             config.register('test', ('new',), True, False)
             click_out = out.getvalue()
 
-        deps = cast(TestConfigDependencies, config.deps)
         assert b"Registering" in click_out
         assert "[test]" in deps.out_str
         assert "[SCRIPTS]" in deps.out_str
@@ -228,3 +294,72 @@ requirements = old
         assert "requirements = new\n\told" in deps.out_str
         assert "global" not in deps.out_str
         assert "local" not in deps.out_str
+
+
+class TestVenvConfigCreate(VenvConfigFixtures):
+    @staticmethod
+    def test_register_create_venv(config: VenvConfig,
+                                  click_iso: Callable) -> None:
+        deps = cast(TestConfigDependencies, config.deps)
+        deps.in_str = "[test]"
+
+        config.load(False)
+        with click_iso() as out:
+            config.create('test')
+            click_out = out.getvalue().decode()
+
+        assert "Creating venv test" in click_out
+
+    @staticmethod
+    def test_register_create_script(config: VenvConfig,
+                                    click_iso: Callable) -> None:
+        deps = cast(TestConfigDependencies, config.deps)
+        deps.in_str = "[SCRIPTS]\ntester = test"
+
+        config.load(False)
+        with click_iso() as out:
+            config.create('tester')
+            click_out = out.getvalue().decode()
+
+        assert "Creating venv test" in click_out
+
+    @staticmethod
+    def test_register_create_missing(config: VenvConfig,
+                                     click_iso: Callable) -> None:
+        deps = cast(TestConfigDependencies, config.deps)
+        deps.in_str = "[test]"
+
+        config.load(False)
+        with click_iso() as out:
+            config.create('other')
+            click_out = out.getvalue().decode()
+
+        assert "Unable to find venv or script other" in click_out
+
+    @staticmethod
+    def test_register_create_exists(config: VenvConfig,
+                                    click_iso: Callable) -> None:
+        deps = cast(TestConfigDependencies, config.deps)
+        deps.in_str = "[test]"
+
+        config.load(False)
+        deps.test_venv.path_exists = True
+        with click_iso() as out:
+            config.create('test')
+            click_out = out.getvalue().decode()
+
+        assert "" == click_out
+
+    @staticmethod
+    def test_register_create_clean(config: VenvConfig,
+                                   click_iso: Callable) -> None:
+        deps = cast(TestConfigDependencies, config.deps)
+        deps.in_str = "[test]"
+
+        config.load(False)
+        deps.test_venv.path_exists = True
+        with click_iso() as out:
+            config.create('test', clean=True)
+            click_out = out.getvalue().decode()
+
+        assert "Cleaning venv test" in click_out

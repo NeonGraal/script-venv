@@ -10,21 +10,18 @@ from pathlib import Path
 import subprocess
 from typing import Iterable, Tuple, Dict, Any, IO  # noqa: F401
 
-from script_venv.common import CommonDependencies
 from .config import ConfigDependencies
 from .venv import VEnv, VEnvDependencies
 
 
-class CommonDependenciesImpl(CommonDependencies):
+class ConfigDependenciesImpl(ConfigDependencies):
+    def venv_deps(self) -> VEnvDependencies:
+        return VEnvDependencies()
+
     def exists(self, path: Path) -> bool:
         return path.exists()
 
-
-class ConfigDependenciesImpl(ConfigDependencies, CommonDependenciesImpl):
-    def exists(self, path: Path) -> bool:
-        return super(ConfigDependenciesImpl, self).exists(path)
-
-    def read(self, path: Path) -> IO[Any]:
+    def read(self, path: Path) -> IO[Any]:  # pragma: no cover
         return path.open()
 
     def scripts(self, venv: VEnv, packages: Iterable[str]) -> Iterable[Tuple[str, str]]:  # pragma: no cover
@@ -54,12 +51,12 @@ class ConfigDependenciesImpl(ConfigDependencies, CommonDependenciesImpl):
             config.write(out_config)
 
 
-class VEnvDependenciesImpl(VEnvDependencies, CommonDependenciesImpl):
+class VEnvDependenciesImpl(VEnvDependencies):  # pragma: no cover
     def creator(self, path: Path, clear: bool = False) -> None:
         venv.create(str(path), with_pip=True, clear=clear)
 
     def exists(self, path: Path) -> bool:
-        return super(VEnvDependenciesImpl, self).exists(path)
+        return path.exists()
 
     def runner(self, cmd: Iterable[str], env: Dict[str, str] = None) -> int:
         new_env = dict(os.environ)  # type: Dict[str, str]

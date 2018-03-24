@@ -8,7 +8,6 @@ from pathlib import Path
 from types import MappingProxyType
 from typing import Mapping, Set, Dict, Iterable, Tuple, Any, IO  # noqa: F401
 
-from script_venv.common import CommonDependencies
 from .venv import VEnv, VEnvDependencies
 
 # noinspection SpellCheckingInspection
@@ -31,7 +30,7 @@ _l = "local"
 _g = "global"
 
 
-class ConfigDependencies(CommonDependencies):  # pragma: no cover
+class ConfigDependencies(object):  # pragma: no cover
     def exists(self, path: Path) -> bool:
         raise NotImplementedError()
 
@@ -115,9 +114,11 @@ class VenvConfig(object):
             venv = self.venvs[v]
             echo(str(venv))
             if v in scripts:
-                echo("    Scripts: %s" % ', '.join(sorted(scripts[v])))
+                echo("\tScripts: %s" % ', '.join(sorted(scripts[v])))
+            if venv.prerequisites:
+                echo("\tPrerequisites: %s" % "\n\t\t".join(sorted(venv.prerequisites)))
             if venv.requirements:
-                echo("    Requirements: %s" % "\n\t\t".join(venv.requirements))
+                echo("\tRequirements: %s" % "\n\t\t".join(sorted(venv.requirements)))
 
     @property
     def scripts(self) -> Mapping[str, str]:
