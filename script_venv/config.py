@@ -3,7 +3,6 @@
 """ Config file processing """
 from configparser import ConfigParser
 from click import echo
-from io import StringIO
 from os import path
 from pathlib import Path
 from types import MappingProxyType
@@ -122,8 +121,7 @@ class VenvConfig(object):
         return self._venvs_proxy
 
     def register(self, name: str, packages: Iterable[str],
-                 per_user: bool, is_local: bool,
-                 out_file: StringIO=None) -> None:
+                 per_user: bool, is_local: bool) -> None:
         config_file, config_file_path = self._file_path(per_user)
 
         config = ConfigParser(allow_no_value=True)
@@ -149,11 +147,6 @@ class VenvConfig(object):
             config.set(name, _l if per_user else _g, None)
 
         self.deps.write(config, config_file_path)
-        if out_file:
-            config.write(out_file)
-        else:
-            with config_file_path.open('w') as out_config:
-                config.write(out_config)
 
     def create(self, venv_or_script: str, *extra_params: str, clean: bool=False) -> None:
         if venv_or_script in self._venvs:

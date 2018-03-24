@@ -12,7 +12,7 @@ To install Script Venv, run this command in your terminal:
 
 .. code-block:: console
 
-    $ pip install script_venv
+    $ pip install -U script_venv
 
 This is the preferred method to install Script Venv, as it will always install the most recent stable release.
 
