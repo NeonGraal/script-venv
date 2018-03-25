@@ -16,7 +16,7 @@ from .venv import VEnv, VEnvDependencies
 
 class ConfigDependenciesImpl(ConfigDependencies):
     def venv_deps(self) -> VEnvDependencies:
-        return VEnvDependencies()
+        return VEnvDependenciesImpl()
 
     def exists(self, path: Path) -> bool:
         return path.exists()

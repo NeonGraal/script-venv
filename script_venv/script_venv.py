@@ -2,22 +2,26 @@
 
 """Main module."""
 
-from click import Context, Command, Group, echo
-from typing import Iterable, Any
+from typing import Any, List
 
-from .config import VenvConfig
-from .factory import ConfigDependenciesImpl
+from click import Context, Command, Group, echo
+
+from script_venv.factory import ConfigDependenciesImpl
+from .config import VenvConfig, ConfigDependencies
 
 
 class ScriptVenvContext(Context):
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, *args: Any, deps: ConfigDependencies, **kwargs: Any) -> None:
         super(ScriptVenvContext, self). __init__(*args, **kwargs)
-        self.config = VenvConfig(deps=ConfigDependenciesImpl())
+        self.obj = deps
+        self.config = VenvConfig(deps=deps)
 
 
 class ScriptVenvCommand(Command):
-    def make_context(self, info_name: str, args: Iterable[str], parent: Context=None, **extra: Any) -> Context:
-        ctx = ScriptVenvContext(self, info_name=info_name, parent=parent, **extra)
+    def make_context(self, info_name: str, args: List[str],
+                     parent: Context=None, **extra: Any) -> Context:
+        deps = parent.obj or ConfigDependenciesImpl()
+        ctx = ScriptVenvContext(self, deps, info_name=info_name, parent=parent, **extra)
         ctx.config.load(False)
         ctx.config.load(True)
         ctx.args = list(args)
@@ -52,6 +56,12 @@ class ScriptVenvCommand(Command):
 
 
 class ScriptVenvGroup(Group):
+    def make_context(self, info_name: str, args: List[str],
+                     parent: Context=None, deps: ConfigDependencies=None, **extra: Any) -> Context:
+        ctx = super(ScriptVenvGroup, self).make_context(info_name, args, parent=parent, **extra)
+        ctx.obj = deps or ConfigDependenciesImpl()
+        return ctx
+
     def get_command(self, ctx: Context, cmd_name: str) -> Command:
         cmd = super(ScriptVenvGroup, self).get_command(ctx, cmd_name)
 
