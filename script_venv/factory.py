@@ -14,17 +14,17 @@ from .config import ConfigDependencies
 from .venv import VEnv, VEnvDependencies
 
 
-class ConfigDependenciesImpl(ConfigDependencies):
+class ConfigDependenciesImpl(ConfigDependencies):  # pragma: no cover
     def venv_deps(self) -> VEnvDependencies:
         return VEnvDependenciesImpl()
 
     def exists(self, path: Path) -> bool:
         return path.exists()
 
-    def read(self, path: Path) -> IO[Any]:  # pragma: no cover
+    def read(self, path: Path) -> IO[Any]:
         return path.open()
 
-    def scripts(self, venv: VEnv, packages: Iterable[str]) -> Iterable[Tuple[str, str]]:  # pragma: no cover
+    def scripts(self, venv: VEnv, packages: Iterable[str]) -> Iterable[Tuple[str, str]]:
         if venv.create():
             venv.install(*venv.requirements)
         venv.install(*packages)
@@ -46,7 +46,7 @@ class ConfigDependenciesImpl(ConfigDependencies):
 
         return ((s, p) for p in packages for s in pkg_scripts(p))
 
-    def write(self, config: ConfigParser, path: Path):  # pragma: no cover
+    def write(self, config: ConfigParser, path: Path):
         with path.open('w') as out_config:
             config.write(out_config)
 

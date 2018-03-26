@@ -11,8 +11,8 @@ from .config import VenvConfig, ConfigDependencies
 
 
 class ScriptVenvContext(Context):
-    def __init__(self, *args: Any, deps: ConfigDependencies, **kwargs: Any) -> None:
-        super(ScriptVenvContext, self). __init__(*args, **kwargs)
+    def __init__(self, command: Command, deps: ConfigDependencies, *args: Any, **kwargs: Any) -> None:
+        super(ScriptVenvContext, self). __init__(command, *args, **kwargs)
         self.obj = deps
         self.config = VenvConfig(deps=deps)
 
@@ -20,7 +20,7 @@ class ScriptVenvContext(Context):
 class ScriptVenvCommand(Command):
     def make_context(self, info_name: str, args: List[str],
                      parent: Context=None, **extra: Any) -> Context:
-        deps = parent.obj or ConfigDependenciesImpl()
+        deps = (parent.obj if parent else None) or ConfigDependenciesImpl()
         ctx = ScriptVenvContext(self, deps, info_name=info_name, parent=parent, **extra)
         ctx.config.load(False)
         ctx.config.load(True)
