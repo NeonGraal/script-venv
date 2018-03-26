@@ -36,19 +36,20 @@ def register_package(obj, venv: str,
 
 
 @main.command(name=":create", context_settings=dict(ignore_unknown_options=True,))
-@click.option('--clean', '-c', is_flag=True, help='If the venv exists, clean it before applying requirements')
+@click.option('--clean', '-C', is_flag=True, help='If the venv exists, clean it before applying requirements')
+@click.option('--update', '-U', is_flag=True, help='Update prerequisites, requirements, and pip')
 @click.argument('venv_or_script', required=True)
 @click.argument('install_params', nargs=-1)
 @click.pass_obj
 def create_venv(obj, venv_or_script: str,
                 install_params: Iterable[str],
-                clean: bool) -> None:  # pragma: no cover
+                clean: bool, update: bool) -> None:  # pragma: no cover
     """Create or clean venv and apply requirements
     appending any install parameters provided"""
     config = VenvConfig(deps=obj)
     config.load(False)
     config.load(True)
-    config.create(venv_or_script, *install_params, clean=clean)
+    config.create(venv_or_script, *install_params, clean=clean, update=update)
 
 
 @main.command(name=":list")

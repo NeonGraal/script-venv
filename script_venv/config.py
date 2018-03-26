@@ -158,7 +158,8 @@ class VenvConfig(object):
 
         self.deps.write(config, config_file_path)
 
-    def create(self, venv_or_script: str, *extra_params: str, clean: bool=False) -> None:
+    def create(self, venv_or_script: str, *extra_params: str,
+               clean: bool = False, update: bool = False) -> None:
         if venv_or_script in self._venvs:
             venv = self._venvs[venv_or_script]
         elif venv_or_script in self._scripts:
@@ -168,5 +169,6 @@ class VenvConfig(object):
             echo("Unable to find venv or script %s" % venv_or_script)
             return
 
-        venv.create(clean=clean)
-        venv.install(*(tuple(venv.requirements) + extra_params))
+        venv.create(clean=clean, update=update)
+        install_params = (['-U'] if update else []) + list(sorted(venv.requirements)) + list(extra_params)
+        venv.install(*install_params)

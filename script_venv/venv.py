@@ -5,7 +5,7 @@
 import os
 import sys
 from pathlib import Path
-from typing import Iterable, Dict  # noqa: F401
+from typing import Iterable, Dict, Tuple  # noqa: F401
 
 from click import echo
 
@@ -73,15 +73,20 @@ class VEnv(object):
 
         return self.deps.runner(install_cmd, env=self._run_env())
 
-    def create(self, clean=False) -> bool:
+    def create(self, clean: bool = False, update: bool = False) -> bool:
         if self.exists():
-            if not clean:
+            if clean:
+                action = "Cleaning"
+            elif update:
+                action = "Updating"
+            else:
                 return False
-            echo("Cleaning venv %s at %s" % (self.name, self.env_path))
         else:
-            echo("Creating venv %s at %s" % (self.name, self.env_path))
+            action = "Creating"
+        echo("%s venv %s at %s" % (action, self.name, self.env_path))
 
         self.deps.creator(self.abs_path, clear=clean)
-        if self.prerequisites:
-            self.install(*self.prerequisites)
+        install_params = (['-U', 'pip'] if update else []) + list(sorted(self.prerequisites))
+        if install_params:
+            self.install(*install_params)
         return True
