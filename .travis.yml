@@ -5,7 +5,7 @@ python:
   - 3.4
 install: pip install -U tox-travis codecov coverage
 script: tox
-after_success: coverage combine && codecov
+after_success: coverage xml && codecov
 deploy:
   provider: pypi
   distributions: sdist bdist_wheel
