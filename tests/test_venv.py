@@ -51,17 +51,17 @@ class TestVEnv(VEnvFixtures):
         return_code = venv.run('test', 'arg1', 'arg2')
 
         assert deps.ret_code == return_code
-        assert {'test', 'arg1', 'arg2'} < set(deps.run[0])
-        assert 'VIRTUAL_ENV' in deps.run[1]
+        assert {'test', 'arg1', 'arg2'} < set(deps.run_args[0])
+        assert 'VIRTUAL_ENV' in deps.run_args[1]
 
         deps.ret_code = randrange(1, 200)
         deps.path_exists = True
         return_code = venv.run('test', 'arg1', 'arg2')
 
         assert deps.ret_code == return_code
-        cmd = deps.run[0].pop(0)
+        cmd = deps.run_args[0].pop(0)
         assert 'test' in cmd
-        assert ['arg1', 'arg2'] == deps.run[0]
+        assert ['arg1', 'arg2'] == deps.run_args[0]
 
     @staticmethod
     def test_venv_install(venv: VEnv) -> None:
@@ -69,9 +69,9 @@ class TestVEnv(VEnvFixtures):
 
         venv.install('package1', 'package2')
 
-        python = deps.run[0].pop(0)
+        python = deps.run_args[0].pop(0)
         assert 'python' in python
-        assert ['-m', 'pip', 'install', 'package1', 'package2'] == deps.run[0]
+        assert ['-m', 'pip', 'install', 'package1', 'package2'] == deps.run_args[0]
 
     @staticmethod
     def test_venv_create(venv: VEnv,
@@ -111,6 +111,20 @@ class TestVEnv(VEnvFixtures):
         assert ['.sv', 'test'] == deps.created[0].split(os.sep)[-2:]
 
     @staticmethod
+    def test_venv_create_update(venv: VEnv,
+                                click_iso: Callable) -> None:
+        deps = cast(TestVEnvDependencies, venv.deps)
+
+        deps.path_exists = True
+        with click_iso() as out:
+            return_code = venv.create(update=True)
+            click_out = out.getvalue()
+
+        assert return_code
+        assert b"Updating" in click_out
+        assert ['.sv', 'test'] == deps.created[0].split(os.sep)[-2:]
+
+    @staticmethod
     def test_venv_create_prerequisites(venv: VEnv,
                                        click_iso: Callable) -> None:
         deps = cast(TestVEnvDependencies, venv.deps)
@@ -124,4 +138,4 @@ class TestVEnv(VEnvFixtures):
         assert return_code
         assert b"Creating" in click_out
         assert ['.sv', 'test'] == deps.created[0].split(os.sep)[-2:]
-        assert venv.prerequisites < set(deps.run[0])
+        assert venv.prerequisites < set(deps.run_args[0])
