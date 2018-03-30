@@ -13,14 +13,14 @@ from script_venv.venv import VEnv, VEnvDependencies
 class TestVEnvDependencies(VEnvDependencies):
     path_exists = False
     created = ("", False)
-    run = ([], {})  # type: Tuple[List[str], Dict[str, str]]
+    run_args = ([], {})  # type: Tuple[List[str], Dict[str, str]]
     ret_code = -1
 
     def exists(self, path: Path) -> bool:
         return self.path_exists
 
     def runner(self, cmd: Iterable[str], env: Dict[str, str] = None) -> int:
-        self.run = (list(cmd), env)
+        self.run_args = (list(cmd), env)
         return self.ret_code
 
     def creator(self, path: Path, clear: bool = False) -> None:
