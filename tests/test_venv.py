@@ -3,18 +3,18 @@
 """ Venv tests """
 import os
 from random import randrange
+from typing import cast, Callable
+from unittest.mock import Mock, ANY
 
 import pytest
-from typing import cast, Callable
 
 from script_venv.venv import VEnv, VEnvDependencies
-from tests.factory import TestVEnvDependencies
 
 
 class VEnvFixtures(object):
     @pytest.fixture
-    def deps(self) -> TestVEnvDependencies:
-        return TestVEnvDependencies()
+    def deps(self) -> VEnvDependencies:
+        return cast(VEnvDependencies, Mock(spec=VEnvDependencies))
 
     @pytest.fixture
     def venv(self, deps: VEnvDependencies) -> VEnv:
@@ -24,74 +24,74 @@ class VEnvFixtures(object):
 class TestVEnv(VEnvFixtures):
     @staticmethod
     def test_venv_str(venv: VEnv) -> None:
-        deps = cast(TestVEnvDependencies, venv.deps)
+        deps = cast(Mock, venv.deps)
 
-        deps.path_exists = False
-        assert ["test (~", ".sv", "test !MISSING)"] == str(venv).split(os.sep)
-
-        deps.path_exists = True
-        assert ["test (~", ".sv", "test)"] == str(venv).split(os.sep)
+        expected = os.sep.join(["test (~", ".sv", "test)"])
+        assert expected == str(venv)
+        assert deps.exists.called
 
     @staticmethod
     def test_venv_exists(venv: VEnv) -> None:
-        deps = cast(TestVEnvDependencies, venv.deps)
+        deps = cast(Mock, venv.deps)
 
-        deps.path_exists = False
-        assert not venv.exists()
-
-        deps.path_exists = True
         assert venv.exists()
+        assert deps.exists.called
 
     @staticmethod
-    def test_venv_run(venv: VEnv) -> None:
-        deps = cast(TestVEnvDependencies, venv.deps)
+    def test_venv_run_cmd(venv: VEnv) -> None:
+        deps = cast(Mock, venv.deps)
 
-        deps.ret_code = randrange(1, 200)
-        deps.path_exists = False
+        expected_ret_code = randrange(1, 200)
+        deps.runner.return_value = expected_ret_code
+        deps.exists.return_value = True
+
         return_code = venv.run('test', 'arg1', 'arg2')
 
-        assert deps.ret_code == return_code
-        assert {'test', 'arg1', 'arg2'} < set(deps.run_args[0])
-        assert 'VIRTUAL_ENV' in deps.run_args[1]
+        assert expected_ret_code == return_code
+        deps.runner.assert_called_once_with([ANY, 'arg1', 'arg2'], env=dict(PATH=ANY, VIRTUAL_ENV=ANY))
 
-        deps.ret_code = randrange(1, 200)
-        deps.path_exists = True
+    @staticmethod
+    def test_venv_run_python(venv: VEnv) -> None:
+        deps = cast(Mock, venv.deps)
+
+        expected_ret_code = randrange(1, 200)
+        deps.runner.return_value = expected_ret_code
+        deps.exists.return_value = False
+
         return_code = venv.run('test', 'arg1', 'arg2')
 
-        assert deps.ret_code == return_code
-        cmd = deps.run_args[0].pop(0)
-        assert 'test' in cmd
-        assert ['arg1', 'arg2'] == deps.run_args[0]
+        assert expected_ret_code == return_code
+        deps.runner.assert_called_once_with([ANY, 'test', 'arg1', 'arg2'], env=dict(PATH=ANY, VIRTUAL_ENV=ANY))
 
     @staticmethod
     def test_venv_install(venv: VEnv) -> None:
-        deps = cast(TestVEnvDependencies, venv.deps)
+        deps = cast(Mock, venv.deps)
 
         venv.install('package1', 'package2')
 
-        python = deps.run_args[0].pop(0)
-        assert 'python' in python
-        assert ['-m', 'pip', 'install', 'package1', 'package2'] == deps.run_args[0]
+        deps.runner.assert_called_once_with([ANY, '-m', 'pip', 'install', 'package1', 'package2'], env=ANY)
 
+
+class TestVEnvCreate(VEnvFixtures):
     @staticmethod
     def test_venv_create(venv: VEnv,
                          click_iso: Callable) -> None:
-        deps = cast(TestVEnvDependencies, venv.deps)
+        deps = cast(Mock, venv.deps)
+        deps.exists.return_value = False
 
-        deps.path_exists = False
         with click_iso() as out:
             return_code = venv.create()
             click_out = out.getvalue()
 
         assert return_code
         assert b"Creating" in click_out
-        assert ['.sv', 'test'] == deps.created[0].split(os.sep)[-2:]
+        deps.creator.assert_called_once_with(ANY, clear=False)
 
     @staticmethod
     def test_venv_create_exists(venv: VEnv) -> None:
-        deps = cast(TestVEnvDependencies, venv.deps)
+        deps = cast(Mock, venv.deps)
+        deps.exists.return_value = True
 
-        deps.path_exists = True
         return_code = venv.create()
 
         assert not return_code
@@ -99,43 +99,44 @@ class TestVEnv(VEnvFixtures):
     @staticmethod
     def test_venv_create_clean(venv: VEnv,
                                click_iso: Callable) -> None:
-        deps = cast(TestVEnvDependencies, venv.deps)
+        deps = cast(Mock, venv.deps)
+        deps.exists.return_value = True
 
-        deps.path_exists = True
         with click_iso() as out:
             return_code = venv.create(clean=True)
             click_out = out.getvalue()
 
         assert return_code
         assert b"Cleaning" in click_out
-        assert ['.sv', 'test'] == deps.created[0].split(os.sep)[-2:]
+        deps.creator.assert_called_once_with(ANY, clear=True)
 
     @staticmethod
     def test_venv_create_update(venv: VEnv,
                                 click_iso: Callable) -> None:
-        deps = cast(TestVEnvDependencies, venv.deps)
+        deps = cast(Mock, venv.deps)
+        deps.exists.return_value = True
 
-        deps.path_exists = True
         with click_iso() as out:
             return_code = venv.create(update=True)
             click_out = out.getvalue()
 
         assert return_code
         assert b"Updating" in click_out
-        assert ['.sv', 'test'] == deps.created[0].split(os.sep)[-2:]
+        deps.creator.assert_called_once_with(ANY, clear=False)
+        deps.runner.assert_called_once_with([ANY, '-m', 'pip', 'install', '-U', 'pip'], env=ANY)
 
     @staticmethod
     def test_venv_create_prerequisites(venv: VEnv,
                                        click_iso: Callable) -> None:
-        deps = cast(TestVEnvDependencies, venv.deps)
-
+        deps = cast(Mock, venv.deps)
+        deps.exists.return_value = False
         venv.prerequisites = {'alpha'}
-        deps.path_exists = False
+
         with click_iso() as out:
             return_code = venv.create()
             click_out = out.getvalue()
 
         assert return_code
         assert b"Creating" in click_out
-        assert ['.sv', 'test'] == deps.created[0].split(os.sep)[-2:]
-        assert venv.prerequisites < set(deps.run_args[0])
+        deps.creator.assert_called_once_with(ANY, clear=False)
+        deps.runner.assert_called_once_with([ANY, '-m', 'pip', 'install', 'alpha'], env=ANY)

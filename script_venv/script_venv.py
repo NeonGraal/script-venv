@@ -10,34 +10,18 @@ from script_venv.factory import ConfigDependenciesImpl
 from .config import VenvConfig, ConfigDependencies
 
 
-class ScriptVenvContext(Context):
-    def __init__(self, command: Command, deps: ConfigDependencies, *args: Any, **kwargs: Any) -> None:
-        super(ScriptVenvContext, self). __init__(command, *args, **kwargs)
-        self.obj = deps
-        self.config = VenvConfig(deps=deps)
-
-
 class ScriptVenvCommand(Command):
-    def make_context(self, info_name: str, args: List[str],
-                     parent: Context=None, **extra: Any) -> Context:
-        deps = (parent.obj if parent else None) or ConfigDependenciesImpl()
-        ctx = ScriptVenvContext(self, deps, info_name=info_name, parent=parent, **extra)
-        ctx.config.load(False)
-        ctx.config.load(True)
-        ctx.args = list(args)
-        return ctx
-
     def invoke(self, ctx: Context) -> None:
-        if not isinstance(ctx, ScriptVenvContext):  # pragma: no cover
-            return
+        if not isinstance(ctx.obj, VenvConfig):
+            raise TypeError("ctx.obj must be a VEnvConfig")
 
         name = ctx.info_name.lower()
         cmd = ctx.info_name
         args = ctx.args
 
-        if name in ctx.config.scripts:
-            v = ctx.config.scripts[name]
-        elif name in ctx.config.venvs:
+        if name in ctx.obj.scripts:
+            v = ctx.obj.scripts[name]
+        elif name in ctx.obj.venvs:
             v = name
             if len(args) == 0:  # pragma: no cover
                 echo('Insufficient parameters', err=True)
@@ -47,7 +31,7 @@ class ScriptVenvCommand(Command):
             echo('Unknown script or venv: "%s"' % ctx.info_name, err=True)
             return
 
-        venv = ctx.config.venvs[v]
+        venv = ctx.obj.venvs[v]
         if venv.create():
             venv.install(*venv.requirements)
 

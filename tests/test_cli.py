@@ -5,24 +5,22 @@
 
 from os import getcwd, chdir, path
 from typing import Iterable, cast
+from unittest.mock import Mock
 
 import pytest
 from click.testing import CliRunner
 
 from script_venv import cli
-from tests.factory import TestConfigDependencies, TestVEnvDependencies
+
+from script_venv.config import ConfigDependencies
+from tests.utils import config_read
 
 
 class CliDependenciesRunner(CliRunner):
     def __init__(self, **kwargs):
-        self.deps = TestConfigDependencies()
-        self.deps.in_str = """[SCRIPTS]
-Sample.py = sample
-pipdeptree = pip.test
-
-[pip.test]
-requirements = pipdeptree
-"""
+        self.deps = Mock(spec=ConfigDependencies)
+        config_read(self.deps, "[SCRIPTS]\nSample.py = sample\npipdeptree = pip.test\n\n"
+                               "[pip.test]\nrequirements = pipdeptree\n")
         super(CliDependenciesRunner, self).__init__(**kwargs)
 
     def invoke(self, cli: object, args: Iterable[str] = None, **kwargs: object):
@@ -94,7 +92,7 @@ def test_cli_list_help(runner: CliDependenciesRunner) -> None:
 
 
 def test_cli_sample(runner: CliDependenciesRunner) -> None:
+    deps = cast(Mock, runner.deps)
     result = runner.invoke(cli.main, ['sample', '--version'])
-    venv_deps = cast(TestVEnvDependencies, runner.deps.venv_deps())
     assert result.exit_code == -1
-    assert '--version' in venv_deps.run_args[0]
+    deps.venv_deps.runner.assert_called_once_with(['--version'])
