@@ -3,12 +3,12 @@
 """ Config file processing """
 from configparser import ConfigParser
 from click import echo
-from os import path
+from os import path, getcwd, sep
 from pathlib import Path
 from types import MappingProxyType
 from typing import Mapping, Set, Dict, Iterable, Tuple, Any, IO  # noqa: F401
 
-from .venv import VEnv, VEnvDependencies
+from .venv import VEnv, VEnvDependencies, abs_path
 
 # noinspection SpellCheckingInspection
 """
@@ -26,8 +26,7 @@ requirements:
 _s = "SCRIPTS"
 _p = "prerequisites"
 _r = "requirements"
-_l = "local"
-_g = "global"
+_l = "location"
 
 
 class ConfigDependencies(object):  # pragma: no cover
@@ -58,22 +57,29 @@ class VenvConfig(object):
         self._venvs_proxy = MappingProxyType(self._venvs)
 
     @staticmethod
-    def _file_path(raw_path: str) -> Tuple[str, Path]:
-        config_file = Path(raw_path) / '.sv_cfg'
-        return config_file.as_posix(), Path(path.expanduser(str(config_file))).absolute()
+    def _file_path(raw_path: Path) -> Tuple[str, Path]:
+        config_file = raw_path / '.sv_cfg'
+        return config_file.as_posix(), abs_path(config_file)
 
     @staticmethod
     def _packages_section(config: ConfigParser, venv: str, section: str) -> Set[str]:
         value = config.get(venv, section, fallback=None) or ''
         return {r for r in value.splitlines() if r}
 
+    def _config_paths(self):
+        for p in self.search_path:
+            if p.upper() == '$PARENTS':
+                parts = getcwd().split(sep)
+                for i in range(len(parts), 0, -1):
+                    yield sep.join(parts[:i])
+            else:
+                yield p
+
     def _load_file(self, path: str):
-        config_file, config_file_path = self._file_path(path)
+        config_file, config_file_path = self._file_path(Path(path))
 
         if not self.deps.exists(config_file_path):  # pragma: no cover
             return
-
-        self.configs.add(config_file)
 
         config = ConfigParser(allow_no_value=True)
         with self.deps.read(config_file_path) as in_config:
@@ -81,9 +87,10 @@ class VenvConfig(object):
 
         for v in config:
             if v.islower():
-                new_venv = VEnv(v, self.deps.venv_deps(),
+                new_venv = VEnv(v, self.deps.venv_deps(), path,
                                 requirements=self._packages_section(config, v, _r),
                                 prerequisites=self._packages_section(config, v, _p),
+                                location=config.get(v, _l, fallback=None)
                                 )
                 self._venvs.setdefault(v, new_venv)
 
@@ -101,7 +108,7 @@ class VenvConfig(object):
             echo("Ignored the following sections of %s: %s" % (config_file, ', '.join(sorted(ignored))))
 
     def load(self) -> None:
-        for p in self.search_path:
+        for p in self._config_paths():
             self._load_file(p)
 
     def list(self):

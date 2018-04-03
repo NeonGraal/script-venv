@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """Console script for script_venv."""
-from os import pathsep
+from os import sep, pathsep
 from typing import Iterable, cast  # noqa: F401
 
 import click
@@ -16,7 +16,7 @@ _IGNORE_UNKNOWN = dict(ignore_unknown_options=True,)
 @click.command(name="sv", cls=ScriptVenvGroup, context_settings=_IGNORE_UNKNOWN)
 @click.version_option()
 @click.option('--config-search-path', '-S', type=click.STRING,
-              default=pathsep.join(['$HOME', '$PARENTS', '$CWD']),
+              default=pathsep.join(['~%s.config' % sep, '$PARENTS', '$CWD']),
               help='Path to load .sv_cfg files from')
 @click.pass_context
 def main(ctx, config_search_path) -> None:

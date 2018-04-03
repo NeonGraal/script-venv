@@ -20,6 +20,19 @@ else:  # pragma: no cover
     _exe = ''
     _quote = '%s'
 
+os.environ['CWD'] = os.getcwd()
+
+
+def abs_path(raw_path: Path) -> Path:
+    str_path = str(raw_path)
+    if str_path.startswith('~'):
+        abs_path = os.path.expanduser(str_path)
+    elif str_path.startswith('$'):
+        abs_path = os.path.expandvars(str_path)
+    else:
+        abs_path = str_path
+    return Path(abs_path).absolute()
+
 
 class VEnvDependencies(object):  # pragma: no cover
     def exists(self, path: Path) -> bool:
@@ -33,19 +46,23 @@ class VEnvDependencies(object):  # pragma: no cover
 
 
 class VEnv(object):
-    def __init__(self, name, deps: VEnvDependencies,
+    def __init__(self, name: str, deps: VEnvDependencies,
+                 config_path: str,
                  requirements: Iterable[str] = None,
                  prerequisites: Iterable[str] = None,
-                 local=False) -> None:
+                 location: str = None) -> None:
         self.name = name
         self.deps = deps
+        self.config_path = config_path
         self.requirements = set(requirements or [])
         self.prerequisites = set(prerequisites or [])
-        self.env_path = str((Path('.sv') if local else Path('~') / '.sv') / name)
-        self.abs_path = Path(os.path.expanduser(self.env_path)).absolute()
+        self.env_path = (Path(config_path, location) if location else Path(config_path)) / '.sv' / name
+        self.abs_path = abs_path(self.env_path)
 
     def __str__(self) -> str:
-        return "%s (%s%s)" % (self.name, self.env_path, '' if self.exists() else ' !MISSING')
+        return "%s (%s%s) [%s]" % (self.name, self.env_path,
+                                   '' if self.exists() else ' !MISSING',
+                                   Path(self.config_path) / '.sv_cfg')
 
     def exists(self) -> bool:
         return self.deps.exists(self.abs_path)

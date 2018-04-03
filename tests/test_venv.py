@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """ Venv tests """
-import os
+from os import sep
 from random import randrange
 from typing import cast, Callable
 from unittest.mock import Mock, ANY
@@ -18,27 +18,29 @@ class VEnvFixtures(object):
 
     @pytest.fixture
     def venv(self, deps: VEnvDependencies) -> VEnv:
-        return VEnv('test', deps)
+        return VEnv('test', deps, '$TEST')
 
 
 class TestVEnv(VEnvFixtures):
-    @staticmethod
-    def test_venv_str(venv: VEnv) -> None:
-        deps = cast(Mock, venv.deps)
-
-        expected = os.sep.join(["test (~", ".sv", "test)"])
+    def test_venv_location(self, deps: VEnvDependencies) -> None:
+        venv = VEnv('test', deps, '$TEST', location='test')
+        expected = sep.join(["test ($TEST", "test", ".sv", "test) [$TEST", ".sv_cfg]"])
         assert expected == str(venv)
         assert deps.exists.called
 
-    @staticmethod
-    def test_venv_exists(venv: VEnv) -> None:
+    def test_venv_str(self, venv: VEnv) -> None:
+        deps = cast(Mock, venv.deps)
+        expected = sep.join(["test ($TEST", ".sv", "test) [$TEST", '.sv_cfg]'])
+        assert expected == str(venv)
+        assert deps.exists.called
+
+    def test_venv_exists(self, venv: VEnv) -> None:
         deps = cast(Mock, venv.deps)
 
         assert venv.exists()
         assert deps.exists.called
 
-    @staticmethod
-    def test_venv_run_cmd(venv: VEnv) -> None:
+    def test_venv_run_cmd(self, venv: VEnv) -> None:
         deps = cast(Mock, venv.deps)
 
         expected_ret_code = randrange(1, 200)
@@ -50,8 +52,7 @@ class TestVEnv(VEnvFixtures):
         assert expected_ret_code == return_code
         deps.runner.assert_called_once_with([ANY, 'arg1', 'arg2'], env=dict(PATH=ANY, VIRTUAL_ENV=ANY))
 
-    @staticmethod
-    def test_venv_run_python(venv: VEnv) -> None:
+    def test_venv_run_python(self, venv: VEnv) -> None:
         deps = cast(Mock, venv.deps)
 
         expected_ret_code = randrange(1, 200)
@@ -63,8 +64,7 @@ class TestVEnv(VEnvFixtures):
         assert expected_ret_code == return_code
         deps.runner.assert_called_once_with([ANY, 'test', 'arg1', 'arg2'], env=dict(PATH=ANY, VIRTUAL_ENV=ANY))
 
-    @staticmethod
-    def test_venv_install(venv: VEnv) -> None:
+    def test_venv_install(self, venv: VEnv) -> None:
         deps = cast(Mock, venv.deps)
 
         venv.install('package1', 'package2')
@@ -73,8 +73,7 @@ class TestVEnv(VEnvFixtures):
 
 
 class TestVEnvCreate(VEnvFixtures):
-    @staticmethod
-    def test_venv_create(venv: VEnv,
+    def test_venv_create(self, venv: VEnv,
                          click_iso: Callable) -> None:
         deps = cast(Mock, venv.deps)
         deps.exists.return_value = False
@@ -87,8 +86,7 @@ class TestVEnvCreate(VEnvFixtures):
         assert b"Creating" in click_out
         deps.creator.assert_called_once_with(ANY, clear=False)
 
-    @staticmethod
-    def test_venv_create_exists(venv: VEnv) -> None:
+    def test_venv_create_exists(self, venv: VEnv) -> None:
         deps = cast(Mock, venv.deps)
         deps.exists.return_value = True
 
@@ -96,8 +94,8 @@ class TestVEnvCreate(VEnvFixtures):
 
         assert not return_code
 
-    @staticmethod
-    def test_venv_create_clean(venv: VEnv,
+    def test_venv_create_clean(self,
+                               venv: VEnv,
                                click_iso: Callable) -> None:
         deps = cast(Mock, venv.deps)
         deps.exists.return_value = True
@@ -110,8 +108,8 @@ class TestVEnvCreate(VEnvFixtures):
         assert b"Cleaning" in click_out
         deps.creator.assert_called_once_with(ANY, clear=True)
 
-    @staticmethod
-    def test_venv_create_update(venv: VEnv,
+    def test_venv_create_update(self,
+                                venv: VEnv,
                                 click_iso: Callable) -> None:
         deps = cast(Mock, venv.deps)
         deps.exists.return_value = True
@@ -125,8 +123,8 @@ class TestVEnvCreate(VEnvFixtures):
         deps.creator.assert_called_once_with(ANY, clear=False)
         deps.runner.assert_called_once_with([ANY, '-m', 'pip', 'install', '-U', 'pip'], env=ANY)
 
-    @staticmethod
-    def test_venv_create_prerequisites(venv: VEnv,
+    def test_venv_create_prerequisites(self,
+                                       venv: VEnv,
                                        click_iso: Callable) -> None:
         deps = cast(Mock, venv.deps)
         deps.exists.return_value = False
