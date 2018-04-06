@@ -12,7 +12,7 @@ from .config import VenvConfig, ConfigDependencies
 
 class ScriptVenvCommand(Command):
     def invoke(self, ctx: Context) -> None:
-        if not isinstance(ctx.obj, VenvConfig):
+        if not isinstance(ctx.obj, VenvConfig):  # pragma: no cover
             raise TypeError("ctx.obj must be a VEnvConfig")
 
         name = ctx.info_name.lower()
@@ -49,7 +49,9 @@ class ScriptVenvGroup(Group):
     def get_command(self, ctx: Context, cmd_name: str) -> Command:
         cmd = super(ScriptVenvGroup, self).get_command(ctx, cmd_name)
 
-        if cmd:
-            return cmd
+        if not cmd:
+            cmd = ScriptVenvCommand(cmd_name)
+            cmd.allow_extra_args = True
+            cmd.ignore_unknown_options = True
 
-        return ScriptVenvCommand(cmd_name)
+        return cmd

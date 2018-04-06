@@ -3,10 +3,10 @@
 """ Config file processing """
 from configparser import ConfigParser
 from click import echo
-from os import path, getcwd, sep
+from os import getcwd, path
 from pathlib import Path
 from types import MappingProxyType
-from typing import Mapping, Set, Dict, Iterable, Tuple, Any, IO  # noqa: F401
+from typing import Mapping, Set, Dict, Iterable, Tuple, Any, IO, Union, List  # noqa: F401
 
 from .venv import VEnv, VEnvDependencies, abs_path
 
@@ -47,7 +47,7 @@ class ConfigDependencies(object):  # pragma: no cover
 
 
 class VenvConfig(object):
-    def __init__(self, search_path: Iterable[str], deps: ConfigDependencies) -> None:
+    def __init__(self, search_path: List[str], deps: ConfigDependencies) -> None:
         self.search_path = search_path
         self.deps = deps
         self.configs = set()  # type: Set[str]
@@ -57,8 +57,8 @@ class VenvConfig(object):
         self._venvs_proxy = MappingProxyType(self._venvs)
 
     @staticmethod
-    def _file_path(raw_path: Path) -> Tuple[str, Path]:
-        config_file = raw_path / '.sv_cfg'
+    def _file_path(raw_path: Union[str, Path]) -> Tuple[str, Path]:
+        config_file = Path(raw_path) / '.sv_cfg'
         return config_file.as_posix(), abs_path(config_file)
 
     @staticmethod
@@ -69,9 +69,9 @@ class VenvConfig(object):
     def _config_paths(self):
         for p in self.search_path:
             if p.upper() == '$PARENTS':
-                parts = getcwd().split(sep)
+                parts = path.split(getcwd())
                 for i in range(len(parts), 0, -1):
-                    yield sep.join(parts[:i])
+                    yield path.join(*parts[:i])
             else:
                 yield p
 
@@ -99,7 +99,7 @@ class VenvConfig(object):
             for s in scripts:
                 v = scripts[s] or s
                 self._scripts[s] = v
-                new_venv = VEnv(v, self.deps.venv_deps())
+                new_venv = VEnv(v, self.deps.venv_deps(), path)
                 self._venvs.setdefault(v, new_venv)
 
         ignored = [s for s in config.sections() if not (s.islower() or s == _s)]
@@ -147,9 +147,10 @@ class VenvConfig(object):
             config.add_section(_s)
         requirements = self._packages_section(config, name, _r)
 
-        venv = VEnv(name, self.deps.venv_deps(),
+        venv = VEnv(name, self.deps.venv_deps(), config_path,
                     requirements=requirements,
-                    prerequisites=self._packages_section(config, name, _p))
+                    prerequisites=self._packages_section(config, name, _p),
+                    location=venv_path)
 
         for p, s in self.deps.scripts(venv, packages):
                 echo("Registering %s from %s into %s" % (s, p, name))

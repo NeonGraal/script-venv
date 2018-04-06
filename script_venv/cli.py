@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """Console script for script_venv."""
-from os import sep, pathsep
+from os import pathsep, path
 from typing import Iterable, cast  # noqa: F401
 
 import click
@@ -10,13 +10,13 @@ from script_venv.factory import ConfigDependenciesImpl
 from .config import VenvConfig, ConfigDependencies
 from .script_venv import ScriptVenvGroup
 
-_IGNORE_UNKNOWN = dict(ignore_unknown_options=True,)
+_IGNORE_UNKNOWN = dict(ignore_unknown_options=True, )
 
 
 @click.command(name="sv", cls=ScriptVenvGroup, context_settings=_IGNORE_UNKNOWN)
 @click.version_option()
 @click.option('--config-search-path', '-S', type=click.STRING,
-              default=pathsep.join(['~%s.config' % sep, '$PARENTS', '$CWD']),
+              default=pathsep.join([path.join('~', '.config'), '$PARENTS', '$CWD']),
               help='Path to load .sv_cfg files from')
 @click.pass_context
 def main(ctx, config_search_path) -> None:
@@ -26,7 +26,7 @@ def main(ctx, config_search_path) -> None:
     ctx.obj.load()
 
 
-@main.command(name=":register")
+@main.command(name=":register", context_settings=_IGNORE_UNKNOWN)
 @click.option('--config-path', '-P', type=click.STRING)
 @click.option('--venv-path', '-V', type=click.STRING)
 @click.argument('venv', required=True)
@@ -35,10 +35,12 @@ def main(ctx, config_search_path) -> None:
 def register_package(obj, venv: str,
                      package: Iterable[str],
                      config_path: str,
-                     venv_path: str) -> int:  # pragma: no cover
+                     venv_path: str) -> int:
     """Register packages and their scripts in venv"""
-    if not isinstance(obj, VenvConfig):
+    if not isinstance(obj, VenvConfig):  # pragma: no cover
         raise TypeError("ctx.obj must be a VEnvConfig")
+    if config_path is None:
+        config_path = obj.search_path[-1]
     obj.register(venv, package, config_path=config_path, venv_path=venv_path)
     return 0
 
@@ -51,10 +53,10 @@ def register_package(obj, venv: str,
 @click.pass_obj
 def create_venv(obj, venv_or_script: str,
                 install_params: Iterable[str],
-                clean: bool, update: bool) -> None:  # pragma: no cover
+                clean: bool, update: bool) -> None:
     """Create or clean venv and apply requirements
     appending any install parameters provided"""
-    if not isinstance(obj, VenvConfig):
+    if not isinstance(obj, VenvConfig):  # pragma: no cover
         raise TypeError("ctx.obj must be a VEnvConfig")
     obj.create(venv_or_script, *install_params, clean=clean, update=update)
 
@@ -63,6 +65,6 @@ def create_venv(obj, venv_or_script: str,
 @click.pass_obj
 def list_venvs(obj) -> None:
     """List known scripts and venvs"""
-    if not isinstance(obj, VenvConfig):
+    if not isinstance(obj, VenvConfig):  # pragma: no cover
         raise TypeError("ctx.obj must be a VEnvConfig")
     obj.list()

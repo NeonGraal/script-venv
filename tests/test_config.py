@@ -1,42 +1,38 @@
 # -*- coding: utf-8 -*-
 
 """ Config file processing """
-import os
+from os import path
 from typing import Callable, cast
 from unittest.mock import Mock, MagicMock
 
 import pytest
 
 from script_venv.config import VenvConfig, ConfigDependencies
-# noinspection SpellCheckingInspection
-from tests.utils import config_read, config_write
-
-_SAMPLE_CFG = """[SCRIPTS]
-sample.py = sample
-pip = sample
-pipdeptree = pip.test
-
-[pip.test]
-global
-prerequisites = wheel
-requirements = pipdeptree
-"""
+from script_venv.venv import VEnvDependencies
+from tests.test_venv import VEnvFixtures
+from tests.utils import config_read, config_write, venv_exists, config_scripts
 
 
-class VenvConfigFixtures(object):
-    @pytest.fixture
-    def deps(self) -> ConfigDependencies:
-        return cast(ConfigDependencies, MagicMock(spec=ConfigDependencies))
+class VenvConfigFixtures(VEnvFixtures):
+    USER_sv_cfg = path.expanduser(path.join('~', '.config', '.sv_cfg'))
+    TEST_sv_cfg = path.abspath(path.join('TEST', '.sv_cfg'))
+    CWD_sv_cfg = path.expandvars(path.join('$CWD', '.sv_cfg'))
 
     @pytest.fixture
-    def config(self, deps) -> VenvConfig:
-        return VenvConfig(search_path=["$TEST"], deps=deps)
+    def config_deps(self, venv_deps: VEnvDependencies) -> ConfigDependencies:
+        config_mock = MagicMock(spec=ConfigDependencies, name="config_deps")
+        config_mock.venv_deps.return_value = venv_deps
+        return cast(ConfigDependencies, config_mock)
+
+    @pytest.fixture
+    def config(self, config_deps: ConfigDependencies) -> VenvConfig:
+        return VenvConfig(search_path=[path.join('~', '.config'), "TEST", "$CWD"], deps=config_deps)
 
 
 class TestVenvConfig(VenvConfigFixtures):
     def test_venv_config_load(self, config: VenvConfig) -> None:
         deps = cast(Mock, config.deps)
-        config_read(deps, "[SCRIPTS]\nsample.py=sample")
+        config_read(deps, {self.TEST_sv_cfg: "[SCRIPTS]\nsample.py=sample"})
 
         config.load()
 
@@ -46,7 +42,7 @@ class TestVenvConfig(VenvConfigFixtures):
 
     def test_venv_config_scripts(self, config: VenvConfig) -> None:
         deps = cast(Mock, config.deps)
-        config_read(deps, "[SCRIPTS]\nsample.py=sample\npip=sample")
+        config_read(deps, {self.TEST_sv_cfg: "[SCRIPTS]\nsample.py=sample\npip=sample"})
 
         config.load()
 
@@ -54,7 +50,7 @@ class TestVenvConfig(VenvConfigFixtures):
 
     def test_venv_config_venvs(self, config: VenvConfig) -> None:
         deps = cast(Mock, config.deps)
-        config_read(deps, "[sample]\n[pip]\n")
+        config_read(deps, {self.TEST_sv_cfg: "[sample]\n[pip]\n"})
 
         config.load()
 
@@ -64,7 +60,7 @@ class TestVenvConfig(VenvConfigFixtures):
                                  config: VenvConfig,
                                  click_iso: Callable) -> None:
         deps = cast(Mock, config.deps)
-        config_read(deps, "[Sample]\n[pip.Test]\n")
+        config_read(deps, {self.TEST_sv_cfg: "[Sample]\n[pip.Test]\n"})
 
         with click_iso() as out:
             config.load()
@@ -77,7 +73,7 @@ class TestVenvConfig(VenvConfigFixtures):
 class TestVenvConfigDetails(VenvConfigFixtures):
     def test_venv_prerequisites(self, config: VenvConfig) -> None:
         deps = cast(Mock, config.deps)
-        config_read(deps, "[sample]\nprerequisites = first\n\tsecond\n")
+        config_read(deps, {self.TEST_sv_cfg: "[sample]\nprerequisites = first\n\tsecond\n"})
 
         config.load()
 
@@ -86,7 +82,7 @@ class TestVenvConfigDetails(VenvConfigFixtures):
 
     def test_venv_requirements(self, config: VenvConfig) -> None:
         deps = cast(Mock, config.deps)
-        config_read(deps, "[sample]\nrequirements = alpha\n\tbeta\n")
+        config_read(deps, {self.TEST_sv_cfg: "[sample]\nrequirements = alpha\n\tbeta\n"})
 
         config.load()
 
@@ -97,7 +93,7 @@ class TestVenvConfigDetails(VenvConfigFixtures):
 class TestVenvConfigLocation(VenvConfigFixtures):
     def test_venv_current(self, config: VenvConfig) -> None:
         deps = cast(Mock, config.deps)
-        config_read(deps, "[pip.test]\n")
+        config_read(deps, {self.TEST_sv_cfg: "[pip.test]\n"})
 
         config.load()
 
@@ -105,15 +101,7 @@ class TestVenvConfigLocation(VenvConfigFixtures):
 
     def test_venv_user(self, config: VenvConfig) -> None:
         deps = cast(Mock, config.deps)
-        config_read(deps, "[pip.test]\n")
-
-        config.load()
-
-        assert '~' in str(config.venvs['pip.test'])
-
-    def test_venv_global(self, config: VenvConfig) -> None:
-        deps = cast(Mock, config.deps)
-        config_read(deps, "[pip.test]\nglobal\n")
+        config_read(deps, {self.USER_sv_cfg: "[pip.test]\n"})
 
         config.load()
 
@@ -121,11 +109,11 @@ class TestVenvConfigLocation(VenvConfigFixtures):
 
     def test_venv_local(self, config: VenvConfig) -> None:
         deps = cast(Mock, config.deps)
-        config_read(deps, "[pip.test]\nlocal\n")
+        config_read(deps, {self.TEST_sv_cfg: "[pip.test]\nlocation = ~\n"})
 
         config.load()
 
-        assert '~' not in str(config.venvs['pip.test'])
+        assert '~' in str(config.venvs['pip.test'])
 
 
 class TestVenvConfigList(VenvConfigFixtures):
@@ -142,23 +130,23 @@ class TestVenvConfigList(VenvConfigFixtures):
                         config: VenvConfig,
                         click_iso: Callable) -> None:
         deps = cast(Mock, config.deps)
-        config_read(deps, "[test]\n")
+        config_read(deps, {self.TEST_sv_cfg: "[test]\n"})
 
         config.load()
         with click_iso() as out:
             config.list()
             click_out = out.getvalue().decode()
 
-        assert os.sep.join(["['$TEST", ".sv_cfg']"]) in click_out
-        assert os.sep.join(['test (.sv', 'test !MISSING)']) in click_out.splitlines()
+        assert path.join("[TEST", ".sv_cfg]") in click_out
+        assert path.join('test (TEST', '.sv', 'test)') in click_out
 
     def test_list_requirements(self,
                                config: VenvConfig,
                                click_iso: Callable) -> None:
         deps = cast(Mock, config.deps)
-        config_read(deps, "[test]\nrequirements = second\n\tfirst\n")
-
+        config_read(deps, {self.TEST_sv_cfg: "[test]\nrequirements = second\n\tfirst\n"})
         config.load()
+
         with click_iso() as out:
             config.list()
             click_out = out.getvalue().decode()
@@ -170,9 +158,9 @@ class TestVenvConfigList(VenvConfigFixtures):
                                 config: VenvConfig,
                                 click_iso: Callable) -> None:
         deps = cast(Mock, config.deps)
-        config_read(deps, "[test]\nprerequisites = beta\n\talpha\n")
-
+        config_read(deps, {self.TEST_sv_cfg: "[test]\nprerequisites = beta\n\talpha\n"})
         config.load()
+
         with click_iso() as out:
             config.list()
             click_out = out.getvalue().decode()
@@ -184,9 +172,9 @@ class TestVenvConfigList(VenvConfigFixtures):
                           config: VenvConfig,
                           click_iso: Callable) -> None:
         deps = cast(Mock, config.deps)
-        config_read(deps, "[SCRIPTS]\nsample = test\ntester = test")
-
+        config_read(deps, {self.TEST_sv_cfg: "[SCRIPTS]\nsample = test\ntester = test"})
         config.load()
+
         with click_iso() as out:
             config.list()
             click_out = out.getvalue().decode()
@@ -199,160 +187,206 @@ class TestVenvConfigRegister(VenvConfigFixtures):
                       config: VenvConfig,
                       click_iso: Callable) -> None:
         deps = cast(Mock, config.deps)
+        config_read(deps, {})
         config_write(deps)
-        deps.scripts.return_value = [('package', 'package.script')]
+        config_scripts(deps)
 
         with click_iso() as out:
-            config.register('test', ('package',), config_path='$TEST')
+            config.register('test', ('package',), config_path='testing')
             click_out = out.getvalue()
 
         assert b"Registering" in click_out
-        assert "[test]" in deps.out_str
-        assert "requirements = package" in deps.out_str
-        assert "global" not in deps.out_str
-        assert "local" not in deps.out_str
+        testing_sv_cfg = path.abspath(path.join('testing', '.sv_cfg'))
+        assert testing_sv_cfg in deps.out_str
+        out_str = deps.out_str[testing_sv_cfg]
+        assert "[test]" in out_str
+        assert "requirements = package" in out_str
+        assert "global" not in out_str
+        assert "local" not in out_str
 
     def test_register_local(self,
                             config: VenvConfig,
                             click_iso: Callable) -> None:
         deps = cast(Mock, config.deps)
+        config_read(deps, {})
         config_write(deps)
+        config_scripts(deps)
 
         with click_iso() as out:
-            config.register('test', ('package',), config_path='$TEST')
+            config.register('test', ('package',), config_path='$CWD')
             click_out = out.getvalue()
 
         assert b"Registering" in click_out
-        assert "requirements = package" in deps.out_str
+        assert self.CWD_sv_cfg in deps.out_str
+        out_str = deps.out_str[self.CWD_sv_cfg]
+        assert "requirements = package" in out_str
 
     def test_register_global(self,
                              config: VenvConfig,
                              click_iso: Callable) -> None:
         deps = cast(Mock, config.deps)
+        config_read(deps, {})
         config_write(deps)
+        config_scripts(deps)
 
         with click_iso() as out:
-            config.register('test', ('package',), config_path='$TEST')
+            config.register('test', ('package',), config_path='~/.config')
             click_out = out.getvalue()
 
         assert b"Registering" in click_out
-        assert "requirements = package" in deps.out_str
+        assert self.USER_sv_cfg in deps.out_str
+        out_str = deps.out_str[self.USER_sv_cfg]
+        assert "requirements = package" in out_str
 
     def test_register_scripts(self,
                               config: VenvConfig,
                               click_iso: Callable) -> None:
         deps = cast(Mock, config.deps)
+        config_read(deps, {})
         config_write(deps)
+        config_scripts(deps)
 
         with click_iso() as out:
-            config.register('test', ('package1', 'package2'), config_path='$TEST')
+            config.register('test', ('package1', 'package2'), config_path='TEST')
             click_out = out.getvalue()
 
         assert b"Registering" in click_out
-        assert "package1.script = test" in deps.out_str
-        assert "package2.script = test" in deps.out_str
-        assert "requirements = package1\n\tpackage2" in deps.out_str
+        assert self.TEST_sv_cfg in deps.out_str
+        out_str = deps.out_str[self.TEST_sv_cfg]
+        assert "package1.script = test" in out_str
+        assert "package2.script = test" in out_str
+        assert "requirements = package1\n\tpackage2" in out_str
 
     def test_register_user(self,
                            config: VenvConfig,
                            click_iso: Callable) -> None:
         deps = cast(Mock, config.deps)
+        config_read(deps, {})
         config_write(deps)
+        config_scripts(deps)
 
         with click_iso() as out:
-            config.register('test', ('package',), config_path='$TEST')
+            config.register('test', ('package',), config_path='$CWD')
             click_out = out.getvalue()
 
         assert b"Registering" in click_out
-        assert "[test]" in deps.out_str
-        assert "requirements = package" in deps.out_str
-        assert "global" not in deps.out_str
-        assert "local" not in deps.out_str
+        assert self.CWD_sv_cfg in deps.out_str
+        out_str = deps.out_str[self.CWD_sv_cfg]
+        assert "[test]" in out_str
+        assert "requirements = package" in out_str
+        assert "global" not in out_str
+        assert "local" not in out_str
 
     def test_register_existing(self,
                                config: VenvConfig,
                                click_iso: Callable) -> None:
         deps = cast(Mock, config.deps)
+        config_read(deps, {
+            self.TEST_sv_cfg: """[SCRIPTS]\nsample = test\n\n[test]\nprerequisites = early\nrequirements = old\n"""
+        })
         config_write(deps)
-        config_read(deps, """[SCRIPTS]\nsample = test\n\n[test]\nprerequisites = early\nrequirements = old\n""")
+        config_scripts(deps)
 
         with click_iso() as out:
-            config.register('test', ('new',), config_path='$TEST')
+            config.register('test', ('new',), config_path='TEST')
             click_out = out.getvalue()
 
         assert b"Registering" in click_out
-        assert "[test]" in deps.out_str
-        assert "[SCRIPTS]" in deps.out_str
-        assert "prerequisites = early" in deps.out_str
-        assert "requirements = new\n\told" in deps.out_str
-        assert "global" not in deps.out_str
-        assert "local" not in deps.out_str
+        assert self.TEST_sv_cfg in deps.out_str
+        out_str = deps.out_str[self.TEST_sv_cfg]
+        assert "[test]" in out_str
+        assert "[SCRIPTS]" in out_str
+        assert "prerequisites = early" in out_str
+        assert "requirements = new\n\told" in out_str
+        assert "global" not in out_str
+        assert "local" not in out_str
 
 
 class TestVenvConfigCreate(VenvConfigFixtures):
-    def test_register_create_venv(self,
-                                  config: VenvConfig,
-                                  click_iso: Callable) -> None:
-        deps = cast(Mock, config.deps)
-        config_read(deps, "[test]")
-
+    def test_create_venv(self,
+                         venv_deps: VEnvDependencies,
+                         config: VenvConfig,
+                         click_iso: Callable) -> None:
+        venv_exists(cast(Mock, venv_deps))
+        config_deps = cast(Mock, config.deps)
+        config_read(config_deps, {self.TEST_sv_cfg: "[test]"})
         config.load()
+
         with click_iso() as out:
             config.create('test')
             click_out = out.getvalue().decode()
 
         assert "Creating venv test" in click_out
 
-    def test_register_create_script(self,
-                                    config: VenvConfig,
-                                    click_iso: Callable) -> None:
-        deps = cast(Mock, config.deps)
-        config_read(deps, "[SCRIPTS]\ntester = test")
-
+    def test_create_script(self,
+                           venv_deps: VEnvDependencies,
+                           config: VenvConfig,
+                           click_iso: Callable) -> None:
+        venv_exists(cast(Mock, venv_deps))
+        config_deps = cast(Mock, config.deps)
+        config_read(config_deps, {self.TEST_sv_cfg: "[SCRIPTS]\ntester = test"})
         config.load()
+
         with click_iso() as out:
             config.create('tester')
             click_out = out.getvalue().decode()
 
         assert "Creating venv test" in click_out
 
-    def test_register_create_missing(self,
-                                     config: VenvConfig,
-                                     click_iso: Callable) -> None:
-        deps = cast(Mock, config.deps)
-        config_read(deps, "[test]")
-
+    def test_create_missing(self,
+                            config: VenvConfig,
+                            click_iso: Callable) -> None:
+        config_deps = cast(Mock, config.deps)
+        config_read(config_deps, {self.TEST_sv_cfg: "[test]"})
         config.load()
+
         with click_iso() as out:
             config.create('other')
             click_out = out.getvalue().decode()
 
         assert "Unable to find venv or script other" in click_out
 
-    def test_register_create_exists(self,
-                                    config: VenvConfig,
-                                    click_iso: Callable) -> None:
-        deps = cast(Mock, config.deps)
-        config_read(deps, "[test]")
-
+    def test_create_exists(self,
+                           config: VenvConfig,
+                           click_iso: Callable) -> None:
+        config_deps = cast(Mock, config.deps)
+        venv_deps = cast(Mock, config.deps.venv_deps())
+        config_read(config_deps, {self.TEST_sv_cfg: "[test]"})
+        venv_exists(venv_deps, self.TEST_sv_test)
         config.load()
-        deps.test_venv.path_exists = True
+
         with click_iso() as out:
             config.create('test')
             click_out = out.getvalue().decode()
 
         assert "" == click_out
 
-    def test_register_create_clean(self,
-                                   config: VenvConfig,
-                                   click_iso: Callable) -> None:
-        deps = cast(Mock, config.deps)
-        config_read(deps, "[test]")
-
+    def test_create_clean(self,
+                          config: VenvConfig,
+                          click_iso: Callable) -> None:
+        config_deps = cast(Mock, config.deps)
+        venv_deps = cast(Mock, config.deps.venv_deps())
+        config_read(config_deps, {self.TEST_sv_cfg: "[test]"})
+        venv_exists(venv_deps, self.TEST_sv_test)
         config.load()
-        deps.test_venv.path_exists = True
+
         with click_iso() as out:
             config.create('test', clean=True)
             click_out = out.getvalue().decode()
 
         assert "Cleaning venv test" in click_out
+
+    def test_create_update(self,
+                           config: VenvConfig,
+                           click_iso: Callable) -> None:
+        config_deps = cast(Mock, config.deps)
+        venv_deps = cast(Mock, config.deps.venv_deps())
+        config_read(config_deps, {self.TEST_sv_cfg: "[test]"})
+        venv_exists(venv_deps, self.TEST_sv_test)
+        config.load()
+
+        with click_iso() as out:
+            config.create('test', update=True)
+            click_out = out.getvalue().decode()
+
+        assert "Updating venv test" in click_out
