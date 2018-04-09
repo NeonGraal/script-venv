@@ -2,6 +2,7 @@
 
 """ Config file processing """
 from configparser import ConfigParser
+
 from click import echo
 from os import getcwd, path
 from pathlib import Path
@@ -47,10 +48,10 @@ class ConfigDependencies(object):  # pragma: no cover
 
 
 class VenvConfig(object):
-    def __init__(self, search_path: List[str], deps: ConfigDependencies) -> None:
-        self.search_path = search_path
+    def __init__(self, deps: ConfigDependencies) -> None:
         self.deps = deps
         self.configs = set()  # type: Set[str]
+        self._search_path = [path.join('~', '.config'), "TEST", "$CWD"]
         self._scripts = {}  # type: Dict[str, str]
         self._venvs = {}  # type: Dict[str, VEnv]
         self._scripts_proxy = MappingProxyType(self._scripts)
@@ -67,7 +68,7 @@ class VenvConfig(object):
         return {r for r in value.splitlines() if r}
 
     def _config_paths(self):
-        for p in self.search_path:
+        for p in self._search_path:
             if p.upper() == '$PARENTS':
                 parts = path.split(getcwd())
                 for i in range(len(parts), 0, -1):
@@ -107,6 +108,12 @@ class VenvConfig(object):
         if ignored:
             echo("Ignored the following sections of %s: %s" % (config_file, ', '.join(sorted(ignored))))
 
+    def search_path(self, full_path):
+        if isinstance(full_path, str):
+            self._search_path = full_path.split(path.pathsep)
+        elif full_path:
+            self._search_path = list(full_path)
+
     def load(self) -> None:
         for p in self._config_paths():
             self._load_file(p)
@@ -136,7 +143,7 @@ class VenvConfig(object):
 
     def register(self, name: str, packages: Iterable[str],
                  config_path: str = None, venv_path: str = None) -> None:
-        config_file, config_file_path = self._file_path(config_path)
+        config_file, config_file_path = self._file_path(config_path or self._search_path[-1])
 
         config = ConfigParser(allow_no_value=True)
         if self.deps.exists(config_file_path):

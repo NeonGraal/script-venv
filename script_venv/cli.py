@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 """Console script for script_venv."""
-from os import pathsep, path
 from typing import Iterable, cast  # noqa: F401
 
 import click
@@ -16,13 +15,15 @@ _IGNORE_UNKNOWN = dict(ignore_unknown_options=True, )
 @click.command(name="sv", cls=ScriptVenvGroup, context_settings=_IGNORE_UNKNOWN)
 @click.version_option()
 @click.option('--config-search-path', '-S', type=click.STRING,
-              default=pathsep.join([path.join('~', '.config'), '$PARENTS', '$CWD']),
               help='Path to load .sv_cfg files from')
 @click.pass_context
 def main(ctx, config_search_path) -> None:
     """Console script for script_venv."""
-    deps = cast(ConfigDependencies, ctx.obj) or ConfigDependenciesImpl()
-    ctx.obj = VenvConfig(search_path=config_search_path.split(pathsep), deps=deps)
+    if not isinstance(ctx.obj, VenvConfig):
+        deps = cast(ConfigDependencies, ctx.obj) or ConfigDependenciesImpl()
+        ctx.obj = VenvConfig(deps=deps)
+    if config_search_path:
+        ctx.obj.search_path(config_search_path)
     ctx.obj.load()
 
 
@@ -39,8 +40,6 @@ def register_package(obj, venv: str,
     """Register packages and their scripts in venv"""
     if not isinstance(obj, VenvConfig):  # pragma: no cover
         raise TypeError("ctx.obj must be a VEnvConfig")
-    if config_path is None:
-        config_path = obj.search_path[-1]
     obj.register(venv, package, config_path=config_path, venv_path=venv_path)
     return 0
 

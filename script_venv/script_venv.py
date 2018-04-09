@@ -43,7 +43,7 @@ class ScriptVenvGroup(Group):
     def make_context(self, info_name: str, args: List[str],
                      parent: Context=None, deps: ConfigDependencies=None, **extra: Any) -> Context:
         ctx = super(ScriptVenvGroup, self).make_context(info_name, args, parent=parent, **extra)
-        ctx.obj = deps or ConfigDependenciesImpl()
+        ctx.obj = ctx.obj or deps or ConfigDependenciesImpl()
         return ctx
 
     def get_command(self, ctx: Context, cmd_name: str) -> Command:
