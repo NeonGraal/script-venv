@@ -40,3 +40,8 @@ def config_scripts(config_deps: Mock):
         return [(p, '%s.script' % p) for p in packages]
 
     config_deps.scripts.side_effect = scripts_callback
+
+
+class StringContaining(str):
+    def __eq__(self, other):
+        return self in other

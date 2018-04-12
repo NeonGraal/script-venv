@@ -4,55 +4,33 @@
 """Tests for `script_venv` package."""
 
 from os import getcwd, chdir, path
-from typing import Iterable, cast, Any
-from unittest.mock import Mock, ANY
+from typing import Iterable, Callable
+from unittest.mock import Mock
 
 import pytest
 from click.testing import CliRunner, Result
 
 from script_venv import cli
-from script_venv.config import ConfigDependencies, VenvConfig
-from script_venv.venv import VEnvDependencies
-from tests.test_config import VenvConfigFixtures
-from tests.utils import config_write, config_scripts, config_read
-
-
-class CliDependenciesRunner(CliRunner):
-    def __init__(self, deps: ConfigDependencies, **kwargs) -> None:
-        self.deps = deps
-        super(CliDependenciesRunner, self).__init__(**kwargs)
-
-    def invoke(self, cli: Any, *args: Any, **kwargs: Any) -> Result:
-        kwargs['deps'] = self.deps
-        return super(CliDependenciesRunner, self).invoke(cli, *args, **kwargs)
+from script_venv.config import VenvConfig
 
 
 class CliObjectRunner(CliRunner):
-    def __init__(self, obj: Any, **kwargs) -> None:
+    def __init__(self, obj: Mock, **kwargs) -> None:
         self.obj = obj
         super(CliObjectRunner, self).__init__(**kwargs)
 
-    def invoke(self, cli, *args, **extra):
+    def invoke(self, cli: Callable, *args, **extra) -> Result:
         extra['obj'] = self.obj
         return super(CliObjectRunner, self).invoke(cli, *args, **extra)
 
 
-class CliFixtures(VenvConfigFixtures):
-    @pytest.fixture
-    def run_deps(self, config_deps: ConfigDependencies) -> Iterable[CliRunner]:
-        old_cwd = getcwd()
-        try:
-            chdir(path.dirname(__file__))
-            yield CliObjectRunner(config_deps)
-        finally:
-            chdir(old_cwd)
-
+class CliFixtures(object):
     @pytest.fixture
     def mock_config(self) -> Mock:
         return Mock(spec=VenvConfig)
 
     @pytest.fixture
-    def run_config(self, mock_config: Mock) -> CliRunner:
+    def run_config(self, mock_config: Mock) -> Iterable[CliRunner]:
         old_cwd = getcwd()
         try:
             chdir(path.dirname(__file__))
@@ -61,7 +39,7 @@ class CliFixtures(VenvConfigFixtures):
             chdir(old_cwd)
 
 
-class TestCli(CliFixtures):
+class TestCliHelp(CliFixtures):
     def test_cli_default(self, run_config: CliRunner):
         result = run_config.invoke(cli.main)
 
@@ -100,62 +78,80 @@ class TestCli(CliFixtures):
 
 
 class TestCliOptions(CliFixtures):
-    def test_cli_search_path(self,
-                             mock_config: Mock,
-                             run_config: CliRunner):
+    def test_cli_search_path(self, mock_config: Mock, run_config: CliRunner):
         run_config.invoke(cli.main, ['-S', 'Test', 'test'])
 
-        mock_config.search_path.assert_called_with('Test')
+        mock_config.search_path.assert_called_once_with('Test')
+        mock_config.load.assert_called_once_with()
 
+    def test_cli_list(self, mock_config: Mock, run_config: CliRunner):
+        run_config.invoke(cli.main, [':list'])
 
-class TestCliDeep(CliFixtures):
-    def test_cli_register_sample(self,
-                                 config_deps: ConfigDependencies,
-                                 run_deps: CliRunner) -> None:
-        deps = cast(Mock, config_deps)
-        config_read(deps, {
-            self.CWD_sv_cfg: "[SCRIPTS]\nSample.py = sample\npipdeptree = pip.test\n\n"
-                             "[pip.test]\nrequirements = pipdeptree\n"
-        })
-        config_write(deps)
-        config_scripts(deps)
+        mock_config.load.assert_called_once_with()
+        mock_config.list.assert_called_once_with()
 
-        result = run_deps.invoke(cli.main, [':register', 'sample', 'pipdeptree'])
+    def test_cli_create(self, mock_config: Mock, run_config: CliRunner):
+        run_config.invoke(cli.main, [':create'])
 
-        assert result.exit_code == 0
-        assert 'Registering pipdeptree.script from pipdeptree into sample' in result.output
+        mock_config.load.assert_called_once_with()
+        mock_config.create.assert_not_called()
 
-    def test_cli_create_update(self,
-                               config_deps: ConfigDependencies,
-                               run_deps: CliRunner) -> None:
-        deps = cast(Mock, config_deps)
-        config_read(deps, {
-            self.CWD_sv_cfg: "[SCRIPTS]\nSample.py = sample\npipdeptree = pip.test\n\n"
-                             "[pip.test]\nrequirements = pipdeptree\n"
-        })
+    def test_cli_create_venv(self, mock_config: Mock, run_config: CliRunner):
+        run_config.invoke(cli.main, [':create', 'test'])
 
-        result = run_deps.invoke(cli.main, [':create', 'sample', '--update'])
+        mock_config.load.assert_called_once_with()
+        mock_config.create.assert_called_once_with('test', clean=False, update=False)
 
-        assert result.exit_code == 0
-        assert 'Creating venv sample' in result.output
+    def test_cli_create_params(self, mock_config: Mock, run_config: CliRunner):
+        run_config.invoke(cli.main, [':create', 'test', 'param1', 'param2'])
 
-    def test_cli_list(self, run_deps: CliRunner) -> None:
-        result = run_deps.invoke(cli.main, [':list'])
+        mock_config.load.assert_called_once_with()
+        mock_config.create.assert_called_once_with('test', 'param1', 'param2', clean=False, update=False)
 
-        assert result.exit_code == 0
-        assert 'Configs:' in result.output
+    def test_cli_create_clean(self, mock_config: Mock, run_config: CliRunner):
+        run_config.invoke(cli.main, [':create', 'test', '-C'])
 
-    def test_cli_sample(self,
-                        venv_deps: VEnvDependencies,
-                        config_deps: ConfigDependencies,
-                        run_deps: CliRunner) -> None:
-        config_read(cast(Mock, config_deps), {
-            self.CWD_sv_cfg: "[SCRIPTS]\nSample.py = sample\npipdeptree = pip.test\n\n"
-                             "[pip.test]\nrequirements = pipdeptree\n"
-        })
+        mock_config.load.assert_called_once_with()
+        mock_config.create.assert_called_once_with('test', clean=True, update=False)
 
-        result = run_deps.invoke(cli.main, ['sample', '--version'])
+    def test_cli_create_update(self, mock_config: Mock, run_config: CliRunner):
+        run_config.invoke(cli.main, [':create', 'test', '-U'])
 
-        assert result.exit_code == 1
-        deps = cast(Mock, venv_deps)
-        deps.runner.assert_called_with([ANY, '--version'], env=ANY)
+        mock_config.load.assert_called_once_with()
+        mock_config.create.assert_called_once_with('test', clean=False, update=True)
+
+    def test_cli_register(self, mock_config: Mock, run_config: CliRunner):
+        run_config.invoke(cli.main, [':register'])
+
+        mock_config.load.assert_called_once_with()
+        mock_config.register.assert_not_called()
+
+    def test_cli_register_venv(self, mock_config: Mock, run_config: CliRunner):
+        run_config.invoke(cli.main, [':register', 'test'])
+
+        mock_config.load.assert_called_once_with()
+        mock_config.register.assert_not_called()
+
+    def test_cli_register_package(self, mock_config: Mock, run_config: CliRunner):
+        run_config.invoke(cli.main, [':register', 'test', 'package'])
+
+        mock_config.load.assert_called_once_with()
+        mock_config.register.assert_called_once_with('test', ('package', ), config_path=None, venv_path=None)
+
+    def test_cli_register_packages(self, mock_config: Mock, run_config: CliRunner):
+        run_config.invoke(cli.main, [':register', 'test', 'package1', 'package2'])
+
+        mock_config.load.assert_called_once_with()
+        mock_config.register.assert_called_once_with('test', ('package1', 'package2'), config_path=None, venv_path=None)
+
+    def test_cli_register_config_path(self, mock_config: Mock, run_config: CliRunner):
+        run_config.invoke(cli.main, [':register', 'test', 'package', '-P', 'config_path'])
+
+        mock_config.load.assert_called_once_with()
+        mock_config.register.assert_called_once_with('test', ('package', ), config_path='config_path', venv_path=None)
+
+    def test_cli_register_venv_path(self, mock_config: Mock, run_config: CliRunner):
+        run_config.invoke(cli.main, [':register', 'test', 'package', '-V', 'venv_path'])
+
+        mock_config.load.assert_called_once_with()
+        mock_config.register.assert_called_once_with('test', ('package', ), config_path=None, venv_path='venv_path')

@@ -7,8 +7,6 @@ import sys
 from pathlib import Path
 from typing import Iterable, Dict, Tuple  # noqa: F401
 
-from click import echo
-
 _r = 'requirements'
 
 if os.name == 'nt':  # pragma: no cover
@@ -35,6 +33,9 @@ def abs_path(raw_path: Path) -> Path:
 
 
 class VEnvDependencies(object):  # pragma: no cover
+    def echo(self, msg: str):
+        raise NotImplementedError()
+
     def exists(self, path: Path) -> bool:
         raise NotImplementedError()
 
@@ -100,7 +101,7 @@ class VEnv(object):
                 return False
         else:
             action = "Creating"
-        echo("%s venv %s at %s" % (action, self.name, self.env_path))
+        self.deps.echo("%s venv %s at %s" % (action, self.name, self.env_path))
 
         self.deps.creator(self.abs_path, clear=clean)
         install_params = (['-U', 'pip'] if update else []) + list(sorted(self.prerequisites))

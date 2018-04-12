@@ -27,21 +27,13 @@ def main(ctx, config_search_path) -> None:
     ctx.obj.load()
 
 
-@main.command(name=":register", context_settings=_IGNORE_UNKNOWN)
-@click.option('--config-path', '-P', type=click.STRING)
-@click.option('--venv-path', '-V', type=click.STRING)
-@click.argument('venv', required=True)
-@click.argument('package', nargs=-1)
+@main.command(name=":list")
 @click.pass_obj
-def register_package(obj, venv: str,
-                     package: Iterable[str],
-                     config_path: str,
-                     venv_path: str) -> int:
-    """Register packages and their scripts in venv"""
+def list_venvs(obj) -> None:
+    """List known scripts and venvs"""
     if not isinstance(obj, VenvConfig):  # pragma: no cover
         raise TypeError("ctx.obj must be a VEnvConfig")
-    obj.register(venv, package, config_path=config_path, venv_path=venv_path)
-    return 0
+    obj.list()
 
 
 @main.command(name=":create", context_settings=_IGNORE_UNKNOWN)
@@ -60,10 +52,18 @@ def create_venv(obj, venv_or_script: str,
     obj.create(venv_or_script, *install_params, clean=clean, update=update)
 
 
-@main.command(name=":list")
+@main.command(name=":register", context_settings=_IGNORE_UNKNOWN)
+@click.option('--config-path', '-P', type=click.STRING)
+@click.option('--venv-path', '-V', type=click.STRING)
+@click.argument('venv', required=True)
+@click.argument('package', nargs=-1, required=True)
 @click.pass_obj
-def list_venvs(obj) -> None:
-    """List known scripts and venvs"""
+def register_package(obj, venv: str,
+                     package: Iterable[str],
+                     config_path: str,
+                     venv_path: str) -> int:
+    """Register packages and their scripts in venv"""
     if not isinstance(obj, VenvConfig):  # pragma: no cover
         raise TypeError("ctx.obj must be a VEnvConfig")
-    obj.list()
+    obj.register(venv, package, config_path=config_path, venv_path=venv_path)
+    return 0

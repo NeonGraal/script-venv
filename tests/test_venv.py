@@ -3,13 +3,13 @@
 """ Venv tests """
 from os import path
 from random import randrange
-from typing import cast, Callable
+from typing import cast
 from unittest.mock import Mock, ANY, MagicMock
 
 import pytest
 
 from script_venv.venv import VEnv, VEnvDependencies, _exe, _bin
-from tests.utils import venv_exists
+from tests.utils import venv_exists, StringContaining
 
 
 class VEnvFixtures(object):
@@ -70,18 +70,13 @@ class TestVEnv(VEnvFixtures):
 
 
 class TestVEnvCreate(VEnvFixtures):
-    def test_venv_create(self,
-                         venv_deps: Mock,
-                         venv: VEnv,
-                         click_iso: Callable) -> None:
+    def test_venv_create(self, venv_deps: Mock, venv: VEnv) -> None:
         venv_exists(venv_deps)
 
-        with click_iso() as out:
-            return_code = venv.create()
-            click_out = out.getvalue()
+        return_code = venv.create()
 
         assert return_code
-        assert b"Creating" in click_out
+        venv_deps.echo.assert_called_once_with(StringContaining("Creating"))
         venv_deps.creator.assert_called_once_with(ANY, clear=False)
 
     def test_venv_create_exists(self, venv: VEnv) -> None:
@@ -89,43 +84,28 @@ class TestVEnvCreate(VEnvFixtures):
 
         assert not return_code
 
-    def test_venv_create_clean(self,
-                               venv_deps: Mock,
-                               venv: VEnv,
-                               click_iso: Callable) -> None:
-        with click_iso() as out:
-            return_code = venv.create(clean=True)
-            click_out = out.getvalue()
+    def test_venv_create_clean(self, venv_deps: Mock, venv: VEnv) -> None:
+        return_code = venv.create(clean=True)
 
         assert return_code
-        assert b"Cleaning" in click_out
+        venv_deps.echo.assert_called_once_with(StringContaining("Cleaning"))
         venv_deps.creator.assert_called_once_with(ANY, clear=True)
 
-    def test_venv_create_update(self,
-                                venv_deps: Mock,
-                                venv: VEnv,
-                                click_iso: Callable) -> None:
-        with click_iso() as out:
-            return_code = venv.create(update=True)
-            click_out = out.getvalue()
+    def test_venv_create_update(self, venv_deps: Mock, venv: VEnv) -> None:
+        return_code = venv.create(update=True)
 
         assert return_code
-        assert b"Updating" in click_out
+        venv_deps.echo.assert_called_once_with(StringContaining("Updating"))
         venv_deps.creator.assert_called_once_with(ANY, clear=False)
         venv_deps.runner.assert_called_once_with([ANY, '-m', 'pip', 'install', '-U', 'pip'], env=ANY)
 
-    def test_venv_create_prerequisites(self,
-                                       venv_deps: Mock,
-                                       venv: VEnv,
-                                       click_iso: Callable) -> None:
+    def test_venv_create_prerequisites(self, venv_deps: Mock, venv: VEnv) -> None:
         venv_exists(venv_deps)
         venv.prerequisites = {'alpha'}
 
-        with click_iso() as out:
-            return_code = venv.create()
-            click_out = out.getvalue()
+        return_code = venv.create()
 
         assert return_code
-        assert b"Creating" in click_out
+        venv_deps.echo.assert_called_once_with(StringContaining("Creating"))
         venv_deps.creator.assert_called_once_with(ANY, clear=False)
         venv_deps.runner.assert_called_once_with([ANY, '-m', 'pip', 'install', 'alpha'], env=ANY)

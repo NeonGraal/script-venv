@@ -3,11 +3,10 @@
 """ Config file processing """
 from configparser import ConfigParser
 
-from click import echo
 from os import getcwd, path
 from pathlib import Path
 from types import MappingProxyType
-from typing import Mapping, Set, Dict, Iterable, Tuple, Any, IO, Union, List  # noqa: F401
+from typing import Mapping, Set, Dict, Iterable, Tuple, Any, IO, Union  # noqa: F401
 
 from .venv import VEnv, VEnvDependencies, abs_path
 
@@ -31,6 +30,9 @@ _l = "location"
 
 
 class ConfigDependencies(object):  # pragma: no cover
+    def echo(self, msg: str):
+        raise NotImplementedError()
+
     def exists(self, path: Path) -> bool:
         raise NotImplementedError()
 
@@ -106,7 +108,7 @@ class VenvConfig(object):
         ignored = [s for s in config.sections() if not (s.islower() or s == _s)]
 
         if ignored:
-            echo("Ignored the following sections of %s: %s" % (config_file, ', '.join(sorted(ignored))))
+            self.deps.echo("Ignored the following sections of %s: %s" % (config_file, ', '.join(sorted(ignored))))
 
     def search_path(self, full_path):
         if isinstance(full_path, str):
@@ -119,19 +121,19 @@ class VenvConfig(object):
             self._load_file(p)
 
     def list(self):
-        echo("Configs: %s" % sorted(self.configs))
+        self.deps.echo("Configs: %s" % sorted(self.configs))
         scripts = {}  # type: Dict[str,Set[str]]
         for s in self.scripts:
             scripts.setdefault(self.scripts[s], set()).add(s)
         for v in self.venvs:
             venv = self.venvs[v]
-            echo(str(venv))
+            self.deps.echo(str(venv))
             if v in scripts:
-                echo("\tScripts: %s" % ', '.join(sorted(scripts[v])))
+                self.deps.echo("\tScripts: %s" % ', '.join(sorted(scripts[v])))
             if venv.prerequisites:
-                echo("\tPrerequisites: %s" % "\n\t\t".join(sorted(venv.prerequisites)))
+                self.deps.echo("\tPrerequisites: %s" % "\n\t\t".join(sorted(venv.prerequisites)))
             if venv.requirements:
-                echo("\tRequirements: %s" % "\n\t\t".join(sorted(venv.requirements)))
+                self.deps.echo("\tRequirements: %s" % "\n\t\t".join(sorted(venv.requirements)))
 
     @property
     def scripts(self) -> Mapping[str, str]:
@@ -143,7 +145,9 @@ class VenvConfig(object):
 
     def register(self, name: str, packages: Iterable[str],
                  config_path: str = None, venv_path: str = None) -> None:
-        config_file, config_file_path = self._file_path(config_path or self._search_path[-1])
+        if not config_path:
+            config_path = self._search_path[-1]
+        config_file, config_file_path = self._file_path(config_path)
 
         config = ConfigParser(allow_no_value=True)
         if self.deps.exists(config_file_path):
@@ -160,8 +164,8 @@ class VenvConfig(object):
                     location=venv_path)
 
         for p, s in self.deps.scripts(venv, packages):
-                echo("Registering %s from %s into %s" % (s, p, name))
-                config.set(_s, s, name)
+            self.deps.echo("Registering %s from %s into %s" % (s, p, name))
+            config.set(_s, s, name)
 
         if not config.has_section(name):
             config.add_section(name)
@@ -177,7 +181,7 @@ class VenvConfig(object):
             v = self._scripts[venv_or_script]
             venv = self._venvs[v]
         else:
-            echo("Unable to find venv or script %s" % venv_or_script)
+            self.deps.echo("Unable to find venv or script %s" % venv_or_script)
             return
 
         venv.create(clean=clean, update=update)
