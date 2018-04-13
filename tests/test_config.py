@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 
-""" Config file processing """
+""" Test Config file processing """
+
 from os import path
 from pathlib import Path
-from typing import cast
 from unittest.mock import Mock, MagicMock
 
 import pytest
 
 from script_venv.config import VenvConfig, ConfigDependencies
-from tests.test_venv import VEnvFixtures
-from tests.utils import config_read, config_write, venv_exists, config_scripts, StringContaining
+
+from .test_venv import VEnvFixtures
+from .utils import config_read, config_write, venv_exists, config_scripts, StringContaining
 
 
 class VenvConfigFixtures(VEnvFixtures):
@@ -267,9 +268,8 @@ class TestVenvConfigCreate(VenvConfigFixtures):
 
         venv_deps.echo.assert_called_with(StringContaining("Creating venv test"))
 
-    def test_create_script(self, venv_deps: Mock, config: VenvConfig) -> None:
-        venv_exists(cast(Mock, venv_deps))
-        config_deps = cast(Mock, config.deps)
+    def test_create_script(self, venv_deps: Mock, config_deps: Mock, config: VenvConfig) -> None:
+        venv_exists(venv_deps)
         config_read(config_deps, {self.CWD_sv_cfg: "[SCRIPTS]\ntester = test"})
         config.load()
 
@@ -285,9 +285,7 @@ class TestVenvConfigCreate(VenvConfigFixtures):
 
         config_deps.echo.assert_called_with("Unable to find venv or script other")
 
-    def test_create_exists(self, config: VenvConfig) -> None:
-        config_deps = cast(Mock, config.deps)
-        venv_deps = cast(Mock, config.deps.venv_deps())
+    def test_create_exists(self, venv_deps: Mock, config_deps: Mock, config: VenvConfig) -> None:
         config_read(config_deps, {self.CWD_sv_cfg: "[test]"})
         venv_exists(venv_deps, self.CWD_sv_test)
         config.load()
@@ -296,9 +294,7 @@ class TestVenvConfigCreate(VenvConfigFixtures):
 
         venv_deps.echo.assert_not_called()
 
-    def test_create_clean(self, config: VenvConfig) -> None:
-        config_deps = cast(Mock, config.deps)
-        venv_deps = cast(Mock, config.deps.venv_deps())
+    def test_create_clean(self, venv_deps: Mock, config_deps: Mock, config: VenvConfig) -> None:
         config_read(config_deps, {self.CWD_sv_cfg: "[test]"})
         venv_exists(venv_deps, self.CWD_sv_test)
         config.load()
@@ -307,9 +303,7 @@ class TestVenvConfigCreate(VenvConfigFixtures):
 
         venv_deps.echo.assert_called_with(StringContaining("Cleaning venv test"))
 
-    def test_create_update(self, config: VenvConfig) -> None:
-        config_deps = cast(Mock, config.deps)
-        venv_deps = cast(Mock, config.deps.venv_deps())
+    def test_create_update(self, venv_deps: Mock, config_deps: Mock, config: VenvConfig) -> None:
         config_read(config_deps, {self.CWD_sv_cfg: "[test]"})
         venv_exists(venv_deps, self.CWD_sv_test)
         config.load()

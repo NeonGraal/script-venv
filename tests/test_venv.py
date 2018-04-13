@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """ Venv tests """
+
 from os import path
 from random import randrange
 from typing import cast
@@ -9,7 +10,8 @@ from unittest.mock import Mock, ANY, MagicMock
 import pytest
 
 from script_venv.venv import VEnv, VEnvDependencies, _exe, _bin
-from tests.utils import venv_exists, StringContaining
+
+from .utils import venv_exists, StringContaining
 
 
 class VEnvFixtures(object):

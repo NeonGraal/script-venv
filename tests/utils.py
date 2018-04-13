@@ -1,7 +1,13 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""Utilities for testing `script_venv` package."""
+
+from click.testing import CliRunner, Result
 from configparser import ConfigParser
 from io import StringIO
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Callable
 from unittest.mock import Mock
 
 
@@ -45,3 +51,13 @@ def config_scripts(config_deps: Mock):
 class StringContaining(str):
     def __eq__(self, other):
         return self in other
+
+
+class CliObjectRunner(CliRunner):
+    def __init__(self, obj: Mock, **kwargs) -> None:
+        self.obj = obj
+        super(CliObjectRunner, self).__init__(**kwargs)
+
+    def invoke(self, cli: Callable, *args, **extra) -> Result:
+        extra['obj'] = self.obj
+        return super(CliObjectRunner, self).invoke(cli, *args, **extra)
