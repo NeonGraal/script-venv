@@ -16,7 +16,7 @@ class TestCliScripts(VenvConfigFixtures):
 
         CliObjectRunner(config_deps).invoke(cli.main, ['Sample.py', '--version'])
 
-        venv_deps.creator.assert_not_called()
+        assert not venv_deps.creator.called
         venv_deps.runner.assert_called_once_with([ANY, 'Sample.py', '--version'], env=ANY)
 
     def test_cli_script_missing(self, venv_deps: Mock, config_deps: Mock):
@@ -25,7 +25,7 @@ class TestCliScripts(VenvConfigFixtures):
 
         CliObjectRunner(config_deps).invoke(cli.main, ['Sample.py', '--version'])
 
-        venv_deps.creator.assert_called_once()
+        assert venv_deps.creator.called
         venv_deps.runner.assert_any_call([ANY, 'Sample.py', '--version'], env=ANY)
 
     def test_cli_venv_exists(self, venv_deps: Mock, config_deps: Mock):
@@ -34,7 +34,7 @@ class TestCliScripts(VenvConfigFixtures):
 
         CliObjectRunner(config_deps).invoke(cli.main, ['test', '--version'])
 
-        venv_deps.creator.assert_not_called()
+        assert not venv_deps.creator.called
         venv_deps.runner.assert_called_once_with([StringContaining('test'), '--version'], env=ANY)
 
     def test_cli_venv_missing(self, venv_deps: Mock, config_deps: Mock):
@@ -43,5 +43,5 @@ class TestCliScripts(VenvConfigFixtures):
 
         CliObjectRunner(config_deps).invoke(cli.main, ['test', '--version'])
 
-        venv_deps.creator.assert_called_once()
+        assert venv_deps.creator.called
         venv_deps.runner.assert_any_call([StringContaining('test'), '--version'], env=ANY)
