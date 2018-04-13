@@ -29,8 +29,8 @@ def config_write(config_deps: Mock):
 
 
 def venv_exists(venv_deps: Mock, *mock_dirs: str):
-    def exists_callback(dir: Path):
-        return str(dir) in mock_dirs
+    def exists_callback(exists_dir: Path):
+        return str(exists_dir) in mock_dirs
 
     venv_deps.exists.side_effect = exists_callback
 

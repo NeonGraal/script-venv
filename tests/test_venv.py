@@ -13,17 +13,17 @@ from tests.utils import venv_exists, StringContaining
 
 
 class VEnvFixtures(object):
-    TEST_sv_test = path.abspath(path.join('TEST', '.sv', 'test'))
+    CWD_sv_test = path.abspath(path.join('.sv', 'test'))
 
     @pytest.fixture
     def venv_deps(self) -> Mock:
         venv_mock = MagicMock(spec=VEnvDependencies, name="venv_deps")
-        venv_exists(venv_mock, self.TEST_sv_test)
+        venv_exists(venv_mock, self.CWD_sv_test)
         return venv_mock
 
     @pytest.fixture
     def venv(self, venv_deps: VEnvDependencies) -> VEnv:
-        return VEnv('test', venv_deps, 'TEST')
+        return VEnv('test', venv_deps, '.')
 
 
 class TestVEnv(VEnvFixtures):
@@ -35,7 +35,7 @@ class TestVEnv(VEnvFixtures):
         assert venv_deps.exists.called
 
     def test_venv_str(self, venv_deps: Mock, venv: VEnv) -> None:
-        expected = path.join("test (TEST", ".sv", "test) [TEST", '.sv_cfg]')
+        expected = path.join("test (.sv", "test) [.sv_cfg]")
         assert expected == str(venv)
         assert venv_deps.exists.called
 
@@ -44,7 +44,7 @@ class TestVEnv(VEnvFixtures):
         assert venv_deps.exists.called
 
     def test_venv_run_cmd(self, venv_deps: Mock, venv: VEnv) -> None:
-        venv_exists(venv_deps, self.TEST_sv_test, path.join(self.TEST_sv_test, _bin, 'test' + _exe))
+        venv_exists(venv_deps, self.CWD_sv_test, path.join(self.CWD_sv_test, _bin, 'test' + _exe))
         expected_ret_code = randrange(1, 200)
         venv_deps.runner.return_value = expected_ret_code
 

@@ -18,7 +18,8 @@ else:  # pragma: no cover
     _exe = ''
     _quote = '%s'
 
-os.environ['CWD'] = os.getcwd()
+_CWD = os.getcwd()
+os.environ['CWD'] = _CWD
 
 
 def abs_path(raw_path: Path) -> Path:

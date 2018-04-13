@@ -2,6 +2,7 @@
 
 """ Config file processing """
 from os import path
+from pathlib import Path
 from typing import cast
 from unittest.mock import Mock, MagicMock
 
@@ -14,7 +15,6 @@ from tests.utils import config_read, config_write, venv_exists, config_scripts, 
 
 class VenvConfigFixtures(VEnvFixtures):
     USER_sv_cfg = path.expanduser(path.join('~', '.config', '.sv_cfg'))
-    TEST_sv_cfg = path.abspath(path.join('TEST', '.sv_cfg'))
     CWD_sv_cfg = path.expandvars(path.join('$CWD', '.sv_cfg'))
 
     @pytest.fixture
@@ -30,7 +30,7 @@ class VenvConfigFixtures(VEnvFixtures):
 
 class TestVenvConfig(VenvConfigFixtures):
     def test_venv_config_load(self, config_deps: Mock, config: VenvConfig) -> None:
-        config_read(config_deps, {self.TEST_sv_cfg: "[SCRIPTS]\nsample.py=sample"})
+        config_read(config_deps, {self.CWD_sv_cfg: "[SCRIPTS]\nsample.py=sample"})
 
         config.load()
 
@@ -39,21 +39,21 @@ class TestVenvConfig(VenvConfigFixtures):
         assert 'sample' == config.scripts['sample.py']
 
     def test_venv_config_scripts(self, config_deps: Mock, config: VenvConfig) -> None:
-        config_read(config_deps, {self.TEST_sv_cfg: "[SCRIPTS]\nsample.py=sample\npip=sample"})
+        config_read(config_deps, {self.CWD_sv_cfg: "[SCRIPTS]\nsample.py=sample\npip=sample"})
 
         config.load()
 
         assert {'sample.py', 'pip'} <= set(config.scripts)
 
     def test_venv_config_venvs(self, config_deps: Mock, config: VenvConfig) -> None:
-        config_read(config_deps, {self.TEST_sv_cfg: "[sample]\n[pip]\n"})
+        config_read(config_deps, {self.CWD_sv_cfg: "[sample]\n[pip]\n"})
 
         config.load()
 
         assert {'sample', 'pip'} <= set(config.venvs)
 
     def test_venv_config_ignored(self, config_deps: Mock, config: VenvConfig) -> None:
-        config_read(config_deps, {self.TEST_sv_cfg: "[Sample]\n[pip.Test]\n"})
+        config_read(config_deps, {self.CWD_sv_cfg: "[Sample]\n[pip.Test]\n"})
 
         config.load()
 
@@ -61,9 +61,34 @@ class TestVenvConfig(VenvConfigFixtures):
         config_deps.echo.assert_called_with(StringContaining("Sample, pip.Test"))
 
 
+class TestVenvConfigSearch(VenvConfigFixtures):
+    def test_config_search(self, config_deps: Mock, config: VenvConfig):
+        config.search_path([])
+
+        config.load()
+
+        config_deps.exists.assert_any_call(Path('.').absolute() / '.sv_cfg')
+
+    def test_config_search_string(self, config_deps: Mock, config: VenvConfig):
+        config.search_path(path.pathsep.join(['Test', 'Path']))
+
+        config.load()
+
+        config_deps.exists.assert_any_call(Path('Test').absolute() / '.sv_cfg')
+        config_deps.exists.assert_any_call(Path('Path').absolute() / '.sv_cfg')
+
+    def test_config_search_list(self, config_deps: Mock, config: VenvConfig):
+        config.search_path(['Test', 'Path'])
+
+        config.load()
+
+        config_deps.exists.assert_any_call(Path('Test').absolute() / '.sv_cfg')
+        config_deps.exists.assert_any_call(Path('Path').absolute() / '.sv_cfg')
+
+
 class TestVenvConfigDetails(VenvConfigFixtures):
     def test_venv_prerequisites(self, config_deps: Mock, config: VenvConfig) -> None:
-        config_read(config_deps, {self.TEST_sv_cfg: "[sample]\nprerequisites = first\n\tsecond\n"})
+        config_read(config_deps, {self.CWD_sv_cfg: "[sample]\nprerequisites = first\n\tsecond\n"})
 
         config.load()
 
@@ -71,7 +96,7 @@ class TestVenvConfigDetails(VenvConfigFixtures):
         assert {'first', 'second'} == venv.prerequisites
 
     def test_venv_requirements(self, config_deps: Mock, config: VenvConfig) -> None:
-        config_read(config_deps, {self.TEST_sv_cfg: "[sample]\nrequirements = alpha\n\tbeta\n"})
+        config_read(config_deps, {self.CWD_sv_cfg: "[sample]\nrequirements = alpha\n\tbeta\n"})
 
         config.load()
 
@@ -81,7 +106,7 @@ class TestVenvConfigDetails(VenvConfigFixtures):
 
 class TestVenvConfigLocation(VenvConfigFixtures):
     def test_venv_current(self, config_deps: Mock, config: VenvConfig) -> None:
-        config_read(config_deps, {self.TEST_sv_cfg: "[pip.test]\n"})
+        config_read(config_deps, {self.CWD_sv_cfg: "[pip.test]\n"})
 
         config.load()
 
@@ -95,7 +120,7 @@ class TestVenvConfigLocation(VenvConfigFixtures):
         assert '~' in str(config.venvs['pip.test'])
 
     def test_venv_local(self, config_deps: Mock, config: VenvConfig) -> None:
-        config_read(config_deps, {self.TEST_sv_cfg: "[pip.test]\nlocation = ~\n"})
+        config_read(config_deps, {self.CWD_sv_cfg: "[pip.test]\nlocation = ~\n"})
 
         config.load()
 
@@ -109,15 +134,15 @@ class TestVenvConfigList(VenvConfigFixtures):
         config_deps.echo.assert_called_with("Configs: []")
 
     def test_list_basic(self, config_deps: Mock, config: VenvConfig) -> None:
-        config_read(config_deps, {self.TEST_sv_cfg: "[test]\n"})
+        config_read(config_deps, {self.CWD_sv_cfg: "[test]\n"})
 
         config.load()
         config.list()
 
-        config_deps.echo.assert_called_with(path.join('test (TEST', '.sv', 'test) [TEST', ".sv_cfg]"))
+        config_deps.echo.assert_called_with(path.join('test (.sv', 'test) [.sv_cfg]'))
 
     def test_list_requirements(self, config_deps: Mock, config: VenvConfig) -> None:
-        config_read(config_deps, {self.TEST_sv_cfg: "[test]\nrequirements = second\n\tfirst\n"})
+        config_read(config_deps, {self.CWD_sv_cfg: "[test]\nrequirements = second\n\tfirst\n"})
         config.load()
 
         config.list()
@@ -125,7 +150,7 @@ class TestVenvConfigList(VenvConfigFixtures):
         config_deps.echo.assert_called_with("\tRequirements: first\n\t\tsecond")
 
     def test_list_prerequisites(self, config_deps: Mock, config: VenvConfig) -> None:
-        config_read(config_deps, {self.TEST_sv_cfg: "[test]\nprerequisites = beta\n\talpha\n"})
+        config_read(config_deps, {self.CWD_sv_cfg: "[test]\nprerequisites = beta\n\talpha\n"})
         config.load()
 
         config.list()
@@ -133,7 +158,7 @@ class TestVenvConfigList(VenvConfigFixtures):
         config_deps.echo.assert_called_with("\tPrerequisites: alpha\n\t\tbeta")
 
     def test_list_scripts(self, config_deps: Mock, config: VenvConfig) -> None:
-        config_read(config_deps, {self.TEST_sv_cfg: "[SCRIPTS]\nsample = test\ntester = test"})
+        config_read(config_deps, {self.CWD_sv_cfg: "[SCRIPTS]\nsample = test\ntester = test"})
         config.load()
 
         config.list()
@@ -147,12 +172,12 @@ class TestVenvConfigRegister(VenvConfigFixtures):
         config_write(config_deps)
         config_scripts(config_deps)
 
-        config.register('test', ('package',), config_path='testing')
+        config.register('test', ('package',))
 
         config_deps.echo.assert_called_with(StringContaining("Registering"))
-        testing_sv_cfg = path.abspath(path.join('testing', '.sv_cfg'))
-        assert testing_sv_cfg in config_deps.out_str
-        out_str = config_deps.out_str[testing_sv_cfg]
+        sv_cfg = path.abspath('.sv_cfg')
+        assert sv_cfg in config_deps.out_str
+        out_str = config_deps.out_str[sv_cfg]
         assert "[test]" in out_str
         assert "requirements = package" in out_str
         assert "global" not in out_str
@@ -187,11 +212,12 @@ class TestVenvConfigRegister(VenvConfigFixtures):
         config_write(config_deps)
         config_scripts(config_deps)
 
-        config.register('test', ('package1', 'package2'), config_path='TEST')
+        config.register('test', ('package1', 'package2'), config_path='Test')
 
         config_deps.echo.assert_called_with(StringContaining("Registering"))
-        assert self.TEST_sv_cfg in config_deps.out_str
-        out_str = config_deps.out_str[self.TEST_sv_cfg]
+        test_sv_cfg = path.expandvars(path.join('$CWD', 'Test', '.sv_cfg'))
+        assert test_sv_cfg in config_deps.out_str
+        out_str = config_deps.out_str[test_sv_cfg]
         assert "package1.script = test" in out_str
         assert "package2.script = test" in out_str
         assert "requirements = package1\n\tpackage2" in out_str
@@ -213,16 +239,16 @@ class TestVenvConfigRegister(VenvConfigFixtures):
 
     def test_register_existing(self, config_deps: Mock, config: VenvConfig) -> None:
         config_read(config_deps, {
-            self.TEST_sv_cfg: """[SCRIPTS]\nsample = test\n\n[test]\nprerequisites = early\nrequirements = old\n"""
+            self.CWD_sv_cfg: """[SCRIPTS]\nsample = test\n\n[test]\nprerequisites = early\nrequirements = old\n"""
         })
         config_write(config_deps)
         config_scripts(config_deps)
 
-        config.register('test', ('new',), config_path='TEST')
+        config.register('test', ('new',), config_path='.')
 
         config_deps.echo.assert_called_with(StringContaining("Registering"))
-        assert self.TEST_sv_cfg in config_deps.out_str
-        out_str = config_deps.out_str[self.TEST_sv_cfg]
+        assert self.CWD_sv_cfg in config_deps.out_str
+        out_str = config_deps.out_str[self.CWD_sv_cfg]
         assert "[test]" in out_str
         assert "[SCRIPTS]" in out_str
         assert "prerequisites = early" in out_str
@@ -234,7 +260,7 @@ class TestVenvConfigRegister(VenvConfigFixtures):
 class TestVenvConfigCreate(VenvConfigFixtures):
     def test_create_venv(self, venv_deps: Mock, config_deps: Mock, config: VenvConfig) -> None:
         venv_exists(venv_deps)
-        config_read(config_deps, {self.TEST_sv_cfg: "[test]"})
+        config_read(config_deps, {self.CWD_sv_cfg: "[test]"})
         config.load()
 
         config.create('test')
@@ -244,7 +270,7 @@ class TestVenvConfigCreate(VenvConfigFixtures):
     def test_create_script(self, venv_deps: Mock, config: VenvConfig) -> None:
         venv_exists(cast(Mock, venv_deps))
         config_deps = cast(Mock, config.deps)
-        config_read(config_deps, {self.TEST_sv_cfg: "[SCRIPTS]\ntester = test"})
+        config_read(config_deps, {self.CWD_sv_cfg: "[SCRIPTS]\ntester = test"})
         config.load()
 
         config.create('tester')
@@ -252,7 +278,7 @@ class TestVenvConfigCreate(VenvConfigFixtures):
         venv_deps.echo.assert_called_with(StringContaining("Creating venv test"))
 
     def test_create_missing(self, config_deps: Mock, config: VenvConfig) -> None:
-        config_read(config_deps, {self.TEST_sv_cfg: "[test]"})
+        config_read(config_deps, {self.CWD_sv_cfg: "[test]"})
         config.load()
 
         config.create('other')
@@ -262,8 +288,8 @@ class TestVenvConfigCreate(VenvConfigFixtures):
     def test_create_exists(self, config: VenvConfig) -> None:
         config_deps = cast(Mock, config.deps)
         venv_deps = cast(Mock, config.deps.venv_deps())
-        config_read(config_deps, {self.TEST_sv_cfg: "[test]"})
-        venv_exists(venv_deps, self.TEST_sv_test)
+        config_read(config_deps, {self.CWD_sv_cfg: "[test]"})
+        venv_exists(venv_deps, self.CWD_sv_test)
         config.load()
 
         config.create('test')
@@ -273,8 +299,8 @@ class TestVenvConfigCreate(VenvConfigFixtures):
     def test_create_clean(self, config: VenvConfig) -> None:
         config_deps = cast(Mock, config.deps)
         venv_deps = cast(Mock, config.deps.venv_deps())
-        config_read(config_deps, {self.TEST_sv_cfg: "[test]"})
-        venv_exists(venv_deps, self.TEST_sv_test)
+        config_read(config_deps, {self.CWD_sv_cfg: "[test]"})
+        venv_exists(venv_deps, self.CWD_sv_test)
         config.load()
 
         config.create('test', clean=True)
@@ -284,8 +310,8 @@ class TestVenvConfigCreate(VenvConfigFixtures):
     def test_create_update(self, config: VenvConfig) -> None:
         config_deps = cast(Mock, config.deps)
         venv_deps = cast(Mock, config.deps.venv_deps())
-        config_read(config_deps, {self.TEST_sv_cfg: "[test]"})
-        venv_exists(venv_deps, self.TEST_sv_test)
+        config_read(config_deps, {self.CWD_sv_cfg: "[test]"})
+        venv_exists(venv_deps, self.CWD_sv_test)
         config.load()
 
         config.create('test', update=True)

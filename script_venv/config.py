@@ -53,7 +53,7 @@ class VenvConfig(object):
     def __init__(self, deps: ConfigDependencies) -> None:
         self.deps = deps
         self.configs = set()  # type: Set[str]
-        self._search_path = [path.join('~', '.config'), "TEST", "$CWD"]
+        self._search_path = [path.join('~', '.config'), "$PARENTS", "$CWD"]
         self._scripts = {}  # type: Dict[str, str]
         self._venvs = {}  # type: Dict[str, VEnv]
         self._scripts_proxy = MappingProxyType(self._scripts)
@@ -72,9 +72,14 @@ class VenvConfig(object):
     def _config_paths(self):
         for p in self._search_path:
             if p.upper() == '$PARENTS':
-                parts = path.split(getcwd())
-                for i in range(len(parts), 0, -1):
-                    yield path.join(*parts[:i])
+                cwd = getcwd()
+                drive, full_path = path.splitdrive(cwd)
+                parts = full_path.split(path.sep)
+                for i in range(2, len(parts)):
+                    this_path = path.join(drive + path.sep, *parts[:i])
+                    yield path.join(path.relpath(this_path, start=cwd))
+            elif p.upper() == '$CWD':
+                yield '.'
             else:
                 yield p
 
