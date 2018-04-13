@@ -3,6 +3,7 @@
 """ Config file processing """
 import venv
 
+import click
 from click import echo
 from configparser import ConfigParser
 import os
@@ -17,6 +18,9 @@ from .venv import VEnv, VEnvDependencies
 class ConfigDependenciesImpl(ConfigDependencies):  # pragma: no cover
     def venv_deps(self) -> VEnvDependencies:
         return VEnvDependenciesImpl()
+
+    def echo(self, msg: str):
+        click.echo(msg)
 
     def exists(self, path: Path) -> bool:
         return path.exists()
@@ -54,6 +58,9 @@ class ConfigDependenciesImpl(ConfigDependencies):  # pragma: no cover
 class VEnvDependenciesImpl(VEnvDependencies):  # pragma: no cover
     def creator(self, path: Path, clear: bool = False) -> None:
         venv.create(str(path), with_pip=True, clear=clear)
+
+    def echo(self, msg: str):
+        click.echo(msg)
 
     def exists(self, path: Path) -> bool:
         return path.exists()

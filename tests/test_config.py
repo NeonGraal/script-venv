@@ -1,365 +1,313 @@
 # -*- coding: utf-8 -*-
 
-""" Config file processing """
+""" Test Config file processing """
 
-from typing import Callable, cast
+from os import path
+from pathlib import Path
+from unittest.mock import Mock, MagicMock
 
-import os
 import pytest
 
-from script_venv.config import VenvConfig
-from .factory import TestConfigDependencies
+from script_venv.config import VenvConfig, ConfigDependencies
 
-# noinspection SpellCheckingInspection
-_SAMPLE_CFG = """[SCRIPTS]
-sample.py = sample
-pip = sample
-pipdeptree = pip.test
-
-[pip.test]
-global
-prerequisites = wheel
-requirements = pipdeptree
-"""
+from .test_venv import VEnvFixtures
+from .utils import config_read, config_write, venv_exists, config_scripts, StringContaining
 
 
-class VenvConfigFixtures(object):
-    @pytest.fixture
-    def deps(self) -> TestConfigDependencies:
-        return TestConfigDependencies()
+class VenvConfigFixtures(VEnvFixtures):
+    USER_sv_cfg = path.expanduser(path.join('~', '.config', '.sv_cfg'))
+    CWD_sv_cfg = path.expandvars(path.join('$CWD', '.sv_cfg'))
 
     @pytest.fixture
-    def config(self, deps) -> VenvConfig:
-        return VenvConfig(deps=deps)
+    def config_deps(self, venv_deps: Mock) -> Mock:
+        config_mock = MagicMock(spec=ConfigDependencies, name="config_deps")
+        config_mock.venv_deps.return_value = venv_deps
+        return config_mock
+
+    @pytest.fixture
+    def config(self, config_deps: ConfigDependencies) -> VenvConfig:
+        return VenvConfig(deps=config_deps)
 
 
 class TestVenvConfig(VenvConfigFixtures):
-    @staticmethod
-    def test_venv_config_load(config: VenvConfig) -> None:
-        deps = cast(TestConfigDependencies, config.deps)
-        deps.in_str = "[SCRIPTS]\nsample.py=sample"
+    def test_venv_config_load(self, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {self.CWD_sv_cfg: "[SCRIPTS]\nsample.py=sample"})
 
-        config.load(False)
+        config.load()
 
         assert 'sample.py' in config.scripts
         assert 'sample' in config.venvs
         assert 'sample' == config.scripts['sample.py']
 
-    @staticmethod
-    def test_venv_config_scripts(config: VenvConfig) -> None:
-        deps = cast(TestConfigDependencies, config.deps)
-        deps.in_str = "[SCRIPTS]\nsample.py=sample\npip=sample"
+    def test_venv_config_scripts(self, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {self.CWD_sv_cfg: "[SCRIPTS]\nsample.py=sample\npip=sample"})
 
-        config.load(False)
+        config.load()
 
         assert {'sample.py', 'pip'} <= set(config.scripts)
 
-    @staticmethod
-    def test_venv_config_venvs(config: VenvConfig) -> None:
-        deps = cast(TestConfigDependencies, config.deps)
-        deps.in_str = "[sample]\n[pip]\n"
+    def test_venv_config_venvs(self, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {self.CWD_sv_cfg: "[sample]\n[pip]\n"})
 
-        config.load(False)
+        config.load()
 
         assert {'sample', 'pip'} <= set(config.venvs)
 
-    @staticmethod
-    def test_venv_config_ignored(config: VenvConfig,
-                                 click_iso: Callable) -> None:
-        deps = cast(TestConfigDependencies, config.deps)
-        deps.in_str = "[Sample]\n[pip.Test]\n"
+    def test_venv_config_ignored(self, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {self.CWD_sv_cfg: "[Sample]\n[pip.Test]\n"})
 
-        with click_iso() as out:
-            config.load(False)
-            click_out = out.getvalue()
+        config.load()
 
         assert not config.venvs
-        assert b"Sample, pip.Test" in click_out
+        config_deps.echo.assert_called_with(StringContaining("Sample, pip.Test"))
+
+
+class TestVenvConfigSearch(VenvConfigFixtures):
+    def test_config_search(self, config_deps: Mock, config: VenvConfig):
+        config.search_path([])
+
+        config.load()
+
+        config_deps.exists.assert_any_call(Path('.').absolute() / '.sv_cfg')
+
+    def test_config_search_string(self, config_deps: Mock, config: VenvConfig):
+        config.search_path(path.pathsep.join(['Test', 'Path']))
+
+        config.load()
+
+        config_deps.exists.assert_any_call(Path('Test').absolute() / '.sv_cfg')
+        config_deps.exists.assert_any_call(Path('Path').absolute() / '.sv_cfg')
+
+    def test_config_search_list(self, config_deps: Mock, config: VenvConfig):
+        config.search_path(['Test', 'Path'])
+
+        config.load()
+
+        config_deps.exists.assert_any_call(Path('Test').absolute() / '.sv_cfg')
+        config_deps.exists.assert_any_call(Path('Path').absolute() / '.sv_cfg')
 
 
 class TestVenvConfigDetails(VenvConfigFixtures):
-    @staticmethod
-    def test_venv_prerequisites(config: VenvConfig) -> None:
-        deps = cast(TestConfigDependencies, config.deps)
-        deps.in_str = "[sample]\nprerequisites = first\n\tsecond\n"
+    def test_venv_prerequisites(self, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {self.CWD_sv_cfg: "[sample]\nprerequisites = first\n\tsecond\n"})
 
-        config.load(False)
+        config.load()
 
         venv = config.venvs['sample']
         assert {'first', 'second'} == venv.prerequisites
 
-    @staticmethod
-    def test_venv_requirements(config: VenvConfig) -> None:
-        deps = cast(TestConfigDependencies, config.deps)
-        deps.in_str = "[sample]\nrequirements = alpha\n\tbeta\n"
+    def test_venv_requirements(self, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {self.CWD_sv_cfg: "[sample]\nrequirements = alpha\n\tbeta\n"})
 
-        config.load(False)
+        config.load()
 
         venv = config.venvs['sample']
         assert {'alpha', 'beta'} == venv.requirements
 
 
 class TestVenvConfigLocation(VenvConfigFixtures):
-    @staticmethod
-    def test_venv_current(config: VenvConfig) -> None:
-        deps = cast(TestConfigDependencies, config.deps)
-        deps.in_str = "[pip.test]\n"
+    def test_venv_current(self, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {self.CWD_sv_cfg: "[pip.test]\n"})
 
-        config.load(False)
+        config.load()
 
         assert '~' not in str(config.venvs['pip.test'])
 
-    @staticmethod
-    def test_venv_user(config: VenvConfig) -> None:
-        deps = cast(TestConfigDependencies, config.deps)
-        deps.in_str = "[pip.test]\n"
+    def test_venv_user(self, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {self.USER_sv_cfg: "[pip.test]\n"})
 
-        config.load(True)
+        config.load()
 
         assert '~' in str(config.venvs['pip.test'])
 
-    @staticmethod
-    def test_venv_global(config: VenvConfig) -> None:
-        deps = cast(TestConfigDependencies, config.deps)
-        deps.in_str = "[pip.test]\nglobal\n"
+    def test_venv_local(self, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {self.CWD_sv_cfg: "[pip.test]\nlocation = ~\n"})
 
-        config.load(False)
+        config.load()
 
         assert '~' in str(config.venvs['pip.test'])
-
-    @staticmethod
-    def test_venv_local(config: VenvConfig) -> None:
-        deps = cast(TestConfigDependencies, config.deps)
-        deps.in_str = "[pip.test]\nlocal\n"
-
-        config.load(True)
-
-        assert '~' not in str(config.venvs['pip.test'])
 
 
 class TestVenvConfigList(VenvConfigFixtures):
-    @staticmethod
-    def test_list_empty(config: VenvConfig,
-                        click_iso: Callable) -> None:
-        with click_iso() as out:
-            config.list()
-            click_out = out.getvalue()
+    def test_list_empty(self, config_deps: Mock, config: VenvConfig) -> None:
+        config.list()
 
-        assert b"Configs: []" == click_out.strip()
+        config_deps.echo.assert_called_with("Configs: []")
 
-    @staticmethod
-    def test_list_basic(config: VenvConfig,
-                        click_iso: Callable) -> None:
-        deps = cast(TestConfigDependencies, config.deps)
-        deps.in_str = "[test]\n"
+    def test_list_basic(self, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {self.CWD_sv_cfg: "[test]\n"})
 
-        config.load(False)
-        with click_iso() as out:
-            config.list()
-            click_out = out.getvalue().decode()
+        config.load()
+        config.list()
 
-        assert "['.sv_cfg']" in click_out
-        assert os.sep.join(['test (.sv', 'test !MISSING)']) in click_out.splitlines()
+        config_deps.echo.assert_called_with(path.join('test (.sv', 'test) [.sv_cfg]'))
 
-    @staticmethod
-    def test_list_requirements(config: VenvConfig,
-                               click_iso: Callable) -> None:
-        deps = cast(TestConfigDependencies, config.deps)
-        deps.in_str = "[test]\nrequirements = second\n\tfirst\n"
+    def test_list_requirements(self, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {self.CWD_sv_cfg: "[test]\nrequirements = second\n\tfirst\n"})
+        config.load()
 
-        config.load(False)
-        with click_iso() as out:
-            config.list()
-            click_out = out.getvalue().decode()
+        config.list()
 
-        assert "\tRequirements: first" in click_out
-        assert "\t\tsecond" in click_out
+        config_deps.echo.assert_called_with("\tRequirements: first\n\t\tsecond")
 
-    @staticmethod
-    def test_list_prerequisites(config: VenvConfig,
-                                click_iso: Callable) -> None:
-        deps = cast(TestConfigDependencies, config.deps)
-        deps.in_str = "[test]\nprerequisites = beta\n\talpha\n"
+    def test_list_prerequisites(self, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {self.CWD_sv_cfg: "[test]\nprerequisites = beta\n\talpha\n"})
+        config.load()
 
-        config.load(False)
-        with click_iso() as out:
-            config.list()
-            click_out = out.getvalue().decode()
+        config.list()
 
-        assert "\tPrerequisites: alpha" in click_out
-        assert "\t\tbeta" in click_out
+        config_deps.echo.assert_called_with("\tPrerequisites: alpha\n\t\tbeta")
 
-    @staticmethod
-    def test_list_scripts(config: VenvConfig,
-                          click_iso: Callable) -> None:
-        deps = cast(TestConfigDependencies, config.deps)
-        deps.in_str = "[SCRIPTS]\nsample = test\ntester = test"
+    def test_list_scripts(self, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {self.CWD_sv_cfg: "[SCRIPTS]\nsample = test\ntester = test"})
+        config.load()
 
-        config.load(False)
-        with click_iso() as out:
-            config.list()
-            click_out = out.getvalue().decode()
+        config.list()
 
-        assert "\tScripts: sample, tester" in click_out
+        config_deps.echo.assert_called_with("\tScripts: sample, tester")
 
 
 class TestVenvConfigRegister(VenvConfigFixtures):
-    @staticmethod
-    def test_register(config: VenvConfig,
-                      click_iso: Callable) -> None:
-        with click_iso() as out:
-            config.register('test', ('package',), False, True)
-            click_out = out.getvalue()
+    def test_register(self, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {})
+        config_write(config_deps)
+        config_scripts(config_deps)
 
-        deps = cast(TestConfigDependencies, config.deps)
-        assert b"Registering" in click_out
-        assert "[test]" in deps.out_str
-        assert "requirements = package" in deps.out_str
-        assert "global" not in deps.out_str
-        assert "local" not in deps.out_str
+        config.register('test', ('package',))
 
-    @staticmethod
-    def test_register_local(config: VenvConfig,
-                            click_iso: Callable) -> None:
-        with click_iso() as out:
-            config.register('test', ('package',), True, True)
-            click_out = out.getvalue()
+        config_deps.echo.assert_called_with(StringContaining("Registering"))
+        sv_cfg = path.abspath('.sv_cfg')
+        assert sv_cfg in config_deps.out_str
+        out_str = config_deps.out_str[sv_cfg]
+        assert "[test]" in out_str
+        assert "requirements = package" in out_str
+        assert "global" not in out_str
+        assert "local" not in out_str
 
-        deps = cast(TestConfigDependencies, config.deps)
-        assert b"Registering" in click_out
-        assert "local\n" in deps.out_str
-        assert "requirements = package" in deps.out_str
-        assert "global" not in deps.out_str
+    def test_register_local(self, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {})
+        config_write(config_deps)
+        config_scripts(config_deps)
 
-    @staticmethod
-    def test_register_global(config: VenvConfig,
-                             click_iso: Callable) -> None:
-        with click_iso() as out:
-            config.register('test', ('package',), False, False)
-            click_out = out.getvalue()
+        config.register('test', ('package',), config_path='$CWD')
 
-        deps = cast(TestConfigDependencies, config.deps)
-        assert b"Registering" in click_out
-        assert "global\n" in deps.out_str
-        assert "requirements = package" in deps.out_str
-        assert "local" not in deps.out_str
+        config_deps.echo.assert_called_with(StringContaining("Registering"))
+        assert self.CWD_sv_cfg in config_deps.out_str
+        out_str = config_deps.out_str[self.CWD_sv_cfg]
+        assert "requirements = package" in out_str
 
-    @staticmethod
-    def test_register_scripts(config: VenvConfig,
-                              click_iso: Callable) -> None:
-        with click_iso() as out:
-            config.register('test', ('package1', 'package2'), False, False)
-            click_out = out.getvalue()
+    def test_register_global(self, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {})
+        config_write(config_deps)
+        config_scripts(config_deps)
 
-        deps = cast(TestConfigDependencies, config.deps)
-        assert b"Registering" in click_out
-        assert "package1.script = test" in deps.out_str
-        assert "package2.script = test" in deps.out_str
-        assert "requirements = package1\n\tpackage2" in deps.out_str
+        config.register('test', ('package',), config_path='~/.config')
 
-    @staticmethod
-    def test_register_user(config: VenvConfig,
-                           click_iso: Callable) -> None:
-        with click_iso() as out:
-            config.register('test', ('package',), True, False)
-            click_out = out.getvalue()
+        config_deps.echo.assert_called_with(StringContaining("Registering"))
+        assert self.USER_sv_cfg in config_deps.out_str
+        out_str = config_deps.out_str[self.USER_sv_cfg]
+        assert "requirements = package" in out_str
 
-        deps = cast(TestConfigDependencies, config.deps)
-        assert b"Registering" in click_out
-        assert "[test]" in deps.out_str
-        assert "requirements = package" in deps.out_str
-        assert "global" not in deps.out_str
-        assert "local" not in deps.out_str
+    def test_register_scripts(self, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {})
+        config_write(config_deps)
+        config_scripts(config_deps)
 
-    @staticmethod
-    def test_register_existing(config: VenvConfig,
-                               click_iso: Callable) -> None:
-        deps = cast(TestConfigDependencies, config.deps)
-        deps.in_str = """[SCRIPTS]
-sample = test
+        config.register('test', ('package1', 'package2'), config_path='Test')
 
-[test]
-prerequisites = early
-requirements = old
-"""
+        config_deps.echo.assert_called_with(StringContaining("Registering"))
+        test_sv_cfg = path.expandvars(path.join('$CWD', 'Test', '.sv_cfg'))
+        assert test_sv_cfg in config_deps.out_str
+        out_str = config_deps.out_str[test_sv_cfg]
+        assert "package1.script = test" in out_str
+        assert "package2.script = test" in out_str
+        assert "requirements = package1\n\tpackage2" in out_str
 
-        with click_iso() as out:
-            config.register('test', ('new',), True, False)
-            click_out = out.getvalue()
+    def test_register_user(self, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {})
+        config_write(config_deps)
+        config_scripts(config_deps)
 
-        assert b"Registering" in click_out
-        assert "[test]" in deps.out_str
-        assert "[SCRIPTS]" in deps.out_str
-        assert "prerequisites = early" in deps.out_str
-        assert "requirements = new\n\told" in deps.out_str
-        assert "global" not in deps.out_str
-        assert "local" not in deps.out_str
+        config.register('test', ('package',), config_path='$CWD')
+
+        config_deps.echo.assert_called_with(StringContaining("Registering"))
+        assert self.CWD_sv_cfg in config_deps.out_str
+        out_str = config_deps.out_str[self.CWD_sv_cfg]
+        assert "[test]" in out_str
+        assert "requirements = package" in out_str
+        assert "global" not in out_str
+        assert "local" not in out_str
+
+    def test_register_existing(self, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {
+            self.CWD_sv_cfg: """[SCRIPTS]\nsample = test\n\n[test]\nprerequisites = early\nrequirements = old\n"""
+        })
+        config_write(config_deps)
+        config_scripts(config_deps)
+
+        config.register('test', ('new',), config_path='.')
+
+        config_deps.echo.assert_called_with(StringContaining("Registering"))
+        assert self.CWD_sv_cfg in config_deps.out_str
+        out_str = config_deps.out_str[self.CWD_sv_cfg]
+        assert "[test]" in out_str
+        assert "[SCRIPTS]" in out_str
+        assert "prerequisites = early" in out_str
+        assert "requirements = new\n\told" in out_str
+        assert "global" not in out_str
+        assert "local" not in out_str
 
 
 class TestVenvConfigCreate(VenvConfigFixtures):
-    @staticmethod
-    def test_register_create_venv(config: VenvConfig,
-                                  click_iso: Callable) -> None:
-        deps = cast(TestConfigDependencies, config.deps)
-        deps.in_str = "[test]"
+    def test_create_venv(self, venv_deps: Mock, config_deps: Mock, config: VenvConfig) -> None:
+        venv_exists(venv_deps)
+        config_read(config_deps, {self.CWD_sv_cfg: "[test]"})
+        config.load()
 
-        config.load(False)
-        with click_iso() as out:
-            config.create('test')
-            click_out = out.getvalue().decode()
+        config.create('test')
 
-        assert "Creating venv test" in click_out
+        venv_deps.echo.assert_called_with(StringContaining("Creating venv test"))
 
-    @staticmethod
-    def test_register_create_script(config: VenvConfig,
-                                    click_iso: Callable) -> None:
-        deps = cast(TestConfigDependencies, config.deps)
-        deps.in_str = "[SCRIPTS]\ntester = test"
+    def test_create_script(self, venv_deps: Mock, config_deps: Mock, config: VenvConfig) -> None:
+        venv_exists(venv_deps)
+        config_read(config_deps, {self.CWD_sv_cfg: "[SCRIPTS]\ntester = test"})
+        config.load()
 
-        config.load(False)
-        with click_iso() as out:
-            config.create('tester')
-            click_out = out.getvalue().decode()
+        config.create('tester')
 
-        assert "Creating venv test" in click_out
+        venv_deps.echo.assert_called_with(StringContaining("Creating venv test"))
 
-    @staticmethod
-    def test_register_create_missing(config: VenvConfig,
-                                     click_iso: Callable) -> None:
-        deps = cast(TestConfigDependencies, config.deps)
-        deps.in_str = "[test]"
+    def test_create_missing(self, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {self.CWD_sv_cfg: "[test]"})
+        config.load()
 
-        config.load(False)
-        with click_iso() as out:
-            config.create('other')
-            click_out = out.getvalue().decode()
+        config.create('other')
 
-        assert "Unable to find venv or script other" in click_out
+        config_deps.echo.assert_called_with("Unable to find venv or script other")
 
-    @staticmethod
-    def test_register_create_exists(config: VenvConfig,
-                                    click_iso: Callable) -> None:
-        deps = cast(TestConfigDependencies, config.deps)
-        deps.in_str = "[test]"
+    def test_create_exists(self, venv_deps: Mock, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {self.CWD_sv_cfg: "[test]"})
+        venv_exists(venv_deps, self.CWD_sv_test)
+        config.load()
 
-        config.load(False)
-        deps.test_venv.path_exists = True
-        with click_iso() as out:
-            config.create('test')
-            click_out = out.getvalue().decode()
+        config.create('test')
 
-        assert "" == click_out
+        venv_deps.echo.assert_not_called()
 
-    @staticmethod
-    def test_register_create_clean(config: VenvConfig,
-                                   click_iso: Callable) -> None:
-        deps = cast(TestConfigDependencies, config.deps)
-        deps.in_str = "[test]"
+    def test_create_clean(self, venv_deps: Mock, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {self.CWD_sv_cfg: "[test]"})
+        venv_exists(venv_deps, self.CWD_sv_test)
+        config.load()
 
-        config.load(False)
-        deps.test_venv.path_exists = True
-        with click_iso() as out:
-            config.create('test', clean=True)
-            click_out = out.getvalue().decode()
+        config.create('test', clean=True)
 
-        assert "Cleaning venv test" in click_out
+        venv_deps.echo.assert_called_with(StringContaining("Cleaning venv test"))
+
+    def test_create_update(self, venv_deps: Mock, config_deps: Mock, config: VenvConfig) -> None:
+        config_read(config_deps, {self.CWD_sv_cfg: "[test]"})
+        venv_exists(venv_deps, self.CWD_sv_test)
+        config.load()
+
+        config.create('test', update=True)
+
+        venv_deps.echo.assert_called_with(StringContaining("Updating venv test"))

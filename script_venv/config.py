@@ -2,13 +2,13 @@
 
 """ Config file processing """
 from configparser import ConfigParser
-from click import echo
-from os import path
+
+from os import getcwd, path
 from pathlib import Path
 from types import MappingProxyType
-from typing import Mapping, Set, Dict, Iterable, Tuple, Any, IO  # noqa: F401
+from typing import Mapping, Set, Dict, Iterable, Tuple, Any, IO, Union  # noqa: F401
 
-from .venv import VEnv, VEnvDependencies
+from .venv import VEnv, VEnvDependencies, abs_path
 
 # noinspection SpellCheckingInspection
 """
@@ -26,11 +26,13 @@ requirements:
 _s = "SCRIPTS"
 _p = "prerequisites"
 _r = "requirements"
-_l = "local"
-_g = "global"
+_l = "location"
 
 
 class ConfigDependencies(object):  # pragma: no cover
+    def echo(self, msg: str):
+        raise NotImplementedError()
+
     def exists(self, path: Path) -> bool:
         raise NotImplementedError()
 
@@ -51,28 +53,41 @@ class VenvConfig(object):
     def __init__(self, deps: ConfigDependencies) -> None:
         self.deps = deps
         self.configs = set()  # type: Set[str]
+        self._search_path = [path.join('~', '.config'), "$PARENTS", "$CWD"]
         self._scripts = {}  # type: Dict[str, str]
         self._venvs = {}  # type: Dict[str, VEnv]
         self._scripts_proxy = MappingProxyType(self._scripts)
         self._venvs_proxy = MappingProxyType(self._venvs)
 
     @staticmethod
-    def _file_path(per_user: bool) -> Tuple[str, Path]:
-        config_file = (Path('~') if per_user else Path('')) / '.sv_cfg'
-        return config_file.as_posix(), Path(path.expanduser(str(config_file))).absolute()
+    def _file_path(raw_path: Union[str, Path]) -> Tuple[str, Path]:
+        config_file = Path(raw_path) / '.sv_cfg'
+        return config_file.as_posix(), abs_path(config_file)
 
     @staticmethod
     def _packages_section(config: ConfigParser, venv: str, section: str) -> Set[str]:
         value = config.get(venv, section, fallback=None) or ''
         return {r for r in value.splitlines() if r}
 
-    def load(self, per_user: bool) -> None:
-        config_file, config_file_path = self._file_path(per_user)
+    def _config_paths(self):
+        for p in self._search_path:
+            if p.upper() == '$PARENTS':
+                cwd = getcwd()
+                drive, full_path = path.splitdrive(cwd)
+                parts = full_path.split(path.sep)
+                for i in range(2, len(parts)):
+                    this_path = path.join(drive + path.sep, *parts[:i])
+                    yield path.join(path.relpath(this_path, start=cwd))
+            elif p.upper() == '$CWD':
+                yield '.'
+            else:
+                yield p
+
+    def _load_file(self, path: str):
+        config_file, config_file_path = self._file_path(Path(path))
 
         if not self.deps.exists(config_file_path):  # pragma: no cover
             return
-
-        self.configs.add(config_file)
 
         config = ConfigParser(allow_no_value=True)
         with self.deps.read(config_file_path) as in_config:
@@ -80,15 +95,10 @@ class VenvConfig(object):
 
         for v in config:
             if v.islower():
-                if per_user:
-                    is_local = config.has_option(v, _l)
-                else:
-                    is_local = not config.has_option(v, _g)
-
-                new_venv = VEnv(v, self.deps.venv_deps(),
-                                local=is_local,
+                new_venv = VEnv(v, self.deps.venv_deps(), path,
                                 requirements=self._packages_section(config, v, _r),
                                 prerequisites=self._packages_section(config, v, _p),
+                                location=config.get(v, _l, fallback=None)
                                 )
                 self._venvs.setdefault(v, new_venv)
 
@@ -97,28 +107,38 @@ class VenvConfig(object):
             for s in scripts:
                 v = scripts[s] or s
                 self._scripts[s] = v
-                new_venv = VEnv(v, self.deps.venv_deps(), local=per_user)
+                new_venv = VEnv(v, self.deps.venv_deps(), path)
                 self._venvs.setdefault(v, new_venv)
 
         ignored = [s for s in config.sections() if not (s.islower() or s == _s)]
 
         if ignored:
-            echo("Ignored the following sections of %s: %s" % (config_file, ', '.join(sorted(ignored))))
+            self.deps.echo("Ignored the following sections of %s: %s" % (config_file, ', '.join(sorted(ignored))))
+
+    def search_path(self, full_path):
+        if isinstance(full_path, str):
+            self._search_path = full_path.split(path.pathsep)
+        elif full_path:
+            self._search_path = list(full_path)
+
+    def load(self) -> None:
+        for p in self._config_paths():
+            self._load_file(p)
 
     def list(self):
-        echo("Configs: %s" % sorted(self.configs))
+        self.deps.echo("Configs: %s" % sorted(self.configs))
         scripts = {}  # type: Dict[str,Set[str]]
         for s in self.scripts:
             scripts.setdefault(self.scripts[s], set()).add(s)
         for v in self.venvs:
             venv = self.venvs[v]
-            echo(str(venv))
+            self.deps.echo(str(venv))
             if v in scripts:
-                echo("\tScripts: %s" % ', '.join(sorted(scripts[v])))
+                self.deps.echo("\tScripts: %s" % ', '.join(sorted(scripts[v])))
             if venv.prerequisites:
-                echo("\tPrerequisites: %s" % "\n\t\t".join(sorted(venv.prerequisites)))
+                self.deps.echo("\tPrerequisites: %s" % "\n\t\t".join(sorted(venv.prerequisites)))
             if venv.requirements:
-                echo("\tRequirements: %s" % "\n\t\t".join(sorted(venv.requirements)))
+                self.deps.echo("\tRequirements: %s" % "\n\t\t".join(sorted(venv.requirements)))
 
     @property
     def scripts(self) -> Mapping[str, str]:
@@ -129,8 +149,10 @@ class VenvConfig(object):
         return self._venvs_proxy
 
     def register(self, name: str, packages: Iterable[str],
-                 per_user: bool, is_local: bool) -> None:
-        config_file, config_file_path = self._file_path(per_user)
+                 config_path: str = None, venv_path: str = None) -> None:
+        if not config_path:
+            config_path = self._search_path[-1]
+        config_file, config_file_path = self._file_path(config_path)
 
         config = ConfigParser(allow_no_value=True)
         if self.deps.exists(config_file_path):
@@ -141,20 +163,18 @@ class VenvConfig(object):
             config.add_section(_s)
         requirements = self._packages_section(config, name, _r)
 
-        venv = VEnv(name, self.deps.venv_deps(),
-                    local=is_local,
+        venv = VEnv(name, self.deps.venv_deps(), config_path,
                     requirements=requirements,
-                    prerequisites=self._packages_section(config, name, _p))
+                    prerequisites=self._packages_section(config, name, _p),
+                    location=venv_path)
 
         for p, s in self.deps.scripts(venv, packages):
-                echo("Registering %s from %s into %s" % (s, p, name))
-                config.set(_s, s, name)
+            self.deps.echo("Registering %s from %s into %s" % (s, p, name))
+            config.set(_s, s, name)
 
         if not config.has_section(name):
             config.add_section(name)
         config.set(name, _r, '\n'.join(sorted(requirements | set(packages))))
-        if per_user == is_local:
-            config.set(name, _l if per_user else _g, None)
 
         self.deps.write(config, config_file_path)
 
@@ -166,7 +186,7 @@ class VenvConfig(object):
             v = self._scripts[venv_or_script]
             venv = self._venvs[v]
         else:
-            echo("Unable to find venv or script %s" % venv_or_script)
+            self.deps.echo("Unable to find venv or script %s" % venv_or_script)
             return
 
         venv.create(clean=clean, update=update)

@@ -1,41 +1,42 @@
 # -*- coding: utf-8 -*-
 
 """Console script for script_venv."""
-
-from typing import Iterable  # noqa: F401
+from typing import Iterable, cast  # noqa: F401
 
 import click
 
-from .config import VenvConfig
+from script_venv.factory import ConfigDependenciesImpl
+from .config import VenvConfig, ConfigDependencies
 from .script_venv import ScriptVenvGroup
 
+_IGNORE_UNKNOWN = dict(ignore_unknown_options=True, )
 
-@click.command(name="sv", cls=ScriptVenvGroup)
+
+@click.command(name="sv", cls=ScriptVenvGroup, context_settings=_IGNORE_UNKNOWN)
 @click.version_option()
-def main() -> None:
+@click.option('--config-search-path', '-S', type=click.STRING,
+              help='Path to load .sv_cfg files from')
+@click.pass_context
+def main(ctx, config_search_path) -> None:
     """Console script for script_venv."""
-    pass
+    if not isinstance(ctx.obj, VenvConfig):
+        deps = cast(ConfigDependencies, ctx.obj) or ConfigDependenciesImpl()
+        ctx.obj = VenvConfig(deps=deps)
+    if config_search_path:
+        ctx.obj.search_path(config_search_path)
+    ctx.obj.load()
 
 
-@main.command(name=":register")
-@click.option('--per-user', '-u', is_flag=True, help='Register in "~/.sv_cfg"')
-@click.option('--is-local', '-l', is_flag=True, help='Register as local venv')
-@click.option('--is-global', '-g', is_flag=True, help='Register as global venv')
-@click.argument('venv', required=True)
-@click.argument('package', nargs=-1)
+@main.command(name=":list")
 @click.pass_obj
-def register_package(obj, venv: str,
-                     package: Iterable[str],
-                     per_user: bool,
-                     is_local: bool,
-                     is_global: bool) -> int:  # pragma: no cover
-    """Register packages and their scripts in venv"""
-    config = VenvConfig(deps=obj)
-    config.register(venv, package, per_user, is_local if per_user else not is_global)
-    return 0
+def list_venvs(obj) -> None:
+    """List known scripts and venvs"""
+    if not isinstance(obj, VenvConfig):  # pragma: no cover
+        raise TypeError("ctx.obj must be a VEnvConfig")
+    obj.list()
 
 
-@main.command(name=":create", context_settings=dict(ignore_unknown_options=True,))
+@main.command(name=":create", context_settings=_IGNORE_UNKNOWN)
 @click.option('--clean', '-C', is_flag=True, help='If the venv exists, clean it before applying requirements')
 @click.option('--update', '-U', is_flag=True, help='Update prerequisites, requirements, and pip')
 @click.argument('venv_or_script', required=True)
@@ -43,20 +44,26 @@ def register_package(obj, venv: str,
 @click.pass_obj
 def create_venv(obj, venv_or_script: str,
                 install_params: Iterable[str],
-                clean: bool, update: bool) -> None:  # pragma: no cover
+                clean: bool, update: bool) -> None:
     """Create or clean venv and apply requirements
     appending any install parameters provided"""
-    config = VenvConfig(deps=obj)
-    config.load(False)
-    config.load(True)
-    config.create(venv_or_script, *install_params, clean=clean, update=update)
+    if not isinstance(obj, VenvConfig):  # pragma: no cover
+        raise TypeError("ctx.obj must be a VEnvConfig")
+    obj.create(venv_or_script, *install_params, clean=clean, update=update)
 
 
-@main.command(name=":list")
+@main.command(name=":register", context_settings=_IGNORE_UNKNOWN)
+@click.option('--config-path', '-P', type=click.STRING)
+@click.option('--venv-path', '-V', type=click.STRING)
+@click.argument('venv', required=True)
+@click.argument('package', nargs=-1, required=True)
 @click.pass_obj
-def list_venvs(obj) -> None:
-    """List known scripts and venvs"""
-    config = VenvConfig(deps=obj)
-    config.load(False)
-    config.load(True)
-    config.list()
+def register_package(obj, venv: str,
+                     package: Iterable[str],
+                     config_path: str,
+                     venv_path: str) -> int:
+    """Register packages and their scripts in venv"""
+    if not isinstance(obj, VenvConfig):  # pragma: no cover
+        raise TypeError("ctx.obj must be a VEnvConfig")
+    obj.register(venv, package, config_path=config_path, venv_path=venv_path)
+    return 0
