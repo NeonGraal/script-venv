@@ -24,11 +24,9 @@ os.environ['CWD'] = _CWD
 
 def abs_path(raw_path: Path) -> Path:
     str_path = str(raw_path)
-    if '$' in str_path:
-        abs_path = Path(os.path.expandvars(str_path))
-    else:
-        abs_path = raw_path
-    return abs_path.expanduser().absolute()
+    usr_path = os.path.expandvars(str_path)
+    abs_path = os.path.expanduser(usr_path)
+    return Path(abs_path).absolute()
 
 
 class VEnvDependencies(object):  # pragma: no cover

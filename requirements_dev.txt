@@ -2,7 +2,7 @@ codecov==2.0.15
 coverage==4.5.1
 flake8==3.5.0
 mypy==0.570
-pathlib2 ; python_version < "3.6"
+pathlib2=2.3.0 ; python_version < "3.6"
 pip==10.0.0
 pytest==3.5.0
 pytest-runner==4.2
