@@ -118,14 +118,14 @@ class TestVenvConfigLocation(VenvConfigFixtures):
 
         config.load()
 
-        assert '~' in str(config.venvs['pip.test'])
+        assert path.join('~', '.sv') in str(config.venvs['pip.test'])
 
     def test_venv_local(self, config_deps: Mock, config: VenvConfig) -> None:
         config_read(config_deps, {self.CWD_sv_cfg: "[pip.test]\nlocation = ~\n"})
 
         config.load()
 
-        assert '~' in str(config.venvs['pip.test'])
+        assert path.join('~', '.sv') in str(config.venvs['pip.test'])
 
 
 class TestVenvConfigList(VenvConfigFixtures):

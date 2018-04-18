@@ -29,6 +29,12 @@ def abs_path(raw_path: Path) -> Path:
     return Path(abs_path).absolute()
 
 
+def venv_path(cfg_path: Path, location: str) -> Path:
+    if cfg_path.name == '.config':
+        cfg_path = Path(*cfg_path.parts[:-1])
+    return cfg_path / location if location else cfg_path
+
+
 class VEnvDependencies(object):  # pragma: no cover
     def echo(self, msg: str):
         raise NotImplementedError()
@@ -54,7 +60,7 @@ class VEnv(object):
         self.config_path = config_path
         self.requirements = set(requirements or [])
         self.prerequisites = set(prerequisites or [])
-        self.env_path = (Path(config_path, location) if location else Path(config_path)) / '.sv' / name
+        self.env_path = venv_path(Path(config_path), location) / '.sv' / name
         self.abs_path = abs_path(self.env_path)
 
     def __str__(self) -> str:
