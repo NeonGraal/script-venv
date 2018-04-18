@@ -3,7 +3,7 @@
 """ Test Config file processing """
 
 from os import path
-from pathlib import Path
+from pathlib2 import Path
 from unittest.mock import Mock, MagicMock
 
 import pytest

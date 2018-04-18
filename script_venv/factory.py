@@ -7,7 +7,7 @@ import click
 from click import echo
 from configparser import ConfigParser
 import os
-from pathlib import Path
+from pathlib2 import Path
 import subprocess
 from typing import Iterable, Tuple, Dict, Any, IO  # noqa: F401
 
