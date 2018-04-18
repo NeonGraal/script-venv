@@ -4,7 +4,7 @@
 
 import os
 import sys
-from pathlib import Path
+from pathlib2 import Path
 from typing import Iterable, Dict, Tuple  # noqa: F401
 
 _r = 'requirements'
@@ -24,12 +24,8 @@ os.environ['CWD'] = _CWD
 
 def abs_path(raw_path: Path) -> Path:
     str_path = str(raw_path)
-    if str_path.startswith('~'):
-        abs_path = os.path.expanduser(str_path)
-    elif str_path.startswith('$'):
-        abs_path = os.path.expandvars(str_path)
-    else:
-        abs_path = str_path
+    usr_path = os.path.expandvars(str_path)
+    abs_path = os.path.expanduser(usr_path)
     return Path(abs_path).absolute()
 
 
