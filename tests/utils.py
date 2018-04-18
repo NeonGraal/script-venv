@@ -6,7 +6,7 @@
 from click.testing import CliRunner, Result
 from configparser import ConfigParser
 from io import StringIO
-from pathlib import Path
+from pathlib2 import Path
 from typing import Dict, Callable
 from unittest.mock import Mock
 

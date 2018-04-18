@@ -4,7 +4,7 @@
 from configparser import ConfigParser
 
 from os import getcwd, path
-from pathlib import Path
+from pathlib2 import Path
 from types import MappingProxyType
 from typing import Mapping, Set, Dict, Iterable, Tuple, Any, IO, Union  # noqa: F401
 

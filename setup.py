@@ -11,11 +11,11 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['Click>=6.0', 'typing ; python_version < "3.5"']
+requirements = ['Click>=6.0', 'typing ; python_version < "3.5"', 'pathlib2', ]
 
 setup_requirements = ['pytest-runner', 'setuptools_scm', ]
 
-test_requirements = ['pytest', 'pytest-cov', 'pytest-flake8', 'pytest-mypy', 'mypy==0.560', ]
+test_requirements = ['pytest', 'pytest-cov', 'pytest-flake8', 'pytest-mypy', 'mypy', ]
 
 setup(
     author="Struan Lyall Judd",
