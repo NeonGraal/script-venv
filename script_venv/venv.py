@@ -4,7 +4,7 @@
 
 import os
 import sys
-from pathlib import Path
+from pathlib2 import Path
 from typing import Iterable, Dict, Tuple  # noqa: F401
 
 _r = 'requirements'
