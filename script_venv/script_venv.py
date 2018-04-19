@@ -34,6 +34,8 @@ class ScriptVenvCommand(Command):
         venv = ctx.obj.venvs[v]
         if venv.create():
             venv.install(*venv.requirements)
+        else:
+            ctx.obj.info("Using venv %s at %s" % (venv.name, venv.env_path))
 
         result = venv.run(cmd, *args)
         ctx.exit(result)

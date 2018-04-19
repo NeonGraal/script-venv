@@ -5,7 +5,7 @@
 import os
 import sys
 from pathlib2 import Path
-from typing import Iterable, Dict, Tuple  # noqa: F401
+from typing import Iterable, Dict  # noqa: F401
 
 _r = 'requirements'
 
@@ -25,8 +25,8 @@ os.environ['CWD'] = _CWD
 def abs_path(raw_path: Path) -> Path:
     str_path = str(raw_path)
     usr_path = os.path.expandvars(str_path)
-    abs_path = os.path.expanduser(usr_path)
-    return Path(abs_path).absolute()
+    abs_path = Path(usr_path).expanduser()
+    return abs_path.absolute()
 
 
 def venv_path(cfg_path: Path, location: str) -> Path:

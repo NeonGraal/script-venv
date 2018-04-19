@@ -5,7 +5,7 @@
 
 from os import getcwd, chdir, path
 from typing import Iterable
-from unittest.mock import Mock
+from unittest.mock import Mock, MagicMock, PropertyMock
 
 import pytest
 
@@ -18,7 +18,9 @@ from .utils import CliObjectRunner
 class CliFixtures(object):
     @pytest.fixture
     def mock_config(self) -> Mock:
-        return Mock(spec=VenvConfig)
+        mock = MagicMock(spec=VenvConfig)
+        type(mock).verbose = PropertyMock(spec=bool)
+        return mock
 
     @pytest.fixture
     def run_config(self, mock_config: Mock) -> Iterable[CliObjectRunner]:
@@ -72,7 +74,14 @@ class TestCliOptions(CliFixtures):
     def test_cli_search_path(self, mock_config: Mock, run_config: CliObjectRunner):
         run_config.invoke(cli.main, ['-S', 'Test', 'test'])
 
+        mock_config.set_verbose.assert_not_called()
         mock_config.search_path.assert_called_once_with('Test')
+        mock_config.load.assert_called_once_with()
+
+    def test_cli_verbose(self, mock_config: Mock, run_config: CliObjectRunner):
+        run_config.invoke(cli.main, ['-V', 'test'])
+
+        mock_config.set_verbose.assert_called_once_with()
         mock_config.load.assert_called_once_with()
 
     def test_cli_list(self, mock_config: Mock, run_config: CliObjectRunner):
