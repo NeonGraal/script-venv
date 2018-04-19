@@ -87,6 +87,28 @@ class TestVenvConfigSearch(VenvConfigFixtures):
         config_deps.exists.assert_any_call(Path('Path').absolute() / '.sv_cfg')
 
 
+class TestVenvConfigVerbose(VenvConfigFixtures):
+    def test_verbose_default(self, config: VenvConfig):
+        assert not config.verbose
+
+    def test_verbose_set(self, config: VenvConfig):
+        config.set_verbose()
+
+        assert config.verbose
+
+    def test_info_default(self, config_deps: Mock, config: VenvConfig):
+        config.info("Test")
+
+        config_deps.echo.assert_not_called()
+
+    def test_info_verbose(self, config_deps: Mock, config: VenvConfig):
+        config.set_verbose()
+
+        config.info("Test")
+
+        config_deps.echo.assert_called_once_with("Test")
+
+
 class TestVenvConfigDetails(VenvConfigFixtures):
     def test_venv_prerequisites(self, config_deps: Mock, config: VenvConfig) -> None:
         config_read(config_deps, {self.CWD_sv_cfg: "[sample]\nprerequisites = first\n\tsecond\n"})

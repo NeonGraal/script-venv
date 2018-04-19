@@ -58,6 +58,7 @@ class VenvConfig(object):
         self._venvs = {}  # type: Dict[str, VEnv]
         self._scripts_proxy = MappingProxyType(self._scripts)
         self._venvs_proxy = MappingProxyType(self._venvs)
+        self._verbose = False
 
     @staticmethod
     def _file_path(raw_path: Union[str, Path]) -> Tuple[str, Path]:
@@ -148,10 +149,22 @@ class VenvConfig(object):
     def venvs(self) -> Mapping[str, VEnv]:
         return self._venvs_proxy
 
+    @property
+    def verbose(self) -> bool:
+        return self._verbose
+
+    def set_verbose(self):
+        self._verbose = True
+
+    def info(self, msg):
+        if self._verbose:
+            self.deps.echo(msg)
+
     def register(self, name: str, packages: Iterable[str],
                  config_path: str = None, venv_path: str = None) -> None:
         if not config_path:
             config_path = self._search_path[-1]
+            self.info("Defaulting config_path to %s" % config_path)
         config_file, config_file_path = self._file_path(config_path)
 
         config = ConfigParser(allow_no_value=True)
@@ -189,6 +202,7 @@ class VenvConfig(object):
             self.deps.echo("Unable to find venv or script %s" % venv_or_script)
             return
 
-        venv.create(clean=clean, update=update)
+        if not venv.create(clean=clean, update=update):
+            self.info("Using venv %s at %s" % (venv.name, venv.env_path))
         install_params = (['-U'] if update else []) + list(sorted(venv.requirements)) + list(extra_params)
         venv.install(*install_params)

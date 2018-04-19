@@ -16,12 +16,15 @@ _IGNORE_UNKNOWN = dict(ignore_unknown_options=True, )
 @click.version_option()
 @click.option('--config-search-path', '-S', type=click.STRING,
               help='Path to load .sv_cfg files from')
+@click.option('--verbose', '-V', is_flag=True, help="Show messages")
 @click.pass_context
-def main(ctx, config_search_path) -> None:
+def main(ctx, config_search_path: str, verbose: bool) -> None:
     """Console script for script_venv."""
     if not isinstance(ctx.obj, VenvConfig):
         deps = cast(ConfigDependencies, ctx.obj) or ConfigDependenciesImpl()
         ctx.obj = VenvConfig(deps=deps)
+    if verbose:
+        ctx.obj.set_verbose()
     if config_search_path:
         ctx.obj.search_path(config_search_path)
     ctx.obj.load()
