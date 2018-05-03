@@ -67,7 +67,7 @@ class VenvConfig(object):
 
     @staticmethod
     def _packages_section(config: ConfigParser, venv: str, section: str) -> Set[str]:
-        value = config.get(venv, section, fallback=None) or ''
+        value = config.get(venv, section, fallback='') or ''
         return {r for r in value.splitlines() if r}
 
     def _config_paths(self):
@@ -99,7 +99,7 @@ class VenvConfig(object):
                 new_venv = VEnv(v, self.deps.venv_deps(), path,
                                 requirements=self._packages_section(config, v, _r),
                                 prerequisites=self._packages_section(config, v, _p),
-                                location=config.get(v, _l, fallback=None)
+                                location=config.get(v, _l, fallback='')
                                 )
                 self._venvs.setdefault(v, new_venv)
 

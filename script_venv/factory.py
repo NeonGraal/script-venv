@@ -9,7 +9,7 @@ from configparser import ConfigParser
 import os
 from pathlib2 import Path
 import subprocess
-from typing import Iterable, Tuple, Dict, Any, IO  # noqa: F401
+from typing import Iterable, Tuple, Dict, Any, IO, Mapping  # noqa: F401
 
 from .config import ConfigDependencies
 from .venv import VEnv, VEnvDependencies
@@ -65,8 +65,9 @@ class VEnvDependenciesImpl(VEnvDependencies):  # pragma: no cover
     def exists(self, path: Path) -> bool:
         return path.exists()
 
-    def runner(self, cmd: Iterable[str], env: Dict[str, str] = None) -> int:
+    def runner(self, cmd: Iterable[str], env: Mapping[str, str] = None) -> int:
         new_env = dict(os.environ)  # type: Dict[str, str]
-        new_env.update(env)
+        if env:
+            new_env.update(env)
 
         return subprocess.call(list(cmd), env=new_env)
