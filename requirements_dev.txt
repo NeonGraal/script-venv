@@ -1,13 +1,13 @@
 codecov==2.0.15
 coverage==4.5.1
 flake8==3.5.0
-mypy==0.590
+mypy==0.600
 pathlib2==2.3.2
 pip==10.0.1
 pytest==3.5.1
 pytest-runner==4.2
 pytest-cov==2.5.1
-pytest-flake8==1.0.0
+pytest-flake8==1.0.1
 pytest-mypy==0.3.1
 pytest-annotate==1.0.2
 setuptools==39.1.0

@@ -29,7 +29,7 @@ def abs_path(raw_path: Path) -> Path:
     return abs_path.absolute()
 
 
-def venv_path(cfg_path: Path, location: str) -> Path:
+def venv_path(cfg_path: Path, location: str = None) -> Path:
     if cfg_path.name == '.config':
         cfg_path = Path(*cfg_path.parts[:-1])
     return cfg_path / location if location else cfg_path

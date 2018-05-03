@@ -15,8 +15,11 @@ class ScriptVenvCommand(Command):
         if not isinstance(ctx.obj, VenvConfig):  # pragma: no cover
             raise TypeError("ctx.obj must be a VEnvConfig")
 
-        name = ctx.info_name.lower()
         cmd = ctx.info_name
+        if not cmd:  # pragma: no cover
+            raise TypeError("ctx.info_name must be given")
+
+        name = cmd.lower()
         args = ctx.args
 
         if name in ctx.obj.scripts:
