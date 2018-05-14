@@ -16,4 +16,4 @@ Sphinx==1.7.4
 tox==3.0.0
 typing==3.6.4 ; python_version < "3.5"
 watchdog==0.8.3
-wheel==0.31.0
+wheel==0.31.1
