@@ -5,6 +5,6 @@ rules:
         strict: true
         contexts:
           - continuous-integration/travis-ci
-          - continuous-integration/appveyor
-          - codecov
+          - continuous-integration/appveyor/pr
+          - codecov/project
           - pyup.io/safety-ci
