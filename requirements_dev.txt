@@ -7,7 +7,7 @@ pip==18.0
 pytest==3.6.3
 pytest-runner==4.2
 pytest-cov==2.5.1
-pytest-flake8==1.0.1
+pytest-flake8==1.0.2
 pytest-mypy==0.3.2
 pytest-annotate==1.0.2
 setuptools==40.0.0
