@@ -4,7 +4,7 @@ flake8==3.5.0
 mypy==0.620
 pathlib2==2.3.2
 pip==18.0
-pytest==3.7.4
+pytest==3.8.0
 pytest-runner==4.2
 pytest-cov==2.6.0
 pytest-flake8==1.0.2
