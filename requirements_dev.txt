@@ -10,7 +10,7 @@ pytest-cov==2.6.0
 pytest-flake8==1.0.2
 pytest-mypy==0.3.2
 pytest-annotate==1.0.2
-setuptools==40.2.0
+setuptools==40.3.0
 setuptools_scm==3.1.0
 Sphinx==1.8.0
 tox==3.2.1
