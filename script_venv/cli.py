@@ -30,7 +30,7 @@ def main(ctx, config_search_path: str, verbose: bool) -> None:
     ctx.obj.load()
 
 
-@main.command(name=":list")
+@main.command(name=":list")  # type: ignore
 @click.pass_obj
 def list_venvs(obj) -> None:
     """List known scripts and venvs"""
@@ -39,7 +39,7 @@ def list_venvs(obj) -> None:
     obj.list()
 
 
-@main.command(name=":create", context_settings=_IGNORE_UNKNOWN)
+@main.command(name=":create", context_settings=_IGNORE_UNKNOWN)  # type: ignore
 @click.option('--clean', '-C', is_flag=True, help='If the venv exists, clean it before applying requirements')
 @click.option('--update', '-U', is_flag=True, help='Update prerequisites, requirements, and pip')
 @click.argument('venv_or_script', required=True)
@@ -55,7 +55,7 @@ def create_venv(obj, venv_or_script: str,
     obj.create(venv_or_script, *install_params, clean=clean, update=update)
 
 
-@main.command(name=":register", context_settings=_IGNORE_UNKNOWN)
+@main.command(name=":register", context_settings=_IGNORE_UNKNOWN)  # type: ignore
 @click.option('--config-path', '-P', type=click.STRING)
 @click.option('--venv-path', '-V', type=click.STRING)
 @click.argument('venv', required=True)
