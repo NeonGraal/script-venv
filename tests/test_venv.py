@@ -99,7 +99,7 @@ class TestVEnvCreate(VEnvFixtures):
         assert return_code
         venv_deps.echo.assert_called_once_with(StringContaining("Updating"))
         venv_deps.creator.assert_called_once_with(ANY, clear=False)
-        venv_deps.runner.assert_called_once_with([ANY, '-m', 'pip', 'install', '-U', 'pip'], env=ANY)
+        venv_deps.runner.assert_called_once_with([ANY, '-m', 'pip', 'install', '-U', 'pip', 'wheel'], env=ANY)
 
     def test_venv_create_prerequisites(self, venv_deps: Mock, venv: VEnv) -> None:
         venv_exists(venv_deps)
