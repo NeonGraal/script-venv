@@ -30,8 +30,9 @@ class ConfigDependenciesImpl(ConfigDependencies):  # pragma: no cover
         return path.open()
 
     def scripts(self, venv: VEnv, packages: Iterable[str]) -> Iterable[Tuple[str, str]]:
-        if venv.create():
-            venv.install(*venv.requirements)
+        if venv.create(update=True):
+            if venv.requirements:
+                venv.install(*venv.requirements)
         venv.install(*packages)
 
         try:
@@ -43,7 +44,8 @@ class ConfigDependenciesImpl(ConfigDependencies):  # pragma: no cover
         if platform == 'win32':
             libpath = venv.abs_path / 'lib' / 'site-packages'
         else:
-            libpath = venv.abs_path / 'lib' / 'python%d.%d' % version_info[:2]
+            ver_path = 'python%d.%d' % version_info[:2]
+            libpath = venv.abs_path / 'lib' / ver_path
 
         pkg_env = pkg_resources.Environment(search_path=[str(libpath / 'site-packages')])
 

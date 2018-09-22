@@ -107,7 +107,7 @@ class VEnv(object):
         self.deps.echo("%s venv %s at %s" % (action, self.name, self.env_path))
 
         self.deps.creator(self.abs_path, clear=clean)
-        install_params = (['-U', 'pip'] if update else []) + list(sorted(self.prerequisites))
+        install_params = (['-U', 'pip', 'wheel'] if update else []) + list(sorted(self.prerequisites))
         if install_params:
             self.install(*install_params)
         return True
