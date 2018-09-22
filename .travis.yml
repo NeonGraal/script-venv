@@ -24,7 +24,7 @@ matrix:
     - python: 3.7
     - python: 3.8-dev
 
-after_success: coverage xml && codecov
+after_success: test $TOXENV = "py36" && coverage xml && codecov
 
 deploy:
   provider: pypi

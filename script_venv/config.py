@@ -52,7 +52,6 @@ class ConfigDependencies(object):  # pragma: no cover
 class VenvConfig(object):
     def __init__(self, deps: ConfigDependencies) -> None:
         self.deps = deps
-        self.configs = set()  # type: Set[str]
         self._search_path = [path.join('~', '.config'), "$PARENTS", "$CWD"]
         self._scripts = {}  # type: Dict[str, str]
         self._venvs = {}  # type: Dict[str, VEnv]
@@ -127,7 +126,7 @@ class VenvConfig(object):
             self._load_file(p)
 
     def list(self):
-        self.deps.echo("Configs: %s" % sorted(self.configs))
+        self.deps.echo("Config Paths: %s" % list(self._config_paths()))
         scripts = {}  # type: Dict[str,Set[str]]
         for s in self.scripts:
             scripts.setdefault(self.scripts[s], set()).add(s)
