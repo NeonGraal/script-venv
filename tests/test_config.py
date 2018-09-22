@@ -154,7 +154,7 @@ class TestVenvConfigList(VenvConfigFixtures):
     def test_list_empty(self, config_deps: Mock, config: VenvConfig) -> None:
         config.list()
 
-        config_deps.echo.assert_called_with("Configs: []")
+        config_deps.echo.assert_called_with(StringContaining("Config Paths: ["))
 
     def test_list_basic(self, config_deps: Mock, config: VenvConfig) -> None:
         config_read(config_deps, {self.CWD_sv_cfg: "[test]\n"})

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 """ Config file processing """
-import venv
 
 import click
 from click import echo
@@ -9,7 +8,9 @@ from configparser import ConfigParser
 import os
 from pathlib2 import Path
 import subprocess
+from sys import version_info, platform
 from typing import Iterable, Tuple, Dict, Any, IO, Mapping  # noqa: F401
+import venv
 
 from .config import ConfigDependencies
 from .venv import VEnv, VEnvDependencies
@@ -39,7 +40,12 @@ class ConfigDependenciesImpl(ConfigDependencies):  # pragma: no cover
             echo("Unable to import pkg_resources to register %s into %s" % (sorted(packages), venv))
             return []
 
-        pkg_env = pkg_resources.Environment(search_path=[str(venv.abs_path / 'lib' / 'site-packages')])
+        if platform == 'win32':
+            libpath = venv.abs_path / 'lib' / 'site-packages'
+        else:
+            libpath = venv.abs_path / 'lib' / 'python%d.%d' % version_info[:2]
+
+        pkg_env = pkg_resources.Environment(search_path=[str(libpath / 'site-packages')])
 
         def pkg_scripts(p: str) -> Iterable[str]:
             scripts = {}  # type: Dict
