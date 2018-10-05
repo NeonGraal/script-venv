@@ -21,10 +21,9 @@ matrix:
       dist: xenial
       sudo: required
   allow_failures:
-    - python: 3.7
     - python: 3.8-dev
 
-after_success: test $TOXENV = "py36" && coverage xml && codecov
+after_success: test $TOXENV = "py37" && coverage xml && codecov
 
 deploy:
   provider: pypi
@@ -35,4 +34,4 @@ deploy:
   on:
     tags: true
     repo: NeonGraal/script-venv
-    python: 3.6
+    python: 3.7
