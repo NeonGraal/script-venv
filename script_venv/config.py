@@ -24,6 +24,8 @@ requirements:
 """
 
 _s = "SCRIPTS"
+_SECTIONS = [_s]
+
 _p = "prerequisites"
 _r = "requirements"
 _l = "location"
@@ -83,6 +85,27 @@ class VenvConfig(object):
             else:
                 yield p
 
+    def _load_venvs(self, config, path):
+        for v in config:
+            if v.islower():
+                new_venv = VEnv(v, self.deps.venv_deps(), path,
+                                requirements=self._packages_section(config, v, _r),
+                                prerequisites=self._packages_section(config, v, _p),
+                                location=config.get(v, _l, fallback='')
+                                )
+                self._venvs.setdefault(v, new_venv)
+
+    def _load_scripts(self, config, path):
+        if not config.has_section(_s):
+            return
+
+        scripts = config[_s]
+        for s in scripts:
+            v = scripts[s] or s
+            self._scripts[s] = v
+            new_venv = VEnv(v, self.deps.venv_deps(), path)
+            self._venvs.setdefault(v, new_venv)
+
     def _load_file(self, path: str):
         config_file, config_file_path = self._file_path(Path(path))
 
@@ -93,24 +116,10 @@ class VenvConfig(object):
         with self.deps.read(config_file_path) as in_config:
             config.read_file(in_config)
 
-        for v in config:
-            if v.islower():
-                new_venv = VEnv(v, self.deps.venv_deps(), path,
-                                requirements=self._packages_section(config, v, _r),
-                                prerequisites=self._packages_section(config, v, _p),
-                                location=config.get(v, _l, fallback='')
-                                )
-                self._venvs.setdefault(v, new_venv)
+        self._load_venvs(config, path)
+        self._load_scripts(config, path)
 
-        if config.has_section(_s):
-            scripts = config[_s]
-            for s in scripts:
-                v = scripts[s] or s
-                self._scripts[s] = v
-                new_venv = VEnv(v, self.deps.venv_deps(), path)
-                self._venvs.setdefault(v, new_venv)
-
-        ignored = [s for s in config.sections() if not (s.islower() or s == _s)]
+        ignored = [s for s in config.sections() if not (s.islower() or s in _SECTIONS)]
 
         if ignored:
             self.deps.echo("Ignored the following sections of %s: %s" % (config_file, ', '.join(sorted(ignored))))
