@@ -333,3 +333,33 @@ class TestVenvConfigCreate(VenvConfigFixtures):
         config.create('test', update=True)
 
         venv_deps.echo.assert_called_with(StringContaining("Updating venv test"))
+
+
+class TestConfigDependencies(object):
+    @pytest.fixture
+    def config_deps(self) -> ConfigDependencies:
+        return ConfigDependencies()
+
+    def test_echo(self, config_deps):
+        with pytest.raises(NotImplementedError):
+            config_deps.echo("Msg")
+
+    def test_exists(self, config_deps):
+        with pytest.raises(NotImplementedError):
+            config_deps.exists(Path("."))
+
+    def test_read(self, config_deps):
+        with pytest.raises(NotImplementedError):
+            config_deps.read(Path("."))
+
+    def test_scripts(self, config_deps):
+        with pytest.raises(NotImplementedError):
+            config_deps.scripts(None, ["package"])
+
+    def test_write(self, config_deps):
+        with pytest.raises(NotImplementedError):
+            config_deps.write(None, Path("."))
+
+    def test_venv_deps(self, config_deps):
+        with pytest.raises(NotImplementedError):
+            config_deps.venv_deps()

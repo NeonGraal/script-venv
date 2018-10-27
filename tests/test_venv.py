@@ -3,6 +3,7 @@
 """ Venv tests """
 
 from os import path
+from pathlib import Path
 from random import randrange
 from typing import cast
 from unittest.mock import Mock, ANY, MagicMock
@@ -111,3 +112,25 @@ class TestVEnvCreate(VEnvFixtures):
         venv_deps.echo.assert_called_once_with(StringContaining("Creating"))
         venv_deps.creator.assert_called_once_with(ANY, clear=False)
         venv_deps.runner.assert_called_once_with([ANY, '-m', 'pip', 'install', 'alpha'], env=ANY)
+
+
+class TestVEnvDependencies(object):
+    @pytest.fixture
+    def venv_deps(self) -> VEnvDependencies:
+        return VEnvDependencies()
+
+    def test_echo(self, venv_deps):
+        with pytest.raises(NotImplementedError):
+            venv_deps.echo("Msg")
+
+    def test_exists(self, venv_deps):
+        with pytest.raises(NotImplementedError):
+            venv_deps.exists(Path("."))
+
+    def test_runner(self, venv_deps):
+        with pytest.raises(NotImplementedError):
+            venv_deps.runner(["Cmd"])
+
+    def test_creator(self, venv_deps):
+        with pytest.raises(NotImplementedError):
+            venv_deps.creator(Path("."))
