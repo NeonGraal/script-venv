@@ -35,7 +35,7 @@ def venv_path(cfg_path: Path, location: str = None) -> Path:
     return cfg_path / location if location else cfg_path
 
 
-class VEnvDependencies(object):  # pragma: no cover
+class VEnvDependencies(object):
     def echo(self, msg: str):
         raise NotImplementedError()
 

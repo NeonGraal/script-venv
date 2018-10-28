@@ -48,7 +48,7 @@ def list_venvs(obj) -> None:
 def create_venv(obj, venv_or_script: str,
                 install_params: Iterable[str],
                 clean: bool, update: bool) -> None:
-    """Create or clean venv and apply requirements
+    """Create, update or clean venv and apply requirements
     appending any install parameters provided"""
     if not isinstance(obj, VenvConfig):  # pragma: no cover
         raise TypeError("ctx.obj must be a VEnvConfig")

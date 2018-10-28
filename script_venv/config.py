@@ -31,7 +31,7 @@ _r = "requirements"
 _l = "location"
 
 
-class ConfigDependencies(object):  # pragma: no cover
+class ConfigDependencies(object):
     def echo(self, msg: str):
         raise NotImplementedError()
 
