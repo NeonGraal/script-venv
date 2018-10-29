@@ -15,7 +15,7 @@ radon==2.4.0
 setuptools==40.5.0
 setuptools_scm==3.1.0
 Sphinx==1.8.1
-tox==3.5.2
+tox==3.5.3
 typing==3.6.6; python_version < "3.5"
 watchdog==0.9.0
 wheel==0.32.2
