@@ -12,7 +12,7 @@ pytest-flake8==1.0.2
 pytest-mypy==0.3.2
 pytest-annotate==1.0.2
 radon==2.4.0
-setuptools==40.5.0
+setuptools==40.6.0
 setuptools_scm==3.1.0
 Sphinx==1.8.2
 tox==3.5.3
