@@ -4,7 +4,7 @@ coverage==4.5.2
 flake8==3.6.0
 mypy==0.660
 pathlib2==2.3.3
-pip==18.1
+pip==19.0
 pytest==4.1.1
 pytest-runner==4.2
 pytest-cov==2.6.1
