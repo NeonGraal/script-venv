@@ -12,3 +12,16 @@ pull_request_rules:
   - status-success=codecov/project
   - status-success=pyup.io/safety-ci
   name: default
+- actions:
+    merge:
+      method: merge
+      rebase_fallback: merge
+      strict: true
+  conditions:
+  - label!=no-mergify
+  - author=NeonGraal
+  - status-success=continuous-integration/travis-ci/pr
+  - status-success=continuous-integration/appveyor/pr
+  - status-success=codecov/project
+  - status-success=pyup.io/safety-ci
+  name: owner
