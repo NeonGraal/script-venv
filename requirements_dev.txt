@@ -6,7 +6,7 @@ mypy==0.670
 pathlib2==2.3.3
 pip==19.0.2
 pytest==4.2.1
-pytest-runner==4.2
+pytest-runner==4.4
 pytest-cov==2.6.1
 pytest-flake8==1.0.4
 pytest-mypy==0.3.2
