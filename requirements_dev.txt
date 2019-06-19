@@ -14,7 +14,7 @@ pytest-mypy==0.3.2
 radon==3.0.3
 setuptools==41.0.1
 setuptools_scm==3.3.3
-Sphinx==2.1.1; python_version >= "3.5"
+Sphinx==2.1.2; python_version >= "3.5"
 Sphinx==1.8.5; python_version < "3.5" # pyup: ignore
 tox==3.12.1
 typing==3.7.4; python_version < "3.5"
