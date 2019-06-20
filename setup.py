@@ -11,7 +11,7 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['Click>=6.0', 'typing ; python_version < "3.5"', 'pathlib2', ]
+requirements = ['Click>=6.0', 'pathlib2', ]
 
 setup_requirements = ['pytest-runner', 'setuptools_scm', ]
 
@@ -27,10 +27,10 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
     description="A python package for script (and command) virtualisation with less typing.",
     entry_points={
