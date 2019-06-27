@@ -9,7 +9,7 @@ pytest==4.6.3
 pytest-runner==5.1
 pytest-cov==2.7.1
 pytest-flake8==1.0.4
-pytest-mypy==0.3.2
+pytest-mypy==0.3.3
 # pytest-annotate==1.0.2
 radon==3.0.3
 setuptools==41.0.1
