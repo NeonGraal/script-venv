@@ -1,9 +1,11 @@
 pull_request_rules:
-- actions:
+- name: Default merge for PRs
+  actions:
     merge:
       method: merge
       rebase_fallback: merge
       strict: true
+    delete_head_branch: {}
   conditions:
   - label!=no-mergify
   - '#approved-reviews-by>=1'
@@ -11,17 +13,32 @@ pull_request_rules:
   - status-success=continuous-integration/appveyor/pr
   - status-success=codecov/project
   - status-success=pyup.io/safety-ci
-  name: default
-- actions:
+- name: Automatic Merge for my PRs
+  actions:
     merge:
       method: merge
       rebase_fallback: merge
       strict: true
+    delete_head_branch: {}
   conditions:
   - label!=no-mergify
-  - author=NeonGraal
+  - author=neongraal
   - status-success=continuous-integration/travis-ci/pr
   - status-success=continuous-integration/appveyor/pr
   - status-success=codecov/project
   - status-success=pyup.io/safety-ci
-  name: owner
+  
+- name: Automatic merge for PyUp PRs
+  conditions:
+  - label!=no-mergify
+  - author=pyup-bot
+  - status-success=continuous-integration/travis-ci/pr
+  - status-success=continuous-integration/appveyor/pr
+  - status-success=codecov/project
+  - status-success=pyup.io/safety-ci
+  actions:
+    merge:
+      method: merge
+      rebase_fallback: merge
+      strict: true
+    delete_head_branch: {}
