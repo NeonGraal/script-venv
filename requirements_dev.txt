@@ -12,7 +12,7 @@ pytest-flake8==1.0.4
 pytest-mypy==0.4.1
 # pytest-annotate==1.0.2
 radon==4.0.0
-setuptools==42.0.0
+setuptools==42.0.1
 setuptools_scm==3.3.3
 Sphinx==2.2.1; python_version >= "3.5"
 tox==3.14.0
