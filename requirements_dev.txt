@@ -2,17 +2,17 @@ Click==7.0
 codecov==2.0.15
 coverage==4.5.4
 flake8==3.7.9
-mypy==0.740
+mypy==0.750
 pathlib2==2.3.5
 pip==19.3.1
-pytest==5.2.2
+pytest==5.3.1
 pytest-runner==5.2
 pytest-cov==2.8.1
 pytest-flake8==1.0.4
 pytest-mypy==0.4.2
 # pytest-annotate==1.0.2
 radon==4.0.0
-setuptools==41.6.0
+setuptools==42.0.2
 setuptools_scm==3.3.3
 Sphinx==2.2.1; python_version >= "3.5"
 tox==3.14.0
