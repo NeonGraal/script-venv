@@ -1,6 +1,6 @@
 Click==7.0
 codecov==2.0.15
-coverage==4.5.4
+coverage==5.0
 flake8==3.7.9
 mypy==0.750
 pathlib2==2.3.5
