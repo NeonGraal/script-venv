@@ -16,5 +16,4 @@ setuptools==45.1.0
 setuptools_scm==3.4.3
 Sphinx==2.3.1; python_version >= "3.5"
 tox==3.14.3
-watchdog==0.9.0
 wheel==0.34.0
