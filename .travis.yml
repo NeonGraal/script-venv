@@ -1,10 +1,12 @@
 language: python
 
+os: windows
+
 install: pip install -U tox-travis codecov coverage
 
 script: tox
 
-matrix:
+jobs:
   include:
     - python: 3.5
       env: TOXENV=py35
@@ -13,15 +15,12 @@ matrix:
     - python: 3.7
       env: TOXENV=py37
       dist: xenial
-      sudo: required
     - python: 3.8
       env: TOXENV=py38
       dist: xenial
-      sudo: required
     - python: 3.9-dev
       env: TOXENV=py39
       dist: xenial
-      sudo: required
   allow_failures:
     - python: 3.9-dev
     - python: 3.8
@@ -31,7 +30,7 @@ after_success: test $TOXENV = "py37" && coverage xml && codecov
 deploy:
   provider: pypi
   distributions: sdist bdist_wheel
-  user: neongraal
+  username: neongraal
   password:
     secure: W2Pnmsp0QW6Z6YkAcloAILcCxtQjRCwLcN5XB5Uou9NsDrTaxkVitEE4vinlf2ACuJH0XvOCaLfyIGI3Vb7ZsxLP/MKg8gZUewjgNz09Y2Wvbx3FYvy/mJDof37Z+iruPfoJ4tceS/KVHRWWEfBuZCGgvONIIKUMRrcO+86DuquB8bsczJAPgGW/UPJ1aeyekAduyAYcRdVtgcRezT+DqlXWNiBHcdiLMvHs4oKU9GQIculfICXrrd3gkOLhnr9wwJSquNkKRZL3m3u006JWEilqXAEPOEOvzg3lRwQ9m005VfJXVpVPMTMVF0znnJmbzYdfGi2MfwpxJuf63U8MchTXjTHYMplEYBSLW4sm2sGoJfwCUwk805gtceT6yiW2Jw8R/bPnwvPV1x97KKUotXRVuZ9IF13QZXWtxbqa/RXdPq3p4dPZ0TtczqcfNEwdQvFOdsvW2byfGe/8+eUmp0JMlKMmSh9iFB4/Pxf54puVr/wyh8g5VNayIVX15rLnjNDTbseA6fx5IoBtgfrUxgubiH18rVHlrjJzgZmnvmQ1Mtbq80zkCmyRqDkOzzjcTWy5Sh/N2f9fg6dQ7RuVoXggNFDFBTfed0ukygVfmn9LbI/svi5zKPyxqNO05z7OvyRooAFWKqiSAjUNKPCwuTxW31MMooAF2fbgOxxMZwU=
   on:
