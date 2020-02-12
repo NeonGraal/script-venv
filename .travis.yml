@@ -1,6 +1,6 @@
 language: python
 
-os: windows
+os: linux
 
 install: pip install -U tox-travis codecov coverage
 
