@@ -27,7 +27,9 @@ Script Venv
         :target: https://pyup.io/repos/github/NeonGraal/script-venv/
         :alt: Requirements Updates
 
-
+.. image:: https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/NeonGraal/script-venv&style=flat
+   :target: https://mergify.io
+   :alt: Mergify Status
 
 A python package for script (and command) virtualisation with less typing.
 
