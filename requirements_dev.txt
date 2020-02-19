@@ -14,6 +14,6 @@ pytest-mypy==0.4.2
 radon==4.1.0
 setuptools==45.2.0
 setuptools_scm==3.5.0
-Sphinx==2.4.1; python_version >= "3.5"
+Sphinx==2.4.2; python_version >= "3.5"
 tox==3.14.5
 wheel==0.34.2
