@@ -23,7 +23,7 @@ pull_request_rules:
   conditions:
   - label!=no-mergify
   - author=neongraal
-  - status-success=Travis CI - Pull Request
+  - status-success=continuous-integration/travis-ci/pr
   - status-success=continuous-integration/appveyor/pr
   - status-success=codecov/project
   - status-success=pyup.io/safety-ci
