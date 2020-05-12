@@ -9,7 +9,7 @@ pull_request_rules:
   conditions:
   - label!=no-mergify
   - '#approved-reviews-by>=1'
-  - status-success=continuous-integration/travis-ci/pr
+  - status-success=Travis CI - Pull Request
   - status-success=continuous-integration/appveyor/pr
   - status-success=codecov/project
   - status-success=pyup.io/safety-ci
@@ -23,7 +23,7 @@ pull_request_rules:
   conditions:
   - label!=no-mergify
   - author=neongraal
-  - status-success=continuous-integration/travis-ci/pr
+  - status-success=Travis CI - Pull Request
   - status-success=continuous-integration/appveyor/pr
   - status-success=codecov/project
   - status-success=pyup.io/safety-ci
@@ -32,7 +32,7 @@ pull_request_rules:
   conditions:
   - label!=no-mergify
   - author=pyup-bot
-  - status-success=continuous-integration/travis-ci/pr
+  - status-success=Travis CI - Pull Request
   - status-success=continuous-integration/appveyor/pr
   - status-success=codecov/project
   - status-success=pyup.io/safety-ci
