@@ -1,5 +1,5 @@
 Click==7.1.2
-codecov==2.1.0
+codecov==2.1.1
 coverage==5.1
 flake8==3.7.9
 mypy==0.770
