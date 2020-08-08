@@ -43,3 +43,13 @@ To create, clean or update the packages in a venv::
         create options:
             --clean, -C     Clean the venv if it already exists
             --update, -U    Update any prerequisites, requirements and even pip if needed
+
+Create calls "python -m pip" internally. 
+"EXTRA_ARGS" are appended to the end of the pip command line. 
+Also pip still honors environmental variable settings, and pip configuration files (ref. `PIP: config files <https://pip.pypa.io/en/stable/user_guide/#config-file>`_).
+
+    e.g.
+      sv :create test --index-url https://my-pypi.test/pypi/+simple/
+    or
+      PIP_INDEX_URL=https://my-pypi.test/pypi/+simple/ sv :create test
+      
