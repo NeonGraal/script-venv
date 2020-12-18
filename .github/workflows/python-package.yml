@@ -39,5 +39,5 @@ jobs:
       env:
         PY_VER:  ${{ matrix.python-version }}
       run: |
-        py.test
+        python setup.py test
         test $PY_VER = "3.8" && coverage xml && codecov
