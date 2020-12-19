@@ -5,7 +5,7 @@ flake8==3.8.4
 mypy==0.790
 pathlib2==2.3.5
 pip==20.3.3
-pytest==6.1.2
+pytest==6.2.1
 pytest-runner==5.2
 pytest-cov==2.10.1
 pytest-flake8==1.0.7
@@ -13,7 +13,7 @@ pytest-mypy==0.8.0
 # pytest-annotate==1.0.2
 radon==4.2.0
 setuptools==51.0.0
-setuptools_scm==4.1.2
+setuptools_scm==5.0.1
 Sphinx==3.3.1
 tox==3.20.1
 wheel==0.36.2
