@@ -9,10 +9,12 @@ pull_request_rules:
   conditions:
   - label!=no-mergify
   - '#approved-reviews-by>=1'
-  - status-success=Travis CI - Pull Request
-  - status-success=continuous-integration/appveyor/pr
+  - status-success=Python package / build (ubuntu-latest, 3.8) (pull_request)
+  - status-success=Python package / build (windows-latest, 3.8) (pull_request)
+  - status-success=Python package / build (macos-latest, 3.8) (pull_request)
   - status-success=codecov/project
   - status-success=pyup.io/safety-ci
+
 - name: Automatic Merge for my PRs
   actions:
     merge:
@@ -23,17 +25,19 @@ pull_request_rules:
   conditions:
   - label!=no-mergify
   - author=neongraal
-  - status-success=Travis CI - Pull Request
-  - status-success=continuous-integration/appveyor/pr
+  - status-success=Python package / build (ubuntu-latest, 3.8) (pull_request)
+  - status-success=Python package / build (windows-latest, 3.8) (pull_request)
+  - status-success=Python package / build (macos-latest, 3.8) (pull_request)
   - status-success=codecov/project
   - status-success=pyup.io/safety-ci
-  
+
 - name: Automatic merge for PyUp PRs
   conditions:
   - label!=no-mergify
   - author=pyup-bot
-  - status-success=Travis CI - Pull Request
-  - status-success=continuous-integration/appveyor/pr
+  - status-success=Python package / build (ubuntu-latest, 3.8) (pull_request)
+  - status-success=Python package / build (windows-latest, 3.8) (pull_request)
+  - status-success=Python package / build (macos-latest, 3.8) (pull_request)
   - status-success=codecov/project
   - status-success=pyup.io/safety-ci
   actions:
