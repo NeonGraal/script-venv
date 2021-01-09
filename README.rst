@@ -10,14 +10,8 @@ Script Venv
         :target: https://script-venv.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-
-.. image:: https://img.shields.io/travis/NeonGraal/script-venv.svg?label=travis&logo=travis
-        :target: https://travis-ci.org/NeonGraal/script-venv
-        :alt: Travis CI (for Linux)
-
-.. image:: https://img.shields.io/appveyor/ci/NeonGraal/script-venv.svg?label=appveyor&logo=appveyor
-        :target: https://ci.appveyor.com/project/NeonGraal/script-venv
-        :alt: Appveyor CI (for Windows)
+.. image:: https://github.com/NeonGraal/script-venv/workflows/Python%20package/badge.svg
+        :alt: Github Actions
 
 .. image:: https://img.shields.io/codecov/c/github/NeonGraal/script-venv.svg
         :target: https://codecov.io/gh/NeonGraal/script-venv
@@ -76,3 +70,7 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+
+Python dependencies scanned by PyUp.io_
+
+.. _PyUp.io: https://pyup.io/
