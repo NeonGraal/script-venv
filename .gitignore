@@ -105,3 +105,4 @@ type_info.json
 
 shelf/
 tests/.sv/
+.history/
