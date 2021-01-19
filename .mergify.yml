@@ -9,9 +9,9 @@ pull_request_rules:
   conditions:
   - label!=no-mergify
   - '#approved-reviews-by>=1'
-  - status-success=Python package / build (ubuntu-latest, 3.8) (pull_request)
-  - status-success=Python package / build (windows-latest, 3.8) (pull_request)
-  - status-success=Python package / build (macos-latest, 3.8) (pull_request)
+  - status-success=build (ubuntu-latest, 3.8) (pull_request)
+  - status-success=build (windows-latest, 3.8) (pull_request)
+  - status-success=build (macos-latest, 3.8) (pull_request)
   - status-success=codecov/project
   - status-success=pyup.io/safety-ci
 
@@ -25,9 +25,9 @@ pull_request_rules:
   conditions:
   - label!=no-mergify
   - author=neongraal
-  - status-success=Python package / build (ubuntu-latest, 3.8) (pull_request)
-  - status-success=Python package / build (windows-latest, 3.8) (pull_request)
-  - status-success=Python package / build (macos-latest, 3.8) (pull_request)
+  - status-success=build (ubuntu-latest, 3.8) (pull_request)
+  - status-success=build (windows-latest, 3.8) (pull_request)
+  - status-success=build (macos-latest, 3.8) (pull_request)
   - status-success=codecov/project
   - status-success=pyup.io/safety-ci
 
@@ -35,9 +35,9 @@ pull_request_rules:
   conditions:
   - label!=no-mergify
   - author=pyup-bot
-  - status-success=Python package / build (ubuntu-latest, 3.8) (pull_request)
-  - status-success=Python package / build (windows-latest, 3.8) (pull_request)
-  - status-success=Python package / build (macos-latest, 3.8) (pull_request)
+  - status-success=build (ubuntu-latest, 3.8) (pull_request)
+  - status-success=build (windows-latest, 3.8) (pull_request)
+  - status-success=build (macos-latest, 3.8) (pull_request)
   - status-success=codecov/project
   - status-success=pyup.io/safety-ci
   actions:
