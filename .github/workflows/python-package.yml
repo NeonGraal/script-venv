@@ -16,7 +16,7 @@ jobs:
     defaults:
       run:
         shell: pwsh
-        
+
     strategy:
       matrix:
         include:
@@ -37,20 +37,24 @@ jobs:
       env:
         PY_EXE: ${{ matrix.pyexe}}
       run: |
-        $env:PY_EXE -m pip install --upgrade pip setuptools
-        $env:PY_EXE -m pip install -r requirements_dev.txt
+        & $env:PY_EXE -m pip install --upgrade pip setuptools
+        & $env:PY_EXE -m pip install -r requirements_dev.txt
     - name: Lint with flake8
       env:
         PY_EXE: ${{ matrix.pyexe}}
       run: |
         # stop the build if there are Python syntax errors or undefined names
-        $env:PY_EXE -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        & $env:PY_EXE -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        $env:PY_EXE -m flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        &  $env:PY_EXE -m flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with tox
       env:
         PY_EXE: ${{ matrix.pyexe}}
       run: |
-        $env:PY_EXE -m tox 
-        $env:PY_EXE -m coverage xml
-        $env:PY_EXE -m codecov
+        & $env:PY_EXE -m tox
+        if ($?) {
+          & $env:PY_EXE -m coverage xml
+          if ($?)  {
+            & $env:PY_EXE -m codecov
+          }
+        }
