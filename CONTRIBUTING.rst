@@ -15,7 +15,7 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at https://github.com/neongraal/script_venv/issues.
+Report bugs at https://github.com/neongraal/script-venv/issues.
 
 If you are reporting a bug, please include:
 

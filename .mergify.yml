@@ -24,7 +24,7 @@ pull_request_rules:
     delete_head_branch: {}
   conditions:
   - label!=no-mergify
-  - author=neongraal
+  - author=NeonGraal
   - status-success=build (ubuntu-latest, 3.8)
   - status-success=build (windows-latest, 3.8)
   - status-success=build (macos-latest, 3.8)
