@@ -1,4 +1,4 @@
-Click==7.1.2
+Click==8.0.0
 codecov==2.1.11
 coverage==5.5
 flake8==3.9.2
