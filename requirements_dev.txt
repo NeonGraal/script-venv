@@ -3,7 +3,7 @@ codecov==2.1.11
 coverage==6.0b1
 flake8==3.9.2
 flake8-polyfill==1.0.2
-mypy==0.812
+mypy==0.910
 pathlib2==2.3.6
 pip==21.2
 pytest==6.2.4
@@ -17,4 +17,5 @@ setuptools==57.4.0
 setuptools_scm==6.0.1
 Sphinx==4.1.1
 tox==3.24.0
+types-setuptools==57.0.0
 wheel==0.36.2
