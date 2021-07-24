@@ -4,17 +4,17 @@ coverage==5.5
 flake8==3.9.2
 flake8-polyfill==1.0.2
 mypy==0.812
-pathlib2==2.3.5
-pip==21.1.1
+pathlib2==2.3.6
+pip==21.1.3
 pytest==6.2.4
 pytest-runner==5.3.1
-pytest-cov==2.12.0
+pytest-cov==2.12.1
 pytest-flake8==1.0.7
 pytest-mypy==0.8.1
 # pytest-annotate==1.0.2
-radon==4.5.1
-setuptools==56.2.0
+radon==5.0.1
+setuptools==57.4.0
 setuptools_scm==6.0.1
-Sphinx==4.0.1
-tox==3.23.1
+Sphinx==4.1.1
+tox==3.24.0
 wheel==0.36.2
