@@ -17,5 +17,5 @@ setuptools==58.0.4
 setuptools_scm==6.3.2
 Sphinx==4.2.0
 tox==3.24.4
-types-setuptools==57.0.2
+types-setuptools==57.4.0
 wheel==0.37.0
