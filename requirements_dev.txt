@@ -4,7 +4,7 @@ coverage==6.3
 flake8==4.0.1
 flake8-polyfill==1.0.2
 mypy==0.931
-pathlib2==2.3.6
+pathlib2==2.3.7.post0
 pip==22.0.3
 pytest==7.0.0
 # pytest-runner==5.3.1
