@@ -9,7 +9,7 @@ pip==22.0.3
 pytest==7.0.0
 # pytest-runner==5.3.1
 pytest-cov==3.0.0
-pytest-flake8==1.0.7
+pytest-flake8==1.1.0
 pytest-mypy==0.9.1
 # pytest-annotate==1.0.2
 radon==5.1.0
