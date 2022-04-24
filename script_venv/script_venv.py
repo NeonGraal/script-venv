@@ -2,7 +2,7 @@
 
 """Main module."""
 
-from typing import Any, List
+from typing import Any, List, Optional
 
 from click import Context, Command, Group, echo
 
@@ -45,7 +45,7 @@ class ScriptVenvCommand(Command):
 
 
 class ScriptVenvGroup(Group):
-    def make_context(self, info_name: str, args: List[str],
+    def make_context(self, info_name: Optional[str], args: List[str],
                      parent: Context = None, deps: ConfigDependencies = None,
                      **extra: Any) -> Context:
         ctx = super(ScriptVenvGroup, self).make_context(info_name, args, parent=parent, **extra)
