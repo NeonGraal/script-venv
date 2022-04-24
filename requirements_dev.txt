@@ -1,4 +1,4 @@
-Click==7.1.2
+Click==8.1.2
 codecov==2.1.12
 coverage==6.3.2
 flake8==4.0.1
@@ -13,7 +13,7 @@ pytest-flake8==1.1.0
 pytest-mypy==0.9.1
 # pytest-annotate==1.0.2
 radon==5.1.0
-setuptools==61.1.1
+setuptools==61.2.0
 setuptools_scm==6.4.2
 Sphinx==4.5.0
 tox==3.24.5
