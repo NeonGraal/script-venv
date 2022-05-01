@@ -3,19 +3,19 @@ codecov==2.1.12
 coverage==6.3.2
 flake8==4.0.1
 flake8-polyfill==1.0.2
-mypy==0.942
+mypy==0.950
 pathlib2==2.3.7.post1
 pip==22.0.4
-pytest==7.1.1
+pytest==7.1.2
 # pytest-runner==5.3.1
 pytest-cov==3.0.0
 pytest-flake8==1.1.0
 pytest-mypy==0.9.1
 # pytest-annotate==1.0.2
 radon==5.1.0
-setuptools==61.2.0
+setuptools==62.1.0
 setuptools_scm==6.4.2
 Sphinx==4.5.0
 tox==3.24.5
-types-setuptools==57.4.11
+types-setuptools==57.4.14
 wheel==0.37.1
