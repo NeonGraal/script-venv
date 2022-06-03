@@ -15,7 +15,7 @@ pytest-mypy==0.9.1
 radon==5.1.0
 setuptools==62.3.1
 setuptools_scm==6.4.2
-Sphinx==4.3.2
+Sphinx==5.0.1
 tox==3.24.5
 types-setuptools==57.4.17
 wheel==0.37.1
