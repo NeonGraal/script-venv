@@ -8,9 +8,9 @@ pull_request_rules:
   conditions:
   - label!=no-mergify
   - '#approved-reviews-by>=1'
-  - status-success=build (ubuntu-latest, 3.8)
-  - status-success=build (windows-latest, 3.8)
-  - status-success=build (macos-latest, 3.8)
+  - status-success=build (ubuntu-latest, 3.10)
+  - status-success=build (windows-latest, 3.10)
+  - status-success=build (macos-latest, 3.10)
   - status-success=codecov/project
   - status-success=pyup.io/safety-ci
 
@@ -23,9 +23,9 @@ pull_request_rules:
   conditions:
   - label!=no-mergify
   - author=NeonGraal
-  - status-success=build (ubuntu-latest, 3.8)
-  - status-success=build (windows-latest, 3.8)
-  - status-success=build (macos-latest, 3.8)
+  - status-success=build (ubuntu-latest, 3.10)
+  - status-success=build (windows-latest, 3.10)
+  - status-success=build (macos-latest, 3.10)
   - status-success=codecov/project
   - status-success=pyup.io/safety-ci
 
@@ -33,9 +33,9 @@ pull_request_rules:
   conditions:
   - label!=no-mergify
   - author=pyup-bot
-  - status-success=build (ubuntu-latest, 3.8)
-  - status-success=build (windows-latest, 3.8)
-  - status-success=build (macos-latest, 3.8)
+  - status-success=build (ubuntu-latest, 3.10)
+  - status-success=build (windows-latest, 3.10)
+  - status-success=build (macos-latest, 3.10)
   - status-success=codecov/project
   - status-success=pyup.io/safety-ci
   actions:
