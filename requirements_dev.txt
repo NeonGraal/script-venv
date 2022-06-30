@@ -14,7 +14,7 @@ pytest-mypy==0.9.1
 # pytest-annotate==1.0.2
 radon==5.1.0
 setuptools==62.6.0
-setuptools_scm==7.0.2
+setuptools_scm==7.0.3
 Sphinx==5.0.2
 tox==3.24.5
 types-setuptools==57.4.17
