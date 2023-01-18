@@ -16,6 +16,6 @@ radon==5.1.0
 setuptools==66.0.0
 setuptools_scm==7.1.0
 Sphinx==6.1.2
-tox==4.3.3
+tox==4.3.5
 types-setuptools==65.7.0.2
 wheel==0.38.4
