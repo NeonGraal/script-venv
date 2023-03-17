@@ -73,7 +73,7 @@ class VEnvDependenciesImpl(VEnvDependencies):  # pragma: no cover
     def exists(self, path: Path) -> bool:
         return path.exists()
 
-    def runner(self, cmd: Iterable[str], env: Mapping[str, str] = None) -> int:
+    def runner(self, cmd: Iterable[str], env: Mapping[str, str] | None = None) -> int:
         new_env = dict(os.environ)  # type: Dict[str, str]
         if env:
             new_env.update(env)

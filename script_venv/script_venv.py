@@ -46,7 +46,7 @@ class ScriptVenvCommand(Command):
 
 class ScriptVenvGroup(Group):
     def make_context(self, info_name: Optional[str], args: List[str],
-                     parent: Context = None, deps: ConfigDependencies = None,
+                     parent: Context | None = None, deps: ConfigDependencies | None = None,
                      **extra: Any) -> Context:
         ctx = super(ScriptVenvGroup, self).make_context(info_name, args, parent=parent, **extra)
         ctx.obj = ctx.obj or deps or ConfigDependenciesImpl()

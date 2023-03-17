@@ -124,7 +124,7 @@ class VenvConfig(object):
         if ignored:
             self.deps.echo("Ignored the following sections of %s: %s" % (config_file, ', '.join(sorted(ignored))))
 
-    def search_path(self, full_path):
+    def search_path(self, full_path : str | list[str]) -> None:
         if isinstance(full_path, str):
             self._search_path = full_path.split(path.pathsep)
         elif full_path:
@@ -134,7 +134,7 @@ class VenvConfig(object):
         for p in self._config_paths():
             self._load_file(p)
 
-    def list(self):
+    def list(self) -> None:
         self.deps.echo("Config Paths: %s" % list(self._config_paths()))
         scripts = {}  # type: Dict[str,Set[str]]
         for s in self.scripts:
@@ -169,7 +169,7 @@ class VenvConfig(object):
             self.deps.echo(msg)
 
     def register(self, name: str, packages: Iterable[str],
-                 config_path: str = None, venv_path: str = None) -> None:
+                 config_path: str | None = None, venv_path: str | None = None) -> None:
         if not config_path:
             config_path = self._search_path[-1]
             self.info("Defaulting config_path to %s" % config_path)
