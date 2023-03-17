@@ -29,7 +29,7 @@ def abs_path(raw_path: Path) -> Path:
     return abs_path.absolute()
 
 
-def venv_path(cfg_path: Path, location: str = None) -> Path:
+def venv_path(cfg_path: Path, location: str | None = None) -> Path:
     if cfg_path.name == '.config':
         cfg_path = Path(*cfg_path.parts[:-1])
     return cfg_path / location if location else cfg_path
@@ -42,7 +42,7 @@ class VEnvDependencies(object):
     def exists(self, path: Path) -> bool:
         raise NotImplementedError()
 
-    def runner(self, cmd: Iterable[str], env: Dict[str, str] = None) -> int:
+    def runner(self, cmd: Iterable[str], env: Dict[str, str] | None = None) -> int:
         raise NotImplementedError()
 
     def creator(self, path: Path, clear: bool = False) -> None:
@@ -52,9 +52,9 @@ class VEnvDependencies(object):
 class VEnv(object):
     def __init__(self, name: str, deps: VEnvDependencies,
                  config_path: str,
-                 requirements: Iterable[str] = None,
-                 prerequisites: Iterable[str] = None,
-                 location: str = None) -> None:
+                 requirements: Iterable[str] | None = None,
+                 prerequisites: Iterable[str] | None = None,
+                 location: str | None = None) -> None:
         self.name = name
         self.deps = deps
         self.config_path = config_path
