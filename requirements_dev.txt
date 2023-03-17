@@ -9,7 +9,7 @@ pip==23.0.1
 pytest==7.2.2
 # pytest-runner==5.3.1
 pytest-cov==4.0.0
-pytest-mypy==0.9.1
+pytest-mypy==0.10.3
 # pytest-annotate==1.0.2
 radon==5.1.0
 setuptools==67.6.0
