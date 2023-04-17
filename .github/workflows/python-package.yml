@@ -44,5 +44,6 @@ jobs:
         python setup.py test
         if ( $? -AND $env:PY_VER -EQ "3.10" ) {
           coverage xml
-          if ( $? ) { codecov }
         }
+    - name: Upload coverage to Codecov
+          uses: codecov/codecov-action@v3
