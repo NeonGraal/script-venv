@@ -1,6 +1,6 @@
 Click==8.1.6
 coverage==7.2.7
-flake8==6.0.0
+flake8==6.1.0
 flake8-polyfill==1.0.2
 mypy==1.4.1
 pathlib2==2.3.7.post1
