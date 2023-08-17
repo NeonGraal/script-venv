@@ -1,4 +1,4 @@
-Click==8.1.6
+Click==8.1.7
 coverage==7.3.0
 flake8==6.1.0
 flake8-polyfill==1.0.2
