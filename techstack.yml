@@ -1,11 +1,11 @@
 repo_name: NeonGraal/script-venv
-report_id: cf04d9df50490885ed0094f61fad5747
+report_id: c94eff80f7dc827391e13180a231fde5
 repo_type: Public
-timestamp: '2023-11-09T18:39:41+00:00'
+timestamp: '2023-12-14T09:54:25+00:00'
 requested_by: mergify[bot]
 provider: github
 branch: master
-detected_tools_count: 18
+detected_tools_count: 23
 tools:
 - name: Python
   description: A clear and powerful object-oriented programming language, comparable
@@ -29,6 +29,17 @@ tools:
   detection_source: ".devcontainer/Dockerfile"
   last_updated_by: Struan Judd
   last_updated_on: 2020-12-18 21:59:31.000000000 Z
+- name: pgvector
+  description: Open-source vector similarity search for Postgres
+  website_url: https://github.com/pgvector/pgvector/
+  open_source: false
+  hosted_saas: false
+  category: Data Stores
+  sub_category: Database Tools
+  image_url: https://img.stackshare.io/service/109221/default_b888cdf5617d936aa6aacf130911906955508639.png
+  detection_source: requirements_dev.txt
+  last_updated_by: Struan Judd
+  last_updated_on: 2018-11-15 09:49:58.000000000 Z
 - name: Docker
   description: Enterprise Container Platform for High-Velocity Innovation.
   website_url: https://www.docker.com/
@@ -56,7 +67,7 @@ tools:
   category: Build, Test, Deploy
   sub_category: Continuous Integration
   image_url: https://img.stackshare.io/service/11563/actions.png
-  detection_source: ".github/workflows/python-publish.yml"
+  detection_source: ".github/workflows/codeql-analysis.yml"
   last_updated_by: Struan Judd
   last_updated_on: 2022-05-01 03:29:28.000000000 Z
 - name: PyPI
@@ -102,10 +113,21 @@ tools:
   category: Build, Test, Deploy
   sub_category: Testing Frameworks
   image_url: https://img.stackshare.io/service/4586/Lu99Qe0Z_400x400.png
-  detection_source_url: requirements_dev.txt
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
   last_updated_on: 2023-10-25 12:26:05.000000000 Z
+- name: LangChain
+  description: Build AI apps with LLMs through composability
+  website_url: https://github.com/hwchase17/langchain
+  open_source: true
+  hosted_saas: false
+  category: Communications
+  sub_category: Large Language Model Tools
+  image_url: https://img.stackshare.io/service/48790/default_5b6c6b73f1ff3775c85d2a1ba954cb87e30cbf13.jpg
+  detection_source: requirements_dev.txt
+  last_updated_by: Struan Judd
+  last_updated_on: 2018-11-15 09:49:58.000000000 Z
 - name: Sphinx
   description: Open source full text search server, designed from the ground up with
     performance, relevance (aka search quality), and integration simplicity in mind
@@ -127,7 +149,7 @@ tools:
   image_url: https://img.stackshare.io/service/7350/eaca159133a3901e24ddb407d1235c25_normal.png
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
-  last_updated_on: 2023-10-18 08:51:33.000000000 Z
+  last_updated_on: 2023-11-23 21:32:01.000000000 Z
 - name: setuptools
   website_url: https://github.com/pypa/setuptools
   open_source: false
@@ -135,7 +157,7 @@ tools:
   image_url: https://img.stackshare.io/service/10517/647025.png
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
-  last_updated_on: 2023-10-03 09:47:29.000000000 Z
+  last_updated_on: 2023-11-29 03:47:38.000000000 Z
 - name: tox
   description: We host the world's documentation. Maintained by @ericholscher &amp;
     @agjhnsn. Not a support channel, please use GitHub.
@@ -146,9 +168,21 @@ tools:
   detection_source: requirements_dev.txt
   last_updated_by: Struan Judd
   last_updated_on: 2018-11-15 09:49:58.000000000 Z
+- name: click
+  description: Composable command line interface toolkit
+  package_url: https://pypi.org/project/click
+  license: BSD-3-Clause
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19830/default_74a61b43bdb9fc0cba2978316b9976f43545029b.png
+  detection_source: requirements_dev.txt
+  last_updated_by: pyup-bot
+  last_updated_on: 2023-07-19 01:35:23.000000000 Z
 - name: coverage
   description: Code coverage measurement for Python
-  package_url: https://pypi.org/coverage
+  package_url: https://pypi.org/project/coverage
   version: 7.3.2
   license: Apache-2.0
   open_source: true
@@ -156,13 +190,27 @@ tools:
   category: Libraries
   sub_category: PyPI Packages
   image_url: https://img.stackshare.io/package/19904/default_1d0eb6da6bdd342bb15f73d8f1721516ebacd1dc.png
-  detection_source_url: requirements_dev.txt
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
   last_updated_on: 2023-10-03 09:47:25.000000000 Z
+- name: flake8-polyfill
+  description: Polyfill package for Flake8 plugins
+  package_url: https://pypi.org/project/flake8-polyfill
+  version: 1.0.2
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/pypi/image.png
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
+  detection_source: requirements_dev.txt
+  last_updated_by: pyup-bot
+  last_updated_on: 2023-07-30 13:00:04.000000000 Z
 - name: pathlib2
   description: Object-oriented filesystem paths
-  package_url: https://pypi.org/pathlib2
+  package_url: https://pypi.org/project/pathlib2
   license: MIT
   open_source: true
   hosted_saas: false
@@ -174,7 +222,7 @@ tools:
   last_updated_on: 2022-02-10 19:12:45.000000000 Z
 - name: pytest-cov
   description: Pytest plugin for measuring coverage
-  package_url: https://pypi.org/pytest-cov
+  package_url: https://pypi.org/project/pytest-cov
   version: 4.0.0
   license: MIT
   open_source: true
@@ -182,13 +230,27 @@ tools:
   category: Libraries
   sub_category: PyPI Packages
   image_url: https://img.stackshare.io/package/19958/default_e91a78767854f0fa80aab2f13d1a25b15ca2d278.png
-  detection_source_url: requirements_dev.txt
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
   last_updated_on: 2023-10-25 12:26:05.000000000 Z
+- name: radon
+  description: Code Metrics in Python
+  package_url: https://pypi.org/project/radon
+  version: 6.0.1
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/pypi/image.png
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
+  detection_source: requirements_dev.txt
+  last_updated_by: pyup-bot
+  last_updated_on: 2023-03-26 08:24:53.000000000 Z
 - name: setuptools_scm
   description: The blessed package to manage your versions by scm tags
-  package_url: https://pypi.org/setuptools_scm
+  package_url: https://pypi.org/project/setuptools_scm
   version: 8.0.4
   license: MIT
   open_source: true
@@ -196,21 +258,21 @@ tools:
   category: Libraries
   sub_category: PyPI Packages
   image_url: https://img.stackshare.io/package/20619/default_63066aa0234404e124cf566de6710b3ef8042728.png
-  detection_source_url: requirements_dev.txt
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
-  last_updated_on: 2023-10-03 09:47:29.000000000 Z
+  last_updated_on: 2023-11-29 03:47:38.000000000 Z
 - name: wheel
   description: A built-package format for Python
-  package_url: https://pypi.org/wheel
-  version: 0.41.2
+  package_url: https://pypi.org/project/wheel
+  version: 0.42.0
   license: MIT
   open_source: true
   hosted_saas: false
   category: Libraries
   sub_category: PyPI Packages
   image_url: https://img.stackshare.io/package/19889/default_7182952cb92ae36151a754e2592ac68e6e6340df.png
-  detection_source_url: requirements_dev.txt
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
-  last_updated_on: 2023-08-22 18:40:05.000000000 Z
+  last_updated_on: 2023-11-26 20:36:11.000000000 Z
