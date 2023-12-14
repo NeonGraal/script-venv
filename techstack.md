@@ -1,7 +1,8 @@
 <!--
---- Readme.md Snippet without images Start ---
+&lt;--- Readme.md Snippet without images Start ---&gt;
 ## Tech Stack
 NeonGraal/script-venv is built on the following main stack:
+
 - [Python](https://www.python.org) – Languages
 - [Node.js](http://nodejs.org/) – Frameworks (Full Stack)
 - [Sphinx](http://sphinxsearch.com/) – Search Engines
@@ -9,14 +10,18 @@ NeonGraal/script-venv is built on the following main stack:
 - [flake8](https://github.com/PyCQA/flake8) – Code Review
 - [pip](https://pypi.org/project/pip/) – Front End Package Manager
 - [GitHub Actions](https://github.com/features/actions) – Continuous Integration
+- [LangChain](https://github.com/hwchase17/langchain) – Large Language Model Tools
+- [pgvector](https://github.com/pgvector/pgvector/) – Database Tools
 - [Docker](https://www.docker.com/) – Virtual Machine Platforms & Containers
 
 Full tech stack [here](/techstack.md)
---- Readme.md Snippet without images End ---
 
---- Readme.md Snippet with images Start ---
+&lt;--- Readme.md Snippet without images End ---&gt;
+
+&lt;--- Readme.md Snippet with images Start ---&gt;
 ## Tech Stack
 NeonGraal/script-venv is built on the following main stack:
+
 - <img width='25' height='25' src='https://img.stackshare.io/service/993/pUBY5pVj.png' alt='Python'/> [Python](https://www.python.org) – Languages
 - <img width='25' height='25' src='https://img.stackshare.io/service/1011/n1JRsFeB_400x400.png' alt='Node.js'/> [Node.js](http://nodejs.org/) – Frameworks (Full Stack)
 - <img width='25' height='25' src='https://img.stackshare.io/service/1598/TtqoAo1V.png' alt='Sphinx'/> [Sphinx](http://sphinxsearch.com/) – Search Engines
@@ -24,17 +29,20 @@ NeonGraal/script-venv is built on the following main stack:
 - <img width='25' height='25' src='https://img.stackshare.io/service/4838/default_c37162891c64eca7fafe782d9c191e409aae1e93.png' alt='flake8'/> [flake8](https://github.com/PyCQA/flake8) – Code Review
 - <img width='25' height='25' src='https://img.stackshare.io/service/5559/-RIWgodF_400x400.jpg' alt='pip'/> [pip](https://pypi.org/project/pip/) – Front End Package Manager
 - <img width='25' height='25' src='https://img.stackshare.io/service/11563/actions.png' alt='GitHub Actions'/> [GitHub Actions](https://github.com/features/actions) – Continuous Integration
+- <img width='25' height='25' src='https://img.stackshare.io/service/48790/default_5b6c6b73f1ff3775c85d2a1ba954cb87e30cbf13.jpg' alt='LangChain'/> [LangChain](https://github.com/hwchase17/langchain) – Large Language Model Tools
+- <img width='25' height='25' src='https://img.stackshare.io/service/109221/default_b888cdf5617d936aa6aacf130911906955508639.png' alt='pgvector'/> [pgvector](https://github.com/pgvector/pgvector/) – Database Tools
 - <img width='25' height='25' src='https://img.stackshare.io/service/586/n4u37v9t_400x400.png' alt='Docker'/> [Docker](https://www.docker.com/) – Virtual Machine Platforms & Containers
 
 Full tech stack [here](/techstack.md)
---- Readme.md Snippet with images End ---
+
+&lt;--- Readme.md Snippet with images End ---&gt;
 -->
 <div align="center">
 
 # Tech Stack File
 ![](https://img.stackshare.io/repo.svg "repo") [NeonGraal/script-venv](https://github.com/NeonGraal/script-venv)![](https://img.stackshare.io/public_badge.svg "public")
 <br/><br/>
-|18<br/>Tools used|11/09/23 <br/>Report generated|
+|23<br/>Tools used|12/14/23 <br/>Report generated|
 |------|------|
 </div>
 
@@ -57,6 +65,19 @@ Full tech stack [here](/techstack.md)
   <img width='36' height='36' src='https://img.stackshare.io/service/1011/n1JRsFeB_400x400.png' alt='Node.js'>
   <br>
   <sub><a href="http://nodejs.org/">Node.js</a></sub>
+  <br>
+  <sub></sub>
+</td>
+
+</tr>
+</table>
+
+## <img src='https://img.stackshare.io/databases.svg'/> Data (1)
+<table><tr>
+  <td align='center'>
+  <img width='36' height='36' src='https://img.stackshare.io/service/109221/default_b888cdf5617d936aa6aacf130911906955508639.png' alt='pgvector'>
+  <br>
+  <sub><a href="https://github.com/pgvector/pgvector/">pgvector</a></sub>
   <br>
   <sub></sub>
 </td>
@@ -125,9 +146,17 @@ Full tech stack [here](/techstack.md)
 </tr>
 </table>
 
-## Other (4)
+## Other (5)
 <table><tr>
   <td align='center'>
+  <img width='36' height='36' src='https://img.stackshare.io/service/48790/default_5b6c6b73f1ff3775c85d2a1ba954cb87e30cbf13.jpg' alt='LangChain'>
+  <br>
+  <sub><a href="https://github.com/hwchase17/langchain">LangChain</a></sub>
+  <br>
+  <sub></sub>
+</td>
+
+<td align='center'>
   <img width='36' height='36' src='https://img.stackshare.io/service/1598/TtqoAo1V.png' alt='Sphinx'>
   <br>
   <sub><a href="http://sphinxsearch.com/">Sphinx</a></sub>
@@ -163,19 +192,22 @@ Full tech stack [here](/techstack.md)
 </table>
 
 
-## <img src='https://img.stackshare.io/group.svg' /> Open source packages (5)</h2>
+## <img src='https://img.stackshare.io/group.svg' /> Open source packages (8)</h2>
 
-## <img width='24' height='24' src='https://img.stackshare.io/service/12572/-RIWgodF_400x400.jpg'/> PyPI (5)
+## <img width='24' height='24' src='https://img.stackshare.io/service/12572/-RIWgodF_400x400.jpg'/> PyPI (8)
 
 |NAME|VERSION|LAST UPDATED|LAST UPDATED BY|LICENSE|VULNERABILITIES|
 |:------|:------|:------|:------|:------|:------|
-|[coverage](https://pypi.org/coverage)|v7.3.2|10/03/23|pyup-bot |Apache-2.0|N/A|
-|[pathlib2](https://pypi.org/pathlib2)|N/A|02/10/22|pyup-bot |MIT|N/A|
-|[pytest-cov](https://pypi.org/pytest-cov)|v4.0.0|10/25/23|pyup-bot |MIT|N/A|
-|[setuptools_scm](https://pypi.org/setuptools_scm)|v8.0.4|10/03/23|pyup-bot |MIT|N/A|
-|[wheel](https://pypi.org/wheel)|v0.41.2|08/22/23|pyup-bot |MIT|N/A|
+|[click](https://pypi.org/project/click)|N/A|07/19/23|pyup-bot |BSD-3-Clause|N/A|
+|[coverage](https://pypi.org/project/coverage)|v7.3.2|10/03/23|pyup-bot |Apache-2.0|N/A|
+|[flake8-polyfill](https://pypi.org/project/flake8-polyfill)|v1.0.2|07/30/23|pyup-bot |MIT|N/A|
+|[pathlib2](https://pypi.org/project/pathlib2)|N/A|02/10/22|pyup-bot |MIT|N/A|
+|[pytest-cov](https://pypi.org/project/pytest-cov)|v4.0.0|10/25/23|pyup-bot |MIT|N/A|
+|[radon](https://pypi.org/project/radon)|v6.0.1|03/26/23|pyup-bot |MIT|N/A|
+|[setuptools_scm](https://pypi.org/project/setuptools_scm)|v8.0.4|11/29/23|pyup-bot |MIT|N/A|
+|[wheel](https://pypi.org/project/wheel)|v0.42.0|11/26/23|pyup-bot |MIT|N/A|
 
 <br/>
 <div align='center'>
 
-Generated via [Stack File](https://github.com/apps/stack-file)
+Generated via [Stack File](https://github.com/marketplace/stack-file)
