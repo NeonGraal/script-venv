@@ -5,7 +5,7 @@ flake8-polyfill==1.0.2
 mypy==1.8.0
 pathlib2==2.3.7.post1
 pip==23.3.2
-pytest==7.4.3
+pytest==7.4.4
 # pytest-runner==5.3.1
 pytest-cov==4.0.0
 pytest-mypy==0.10.3
