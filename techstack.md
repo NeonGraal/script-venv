@@ -42,7 +42,7 @@ Full tech stack [here](/techstack.md)
 # Tech Stack File
 ![](https://img.stackshare.io/repo.svg "repo") [NeonGraal/script-venv](https://github.com/NeonGraal/script-venv)![](https://img.stackshare.io/public_badge.svg "public")
 <br/><br/>
-|23<br/>Tools used|12/14/23 <br/>Report generated|
+|26<br/>Tools used|01/05/24 <br/>Report generated|
 |------|------|
 </div>
 
@@ -192,19 +192,22 @@ Full tech stack [here](/techstack.md)
 </table>
 
 
-## <img src='https://img.stackshare.io/group.svg' /> Open source packages (8)</h2>
+## <img src='https://img.stackshare.io/group.svg' /> Open source packages (11)</h2>
 
-## <img width='24' height='24' src='https://img.stackshare.io/service/12572/-RIWgodF_400x400.jpg'/> PyPI (8)
+## <img width='24' height='24' src='https://img.stackshare.io/service/12572/-RIWgodF_400x400.jpg'/> PyPI (11)
 
 |NAME|VERSION|LAST UPDATED|LAST UPDATED BY|LICENSE|VULNERABILITIES|
 |:------|:------|:------|:------|:------|:------|
 |[click](https://pypi.org/project/click)|N/A|07/19/23|pyup-bot |BSD-3-Clause|N/A|
 |[coverage](https://pypi.org/project/coverage)|v7.3.2|10/03/23|pyup-bot |Apache-2.0|N/A|
 |[flake8-polyfill](https://pypi.org/project/flake8-polyfill)|v1.0.2|07/30/23|pyup-bot |MIT|N/A|
+|[mypy](https://pypi.org/project/mypy)|v1.7.1|11/23/23|pyup-bot |MIT|N/A|
 |[pathlib2](https://pypi.org/project/pathlib2)|N/A|02/10/22|pyup-bot |MIT|N/A|
 |[pytest-cov](https://pypi.org/project/pytest-cov)|v4.0.0|10/25/23|pyup-bot |MIT|N/A|
 |[radon](https://pypi.org/project/radon)|v6.0.1|03/26/23|pyup-bot |MIT|N/A|
+|[setuptools](https://pypi.org/project/setuptools)|v69.0.2|11/29/23|pyup-bot |MIT|N/A|
 |[setuptools_scm](https://pypi.org/project/setuptools_scm)|v8.0.4|11/29/23|pyup-bot |MIT|N/A|
+|[tox](https://pypi.org/project/tox)|v4.11.4|11/15/18|Struan Judd |MIT|N/A|
 |[wheel](https://pypi.org/project/wheel)|v0.42.0|11/26/23|pyup-bot |MIT|N/A|
 
 <br/>

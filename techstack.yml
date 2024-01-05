@@ -1,11 +1,12 @@
 repo_name: NeonGraal/script-venv
-report_id: c94eff80f7dc827391e13180a231fde5
+report_id: cf04d9df50490885ed0094f61fad5747
+version: 0.1
 repo_type: Public
-timestamp: '2023-12-14T09:54:25+00:00'
+timestamp: '2024-01-05T09:09:25+00:00'
 requested_by: mergify[bot]
 provider: github
 branch: master
-detected_tools_count: 23
+detected_tools_count: 26
 tools:
 - name: Python
   description: A clear and powerful object-oriented programming language, comparable
@@ -16,6 +17,7 @@ tools:
   category: Languages & Frameworks
   sub_category: Languages
   image_url: https://img.stackshare.io/service/993/pUBY5pVj.png
+  detection_source_url: https://github.com/NeonGraal/script-venv
   detection_source: Repo Metadata
 - name: Node.js
   description: A platform built on Chrome's JavaScript runtime for easily building
@@ -26,6 +28,7 @@ tools:
   category: Languages & Frameworks
   sub_category: Frameworks (Full Stack)
   image_url: https://img.stackshare.io/service/1011/n1JRsFeB_400x400.png
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/.devcontainer/Dockerfile
   detection_source: ".devcontainer/Dockerfile"
   last_updated_by: Struan Judd
   last_updated_on: 2020-12-18 21:59:31.000000000 Z
@@ -37,6 +40,7 @@ tools:
   category: Data Stores
   sub_category: Database Tools
   image_url: https://img.stackshare.io/service/109221/default_b888cdf5617d936aa6aacf130911906955508639.png
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: Struan Judd
   last_updated_on: 2018-11-15 09:49:58.000000000 Z
@@ -49,6 +53,7 @@ tools:
   category: Build, Test, Deploy
   sub_category: Virtual Machine Platforms & Containers
   image_url: https://img.stackshare.io/service/586/n4u37v9t_400x400.png
+  detection_source_url: https://github.com/NeonGraal/script-venv
   detection_source: Repo Metadata
 - name: Git
   description: Fast, scalable, distributed revision control system
@@ -58,6 +63,7 @@ tools:
   category: Build, Test, Deploy
   sub_category: Version Control System
   image_url: https://img.stackshare.io/service/1046/git.png
+  detection_source_url: https://github.com/NeonGraal/script-venv
   detection_source: Repo Metadata
 - name: GitHub Actions
   description: Automate your workflow from idea to production
@@ -67,6 +73,7 @@ tools:
   category: Build, Test, Deploy
   sub_category: Continuous Integration
   image_url: https://img.stackshare.io/service/11563/actions.png
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/.github/workflows/codeql-analysis.yml
   detection_source: ".github/workflows/codeql-analysis.yml"
   last_updated_by: Struan Judd
   last_updated_on: 2022-05-01 03:29:28.000000000 Z
@@ -78,6 +85,7 @@ tools:
   category: Build, Test, Deploy
   sub_category: Hosted Package Repository
   image_url: https://img.stackshare.io/service/12572/-RIWgodF_400x400.jpg
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: Struan Judd
   last_updated_on: 2018-11-15 09:49:58.000000000 Z
@@ -89,6 +97,7 @@ tools:
   category: Build, Test, Deploy
   sub_category: Code Review
   image_url: https://img.stackshare.io/service/4838/default_c37162891c64eca7fafe782d9c191e409aae1e93.png
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
   last_updated_on: 2023-07-30 13:00:04.000000000 Z
@@ -100,6 +109,7 @@ tools:
   category: Build, Test, Deploy
   sub_category: Front End Package Manager
   image_url: https://img.stackshare.io/service/5559/-RIWgodF_400x400.jpg
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: Struan Judd
   last_updated_on: 2018-11-15 09:49:58.000000000 Z
@@ -125,6 +135,7 @@ tools:
   category: Communications
   sub_category: Large Language Model Tools
   image_url: https://img.stackshare.io/service/48790/default_5b6c6b73f1ff3775c85d2a1ba954cb87e30cbf13.jpg
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: Struan Judd
   last_updated_on: 2018-11-15 09:49:58.000000000 Z
@@ -137,6 +148,7 @@ tools:
   category: Application Utilities
   sub_category: Search Engines
   image_url: https://img.stackshare.io/service/1598/TtqoAo1V.png
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
   last_updated_on: 2023-09-14 10:42:34.000000000 Z
@@ -147,6 +159,7 @@ tools:
   open_source: false
   hosted_saas: false
   image_url: https://img.stackshare.io/service/7350/eaca159133a3901e24ddb407d1235c25_normal.png
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
   last_updated_on: 2023-11-23 21:32:01.000000000 Z
@@ -155,6 +168,7 @@ tools:
   open_source: false
   hosted_saas: false
   image_url: https://img.stackshare.io/service/10517/647025.png
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
   last_updated_on: 2023-11-29 03:47:38.000000000 Z
@@ -165,6 +179,7 @@ tools:
   open_source: false
   hosted_saas: false
   image_url: https://img.stackshare.io/service/4825/OhsWgbsr_normal.png
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: Struan Judd
   last_updated_on: 2018-11-15 09:49:58.000000000 Z
@@ -177,6 +192,7 @@ tools:
   category: Libraries
   sub_category: PyPI Packages
   image_url: https://img.stackshare.io/package/19830/default_74a61b43bdb9fc0cba2978316b9976f43545029b.png
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
   last_updated_on: 2023-07-19 01:35:23.000000000 Z
@@ -208,6 +224,20 @@ tools:
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
   last_updated_on: 2023-07-30 13:00:04.000000000 Z
+- name: mypy
+  description: Optional static typing for Python
+  package_url: https://pypi.org/project/mypy
+  version: 1.7.1
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/20219/default_d4dd0466552a9776ca8535b869e22a3362790c94.png
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
+  detection_source: requirements_dev.txt
+  last_updated_by: pyup-bot
+  last_updated_on: 2023-11-23 21:32:01.000000000 Z
 - name: pathlib2
   description: Object-oriented filesystem paths
   package_url: https://pypi.org/project/pathlib2
@@ -217,6 +247,7 @@ tools:
   category: Libraries
   sub_category: PyPI Packages
   image_url: https://img.stackshare.io/package/19954/default_1965f66bb5a4d2eb7b31193d7be6d8a9041d02b9.png
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
   last_updated_on: 2022-02-10 19:12:45.000000000 Z
@@ -248,6 +279,20 @@ tools:
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
   last_updated_on: 2023-03-26 08:24:53.000000000 Z
+- name: setuptools
+  description: Easily download
+  package_url: https://pypi.org/project/setuptools
+  version: 69.0.2
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19831/default_65d1c12a133e1aa67ae96a1221c9c122ddf86c5f.png
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
+  detection_source: requirements_dev.txt
+  last_updated_by: pyup-bot
+  last_updated_on: 2023-11-29 03:47:38.000000000 Z
 - name: setuptools_scm
   description: The blessed package to manage your versions by scm tags
   package_url: https://pypi.org/project/setuptools_scm
@@ -262,6 +307,20 @@ tools:
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
   last_updated_on: 2023-11-29 03:47:38.000000000 Z
+- name: tox
+  description: Tox is a generic virtualenv management and test command line tool
+  package_url: https://pypi.org/project/tox
+  version: 4.11.4
+  license: MIT
+  open_source: true
+  hosted_saas: false
+  category: Libraries
+  sub_category: PyPI Packages
+  image_url: https://img.stackshare.io/package/19991/default_f2178576c59f6927768590a32b6ef092891768c5.png
+  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
+  detection_source: requirements_dev.txt
+  last_updated_by: Struan Judd
+  last_updated_on: 2018-11-15 09:49:58.000000000 Z
 - name: wheel
   description: A built-package format for Python
   package_url: https://pypi.org/project/wheel
