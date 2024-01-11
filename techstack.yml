@@ -2,11 +2,11 @@ repo_name: NeonGraal/script-venv
 report_id: cf04d9df50490885ed0094f61fad5747
 version: 0.1
 repo_type: Public
-timestamp: '2024-01-05T09:09:25+00:00'
+timestamp: '2024-01-11T12:38:48+00:00'
 requested_by: mergify[bot]
 provider: github
 branch: master
-detected_tools_count: 26
+detected_tools_count: 24
 tools:
 - name: Python
   description: A clear and powerful object-oriented programming language, comparable
@@ -32,18 +32,6 @@ tools:
   detection_source: ".devcontainer/Dockerfile"
   last_updated_by: Struan Judd
   last_updated_on: 2020-12-18 21:59:31.000000000 Z
-- name: pgvector
-  description: Open-source vector similarity search for Postgres
-  website_url: https://github.com/pgvector/pgvector/
-  open_source: false
-  hosted_saas: false
-  category: Data Stores
-  sub_category: Database Tools
-  image_url: https://img.stackshare.io/service/109221/default_b888cdf5617d936aa6aacf130911906955508639.png
-  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
-  detection_source: requirements_dev.txt
-  last_updated_by: Struan Judd
-  last_updated_on: 2018-11-15 09:49:58.000000000 Z
 - name: Docker
   description: Enterprise Container Platform for High-Velocity Innovation.
   website_url: https://www.docker.com/
@@ -100,7 +88,7 @@ tools:
   detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
-  last_updated_on: 2023-07-30 13:00:04.000000000 Z
+  last_updated_on: 2024-01-05 09:40:15.000000000 Z
 - name: pip
   description: A package installer for Python
   website_url: https://pypi.org/project/pip/
@@ -116,7 +104,7 @@ tools:
 - name: pytest
   description: A full-featured Python testing tool to help you write better programs
   website_url: http://pytest.org/latest/
-  version: 7.4.3
+  version: 7.4.4
   license: MIT
   open_source: true
   hosted_saas: false
@@ -126,19 +114,7 @@ tools:
   detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
-  last_updated_on: 2023-10-25 12:26:05.000000000 Z
-- name: LangChain
-  description: Build AI apps with LLMs through composability
-  website_url: https://github.com/hwchase17/langchain
-  open_source: true
-  hosted_saas: false
-  category: Communications
-  sub_category: Large Language Model Tools
-  image_url: https://img.stackshare.io/service/48790/default_5b6c6b73f1ff3775c85d2a1ba954cb87e30cbf13.jpg
-  detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
-  detection_source: requirements_dev.txt
-  last_updated_by: Struan Judd
-  last_updated_on: 2018-11-15 09:49:58.000000000 Z
+  last_updated_on: 2024-01-01 04:11:53.000000000 Z
 - name: Sphinx
   description: Open source full text search server, designed from the ground up with
     performance, relevance (aka search quality), and integration simplicity in mind
@@ -162,7 +138,7 @@ tools:
   detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
-  last_updated_on: 2023-11-23 21:32:01.000000000 Z
+  last_updated_on: 2023-12-21 18:46:35.000000000 Z
 - name: setuptools
   website_url: https://github.com/pypa/setuptools
   open_source: false
@@ -171,7 +147,7 @@ tools:
   detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
-  last_updated_on: 2023-11-29 03:47:38.000000000 Z
+  last_updated_on: 2024-01-06 03:47:13.000000000 Z
 - name: tox
   description: We host the world's documentation. Maintained by @ericholscher &amp;
     @agjhnsn. Not a support channel, please use GitHub.
@@ -199,7 +175,7 @@ tools:
 - name: coverage
   description: Code coverage measurement for Python
   package_url: https://pypi.org/project/coverage
-  version: 7.3.2
+  version: 7.4.0
   license: Apache-2.0
   open_source: true
   hosted_saas: false
@@ -209,7 +185,7 @@ tools:
   detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
-  last_updated_on: 2023-10-03 09:47:25.000000000 Z
+  last_updated_on: 2023-12-28 14:23:23.000000000 Z
 - name: flake8-polyfill
   description: Polyfill package for Flake8 plugins
   package_url: https://pypi.org/project/flake8-polyfill
@@ -223,11 +199,11 @@ tools:
   detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
-  last_updated_on: 2023-07-30 13:00:04.000000000 Z
+  last_updated_on: 2024-01-05 09:40:15.000000000 Z
 - name: mypy
   description: Optional static typing for Python
   package_url: https://pypi.org/project/mypy
-  version: 1.7.1
+  version: 1.8.0
   license: MIT
   open_source: true
   hosted_saas: false
@@ -237,7 +213,7 @@ tools:
   detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
-  last_updated_on: 2023-11-23 21:32:01.000000000 Z
+  last_updated_on: 2023-12-21 18:46:35.000000000 Z
 - name: pathlib2
   description: Object-oriented filesystem paths
   package_url: https://pypi.org/project/pathlib2
@@ -264,7 +240,7 @@ tools:
   detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
-  last_updated_on: 2023-10-25 12:26:05.000000000 Z
+  last_updated_on: 2024-01-01 04:11:53.000000000 Z
 - name: radon
   description: Code Metrics in Python
   package_url: https://pypi.org/project/radon
@@ -282,7 +258,7 @@ tools:
 - name: setuptools
   description: Easily download
   package_url: https://pypi.org/project/setuptools
-  version: 69.0.2
+  version: 69.0.3
   license: MIT
   open_source: true
   hosted_saas: false
@@ -292,7 +268,7 @@ tools:
   detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
-  last_updated_on: 2023-11-29 03:47:38.000000000 Z
+  last_updated_on: 2024-01-06 03:47:13.000000000 Z
 - name: setuptools_scm
   description: The blessed package to manage your versions by scm tags
   package_url: https://pypi.org/project/setuptools_scm
@@ -306,7 +282,7 @@ tools:
   detection_source_url: https://github.com/NeonGraal/script-venv/blob/master/requirements_dev.txt
   detection_source: requirements_dev.txt
   last_updated_by: pyup-bot
-  last_updated_on: 2023-11-29 03:47:38.000000000 Z
+  last_updated_on: 2024-01-06 03:47:13.000000000 Z
 - name: tox
   description: Tox is a generic virtualenv management and test command line tool
   package_url: https://pypi.org/project/tox
