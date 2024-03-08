@@ -2,7 +2,7 @@ Click==8.1.6
 coverage==7.4.3
 flake8==7.0.0
 flake8-polyfill==1.0.2
-mypy==1.8.0
+mypy==1.9.0
 pathlib2==2.3.7.post1
 pip==24.0
 pytest==8.0.2
