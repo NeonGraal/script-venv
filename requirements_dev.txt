@@ -7,7 +7,7 @@ pathlib2==2.3.7.post1
 pip==24.0
 pytest==8.1.1
 # pytest-runner==5.3.1
-pytest-cov==4.0.0
+pytest-cov==5.0.0
 pytest-mypy==0.10.3
 # pytest-annotate==1.0.2
 radon==6.0.1
