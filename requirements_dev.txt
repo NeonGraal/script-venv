@@ -1,5 +1,5 @@
 Click==8.1.7
-coverage==7.6.0
+coverage==7.6.2
 flake8==7.1.0
 flake8-polyfill==1.0.2
 mypy==1.11.1
