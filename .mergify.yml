@@ -7,8 +7,20 @@ pull_request_rules:
       - label!=no-mergify
       - '#approved-reviews-by>=1'
       - status-success=build (ubuntu-latest, 3.10)
+      - status-success=build (ubuntu-latest, 3.11)
+      - status-success=build (ubuntu-latest, 3.12)
+      - status-success=build (ubuntu-latest, 3.13)
+      - status-success=build (ubuntu-latest, 3.14)
       - status-success=build (windows-latest, 3.10)
+      - status-success=build (windows-latest, 3.11)
+      - status-success=build (windows-latest, 3.12)
+      - status-success=build (windows-latest, 3.13)
+      - status-success=build (windows-latest, 3.14)
       - status-success=build (macos-latest, 3.10)
+      - status-success=build (macos-latest, 3.11)
+      - status-success=build (macos-latest, 3.12)
+      - status-success=build (macos-latest, 3.13)
+      - status-success=build (macos-latest, 3.14)
       - status-success=codecov/project
       - status-success=pyup.io/safety-ci
 
@@ -20,8 +32,20 @@ pull_request_rules:
       - label!=no-mergify
       - author=NeonGraal
       - status-success=build (ubuntu-latest, 3.10)
+      - status-success=build (ubuntu-latest, 3.11)
+      - status-success=build (ubuntu-latest, 3.12)
+      - status-success=build (ubuntu-latest, 3.13)
+      - status-success=build (ubuntu-latest, 3.14)
       - status-success=build (windows-latest, 3.10)
+      - status-success=build (windows-latest, 3.11)
+      - status-success=build (windows-latest, 3.12)
+      - status-success=build (windows-latest, 3.13)
+      - status-success=build (windows-latest, 3.14)
       - status-success=build (macos-latest, 3.10)
+      - status-success=build (macos-latest, 3.11)
+      - status-success=build (macos-latest, 3.12)
+      - status-success=build (macos-latest, 3.13)
+      - status-success=build (macos-latest, 3.14)
       - status-success=codecov/project
       - status-success=pyup.io/safety-ci
 
@@ -30,8 +54,20 @@ pull_request_rules:
       - label!=no-mergify
       - author=pyup-bot
       - status-success=build (ubuntu-latest, 3.10)
+      - status-success=build (ubuntu-latest, 3.11)
+      - status-success=build (ubuntu-latest, 3.12)
+      - status-success=build (ubuntu-latest, 3.13)
+      - status-success=build (ubuntu-latest, 3.14)
       - status-success=build (windows-latest, 3.10)
+      - status-success=build (windows-latest, 3.11)
+      - status-success=build (windows-latest, 3.12)
+      - status-success=build (windows-latest, 3.13)
+      - status-success=build (windows-latest, 3.14)
       - status-success=build (macos-latest, 3.10)
+      - status-success=build (macos-latest, 3.11)
+      - status-success=build (macos-latest, 3.12)
+      - status-success=build (macos-latest, 3.13)
+      - status-success=build (macos-latest, 3.14)
       - status-success=codecov/project
       - status-success=pyup.io/safety-ci
     actions:

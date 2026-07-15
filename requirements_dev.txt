@@ -1,17 +1,17 @@
 Click==8.1.7
-coverage==7.15.1
+coverage==7.15.2
 flake8==7.3.0
 flake8-polyfill==1.0.2
 mypy==2.2.0
 pathlib2==2.3.7.post1
-pip==24.0  # pyup: ignore
+pip==26.1.2  # pyup: ignore
 pytest==8.3.4
 # pytest-runner==5.3.1
-pytest-cov==6.0.0
+pytest-cov==7.1.0
 pytest-mypy==1.0.1
 # pytest-annotate==1.0.2
 radon==6.0.1
-setuptools==71.1.0
+setuptools==83.0.0
 setuptools_scm==10.2.0
 Sphinx==9.1.0
 tox==4.56.4

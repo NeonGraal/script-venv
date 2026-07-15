@@ -13,10 +13,6 @@ with open('HISTORY.rst') as history_file:
 
 requirements = ['Click>=6.0', 'pathlib2', ]
 
-setup_requirements = ['pytest-runner', 'setuptools_scm', ]
-
-test_requirements = ['pytest', 'pytest-cov', 'pytest-flake8', 'pytest-mypy', 'mypy', ]
-
 setup(
     author="Struan Lyall Judd",
     author_email='sv@scifi.geek.nz',
@@ -29,6 +25,9 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
+        'Programming Language :: Python :: 3.14',
     ],
     description="A python package for script (and command) virtualisation with less typing.",
     entry_points={
@@ -43,9 +42,6 @@ setup(
     keywords='script_venv',
     name='script_venv',
     packages=find_packages(include=['script_venv']),
-    setup_requires=setup_requirements,
-    test_suite='tests',
-    tests_require=test_requirements,
     url='https://github.com/neongraal/script_venv',
     use_scm_version=True,
     zip_safe=False,
