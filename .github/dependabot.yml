@@ -13,6 +13,13 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-      pip:
+      pip-patch:
         patterns:
           - "*"
+        update-types:
+          - "patch"
+      pip-minor:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
