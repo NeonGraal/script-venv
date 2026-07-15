@@ -41,7 +41,7 @@ jobs:
       env:
         PY_VER:  ${{ matrix.python-version }}
       run: |
-        python setup.py test
+        py.test
         if ( $? -AND $env:PY_VER -EQ "3.10" ) {
           coverage xml
         }
