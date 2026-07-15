@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """Utilities for testing `script_venv` package."""
-from click import BaseCommand
+from click import Command
 from click.testing import CliRunner, Result
 from configparser import ConfigParser
 from io import StringIO
@@ -58,6 +58,6 @@ class CliObjectRunner(CliRunner):
         self.obj = obj
         super(CliObjectRunner, self).__init__(**kwargs)
 
-    def invoke(self, cli: BaseCommand, *args, **extra) -> Result:
+    def invoke(self, cli: Command, *args, **extra) -> Result:
         extra['obj'] = self.obj
         return super(CliObjectRunner, self).invoke(cli, *args, **extra)
