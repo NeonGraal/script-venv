@@ -12,7 +12,7 @@ from .script_venv import ScriptVenvGroup
 _IGNORE_UNKNOWN = dict(ignore_unknown_options=True, )
 
 
-@click.command(name="sv", cls=ScriptVenvGroup, context_settings=_IGNORE_UNKNOWN)
+@click.command(name="sv", cls=ScriptVenvGroup, context_settings=_IGNORE_UNKNOWN, invoke_without_command=True)
 @click.version_option()
 @click.option('--config-search-path', '-S', type=click.STRING,
               help='Path to load .sv_cfg files from')
@@ -20,6 +20,9 @@ _IGNORE_UNKNOWN = dict(ignore_unknown_options=True, )
 @click.pass_context
 def main(ctx, config_search_path: str, verbose: bool) -> None:
     """Console script for script_venv."""
+    if ctx.invoked_subcommand is None:
+        click.echo(ctx.get_help())
+        return
     if not isinstance(ctx.obj, VenvConfig):
         deps = cast(ConfigDependencies, ctx.obj) or ConfigDependenciesImpl()
         ctx.obj = VenvConfig(deps=deps)
