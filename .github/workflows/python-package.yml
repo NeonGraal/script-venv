@@ -63,14 +63,18 @@ jobs:
             filter: 'latest',
           });
           const failed = jobs.data.jobs.filter(
-            j => j.name.startsWith('build') && j.conclusion === 'failure'
+            j => j.name.startsWith('build (') && j.conclusion === 'failure'
           ).length;
           core.info(`Failed build jobs so far: ${failed}`);
           if (failed >= 6) {
             core.warning(`${failed} build jobs failed (threshold: 6) — cancelling run`);
-            await github.rest.actions.cancelWorkflowRun({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              run_id: context.runId,
-            });
+            try {
+              await github.rest.actions.cancelWorkflowRun({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: context.runId,
+              });
+            } catch (e) {
+              core.info(`Cancel request skipped (run may already be cancelling): ${e.message}`);
+            }
           }
