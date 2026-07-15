@@ -13,7 +13,10 @@ jobs:
   build:
 
     runs-on: ${{ matrix.os }}
+    permissions:
+      actions: write
     strategy:
+      fail-fast: false
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
         python-version: [ '3.10', '3.11', '3.12', '3.13', '3.14' ]
@@ -31,6 +34,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip wheel
         python -m pip install -r requirements_dev.txt
+        python -m pip install -e .
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -41,9 +45,36 @@ jobs:
       env:
         PY_VER:  ${{ matrix.python-version }}
       run: |
-        python setup.py test
+        py.test
         if ( $? -AND $env:PY_VER -EQ "3.10" ) {
           coverage xml
         }
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v7
+    - name: Cancel run if 6 or more build jobs have failed
+      if: always()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const jobs = await github.rest.actions.listJobsForWorkflowRun({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            run_id: context.runId,
+            filter: 'latest',
+          });
+          const failed = jobs.data.jobs.filter(
+            j => j.name.startsWith('build (') && j.conclusion === 'failure'
+          ).length;
+          core.info(`Failed build jobs so far: ${failed}`);
+          if (failed >= 6) {
+            core.warning(`${failed} build jobs failed (threshold: 6) — cancelling run`);
+            try {
+              await github.rest.actions.cancelWorkflowRun({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: context.runId,
+              });
+            } catch (e) {
+              core.info(`Cancel request skipped (run may already be cancelling): ${e.message}`);
+            }
+          }
