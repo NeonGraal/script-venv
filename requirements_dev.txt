@@ -1,5 +1,5 @@
 Click==8.5.0
-coverage==7.16.2
+coverage==7.17.0
 flake8==7.4.1
 flake8-polyfill==1.0.2
 mypy==2.4.0
@@ -8,15 +8,15 @@ pip==26.2.1  # pyup: ignore
 pytest==9.1.1
 # pytest-runner==5.3.1
 pytest-cov==7.1.0
-pytest-mypy==1.0.1
+pytest-mypy==1.1.0
 # pytest-annotate==1.0.2
 radon==6.0.1
-setuptools==84.0.0
+setuptools==84.2.1
 setuptools_scm==10.3.4
 Sphinx==8.1.3; python_version == "3.10"
 Sphinx==8.2.3; python_version == "3.11"
-Sphinx==9.1.0; python_version >= "3.12"
-tox==4.64.7
+Sphinx==9.2.0; python_version >= "3.12"
+tox==4.67.1
 types-setuptools==84.0.0.20260812
 wheel==0.48.0
  
